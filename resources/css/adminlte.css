@@ -10,14 +10,67 @@
 @import 'overlayscrollbars/overlayscrollbars.css';
 @import 'admin-lte/dist/css/adminlte.css';
 
-/*
- * Option B: compile from source to customise SCSS variables. Comment out
- * the admin-lte CSS import above and use this instead (requires `sass`):
- *
- *   // resources/css/adminlte.scss
- *   $primary: #6610f2;            // your overrides BEFORE the import
- *   $lte-sidebar-width: 280px;
- *   @import 'admin-lte/src/scss/adminlte';
- *
- * See https://adminlte.io/themes/v4/docs/customization.html
- */
+/* ULT Polinema Admin Sidebar */
+.app-sidebar {
+    background-color: #0d2542 !important;
+    color: #ffffff;
+}
+
+.app-sidebar .nav-link {
+    color: #d6dfeb;
+    border-radius: 6px;
+    margin: 3px 10px;
+    padding: 10px 12px;
+    font-size: 0.875rem;
+    transition: background-color 0.2s ease;
+}
+
+.app-sidebar .nav-link:hover {
+    background-color: #173b67;
+    color: #ffffff;
+}
+
+.app-sidebar .nav-link.active {
+    background-color: #173f80;
+    color: #ffffff;
+}
+
+.app-sidebar .nav-link.active .nav-icon {
+    color: #ffd43b;
+}
+
+.app-sidebar .nav-icon {
+    margin-right: 8px;
+    font-size: 0.95rem;
+}
+
+.app-sidebar .brand-link {
+    background-color: #0d2542;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.app-sidebar .brand-text {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.app-sidebar .nav-link p {
+    display: inline;
+}
+
+
+/* Footer rata tengah */
+.app-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.app-footer .float-end {
+    display: none;
+}
+
+.app-footer strong {
+    margin: 0;
+}
