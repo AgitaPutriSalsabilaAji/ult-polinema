@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Beranda | Unit Layanan Terpadu Polinema</title>
+
+    {{-- Bootstrap 5 --}}
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    {{-- Bootstrap Icons --}}
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+    {{-- CSS dan JavaScript lokal melalui Vite --}}
+    @vite(['resources/js/beranda.js'])
+</head>
+<body>
+
+    {{-- HEADER DAN NAVIGASI --}}
+    <header class="site-header sticky-top">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container-xl">
+
+                <a class="navbar-brand brand-lockup"
+                   href="#beranda"
+                   aria-label="Beranda ULT Polinema">
+
+                    <img
+                        src="{{ asset('images/logo polinema.png') }}"
+                        alt="Logo Politeknik Negeri Malang"
+                    >
+
+                    <span>
+                        <strong>UNIT LAYANAN TERPADU</strong>
+                        <small>POLITEKNIK NEGERI MALANG</small>
+                    </span>
+                </a>
+
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#mainNav"
+                    aria-controls="mainNav"
+                    aria-expanded="false"
+                    aria-label="Buka navigasi">
+
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav mx-auto align-items-lg-center">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#beranda">Beranda</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#layanan">Layanan</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#faq">FAQ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#cek-status">Cek Status</a>
+                        </li>
+                    </ul>
+
+                    <a class="btn btn-orange nav-check" href="#cek-status">
+                        <i class="bi bi-search me-2"></i>Cek Layanan
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+
+        {{-- HERO --}}
+        <section class="hero-section" id="beranda">
+            <div class="hero-overlay"></div>
+
+            <div class="container-xl hero-content">
+                <div class="row align-items-center g-4">
+
+                    <div class="col-lg-7">
+                        <span class="eyebrow">
+                            <span class="eyebrow-dot"></span>
+                            UNIT LAYANAN TERPADU
+                        </span>
+
+                        <h1>Layanan Polinema<br>Dalam Satu Pintu</h1>
+
+                        <p class="hero-description">
+                            Satu pintu layanan informasi dan administrasi
+                            Politeknik Negeri Malang yang mudah, cepat,
+                            transparan, dan terpadu untuk civitas akademika
+                            dan masyarakat luas tanpa perlu login.
+                        </p>
+
+                        <div class="d-flex flex-wrap gap-2 hero-actions">
+                            <a href="#layanan" class="btn btn-orange">
+                                <i class="bi bi-grid-fill me-2"></i>
+                                Jelajahi Layanan
+                            </a>
+
+                            <a href="#cek-status" class="btn btn-ghost">
+                                <i class="bi bi-ticket-perforated me-2"></i>
+                                Cek Status E-Ticket
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="hero-stat-card ms-lg-auto">
+                            <div class="stat-top">
+                                <strong>38+</strong>
+                                <span>Total Jenis Layanan</span>
+                            </div>
+
+                            <div class="stat-middle">
+                                <strong>1–3 Hari Kerja</strong>
+                                <span>Rata-rata Respons</span>
+                            </div>
+
+                            <div class="stat-bottom">
+                                <span class="open-pill">
+                                    <i class="bi bi-circle-fill"></i>
+                                    100% Terbuka
+                                </span>
+                                <span>Akses Tanpa Akun</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        {{-- PENCARIAN LAYANAN --}}
+        <section class="service-search-section">
+            <div class="container-xl text-center">
+                <h2 class="section-heading">APA YANG ANDA BUTUHKAN?</h2>
+
+                <p class="section-subtitle">
+                    Temukan layanan yang sesuai dengan kebutuhan
+                    administrasi atau informasi Anda.
+                </p>
+
+                <form class="search-form mx-auto"
+                      id="serviceSearchForm"
+                      role="search">
+
+                    <i class="bi bi-search search-icon"></i>
+
+                    <input
+                        type="search"
+                        id="serviceSearch"
+                        aria-label="Cari layanan"
+                        placeholder="Cari layanan yang Anda butuhkan..."
+                    >
+
+                    <button class="btn btn-orange" type="submit">
+                        Cari Layanan
+                    </button>
+                </form>
+
+                <p class="search-hint">
+                    Belum tahu layanan yang tepat?
+                    <a href="#kategori">＋ Cek Semua Kategori Layanan</a>
+                </p>
+
+                <p class="search-feedback" id="searchFeedback"
+                   aria-live="polite"></p>
+            </div>
+        </section>
+
+        {{-- AJUKAN PERMOHONAN --}}
+        <section class="quick-apply-section">
+            <div class="container-xl">
+                <div class="quick-apply">
+                    <div>
+                        <span class="mini-label">Akses Langsung Tanpa Akun</span>
+
+                        <h2>AJUKAN PERMOHONAN LAYANAN</h2>
+
+                        <p>
+                            Pilih layanan yang Anda butuhkan dan buat e-ticket
+                            resmi tanpa perlu mendaftar akun.
+                        </p>
+                    </div>
+
+                    <a href="#layanan" class="btn btn-orange">
+                        <i class="bi bi-arrow-right me-2"></i>
+                        PILIH LAYANAN
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        {{-- DAFTAR LAYANAN --}}
+        <section class="services-section section-space" id="layanan">
+            <div class="container-xl">
+
+                <div class="section-title-row">
+                    <div>
+                        <h2 class="section-heading text-start">
+                            Layanan Unit Layanan Terpadu
+                        </h2>
+
+                        <p class="section-subtitle text-start">
+                            Temukan berbagai layanan administrasi
+                            Politeknik Negeri Malang dalam satu portal.
+                        </p>
+                    </div>
+
+                    <a href="#kategori" class="see-all">
+                        LIHAT SEMUA LAYANAN (38)
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="row g-3 service-list" id="serviceList">
+
+                    <div class="col-md-6 service-item"
+                         data-search="surat keterangan kuliah akademik surat mahasiswa">
+                        <a href="#cek-status" class="service-link">
+                            <span class="service-number">01</span>
+
+                            <span class="service-copy">
+                                <strong>Surat Keterangan Kuliah</strong>
+                                <small>
+                                    Layanan penerbitan surat resmi yang
+                                    menyatakan bahwa seseorang pernah atau
+                                    masih menempuh pendidikan di Polinema.
+                                </small>
+                                <em>Unit: Akademik</em>
+                            </span>
+
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="col-md-6 service-item"
+                         data-search="legalisir dokumen akademik ijazah transkrip sertifikat">
+                        <a href="#cek-status" class="service-link">
+                            <span class="service-number">02</span>
+
+                            <span class="service-copy">
+                                <strong>Legalisir Dokumen</strong>
+                                <small>
+                                    Pengesahan dan legalisasi ijazah,
+                                    transkrip nilai, dan sertifikat akademik.
+                                </small>
+                                <em>Unit: Akademik</em>
+                            </span>
+
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="col-md-6 service-item"
+                         data-search="kunjungan sekolah kerja sama humas">
+                        <a href="#cek-status" class="service-link">
+                            <span class="service-number">03</span>
+
+                            <span class="service-copy">
+                                <strong>Kunjungan Sekolah</strong>
+                                <small>
+                                    Layanan penerimaan dan fasilitasi
+                                    kunjungan sekolah ke Politeknik
+                                    Negeri Malang.
+                                </small>
+                                <em>Unit: Kerja Sama &amp; Humas</em>
+                            </span>
+
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="col-md-6 service-item"
+                         data-search="informasi pembayaran keuangan ukt tagihan virtual account">
+                        <a href="#cek-status" class="service-link">
+                            <span class="service-number">04</span>
+
+                            <span class="service-copy">
+                                <strong>Informasi Pembayaran</strong>
+                                <small>
+                                    Informasi tata cara pembayaran UKT,
+                                    tagihan administrasi, dan virtual
+                                    account bank.
+                                </small>
+                                <em>Unit: Keuangan</em>
+                            </span>
+
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="col-md-6 service-item"
+                         data-search="internal kepegawaian pegawai">
+                        <a href="#cek-status" class="service-link">
+                            <span class="service-number">05</span>
+
+                            <span class="service-copy">
+                                <strong>Internal</strong>
+                                <small>
+                                    Layanan informasi kepegawaian
+                                    Politeknik Negeri Malang.
+                                </small>
+                                <em>Unit: Kepegawaian</em>
+                            </span>
+
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="col-md-6 service-item"
+                         data-search="informasi beasiswa kemahasiswaan kip kuliah prestasi bantuan">
+                        <a href="#cek-status" class="service-link">
+                            <span class="service-number">06</span>
+
+                            <span class="service-copy">
+                                <strong>Informasi Beasiswa</strong>
+                                <small>
+                                    Informasi program beasiswa KIP Kuliah,
+                                    prestasi, kemitraan, dan persyaratan
+                                    beasiswa.
+                                </small>
+                                <em>Unit: Kemahasiswaan</em>
+                            </span>
+
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="col-12 no-results d-none" id="noResults">
+                        Layanan tidak ditemukan. Coba gunakan kata kunci lain.
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        {{-- KATEGORI LAYANAN --}}
+        <section class="category-section section-space" id="kategori">
+            <div class="container-xl text-center">
+                <h2 class="section-heading">KATEGORI LAYANAN</h2>
+
+                <p class="section-subtitle">
+                    Pilih rumpun unit kerja penanggung jawab layanan di Polinema.
+                </p>
+
+                <div class="row g-3 justify-content-center category-grid">
+
+                    <div class="col-6 col-md">
+                        <a class="category-card" href="#layanan"
+                           data-category="akademik">
+                            <span class="category-icon">
+                                <i class="bi bi-journal-text"></i>
+                            </span>
+                            <strong>AKADEMIK</strong>
+                            <small>5 Layanan Tersedia</small>
+                        </a>
+                    </div>
+
+                    <div class="col-6 col-md">
+                        <a class="category-card" href="#layanan"
+                           data-category="keuangan">
+                            <span class="category-icon">
+                                <i class="bi bi-cash-coin"></i>
+                            </span>
+                            <strong>KEUANGAN</strong>
+                            <small>7 Layanan Tersedia</small>
+                        </a>
+                    </div>
+
+                    <div class="col-6 col-md">
+                        <a class="category-card" href="#layanan"
+                           data-category="kemahasiswaan">
+                            <span class="category-icon">
+                                <i class="bi bi-people-fill"></i>
+                            </span>
+                            <strong>KEMAHASISWAAN</strong>
+                            <small>9 Layanan Tersedia</small>
+                        </a>
+                    </div>
+
+                    <div class="col-6 col-md">
+                        <a class="category-card" href="#layanan"
+                           data-category="humas">
+                            <span class="category-icon">
+                                <i class="bi bi-megaphone-fill"></i>
+                            </span>
+                            <strong>KERJA SAMA &amp; HUMAS</strong>
+                            <small>7 Layanan Tersedia</small>
+                        </a>
+                    </div>
+
+                    <div class="col-6 col-md">
+                        <a class="category-card" href="#layanan"
+                           data-category="kepegawaian">
+                            <span class="category-icon">
+                                <i class="bi bi-briefcase-fill"></i>
+                            </span>
+                            <strong>KEPEGAWAIAN</strong>
+                            <small>5 Layanan Tersedia</small>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        {{-- ALUR PELAYANAN --}}
+        <section class="steps-section section-space">
+            <div class="container-xl">
+                <div class="text-center mb-4">
+                    <span class="mini-label orange-label">
+                        Prosedur Pengajuan
+                    </span>
+
+                    <h2 class="section-heading">ALUR PELAYANAN ULT</h2>
+
+                    <p class="section-subtitle">
+                        Gunakan layanan ULT Politeknik Negeri Malang
+                        melalui empat langkah sederhana.
+                    </p>
+                </div>
+
+                <div class="row g-3">
+
+                    <div class="col-6 col-lg-3">
+                        <article class="step-card">
+                            <span>01</span>
+                            <h3>Pilih Layanan</h3>
+                            <p>
+                                Cari dan pilih jenis layanan sesuai dengan
+                                keperluan administrasi Anda.
+                            </p>
+                        </article>
+                    </div>
+
+                    <div class="col-6 col-lg-3">
+                        <article class="step-card">
+                            <span>02</span>
+                            <h3>Isi Form Pengajuan</h3>
+                            <p>
+                                Lengkapi identitas pemohon, deskripsi
+                                kebutuhan, dan unggah dokumen pendukung.
+                            </p>
+                        </article>
+                    </div>
+
+                    <div class="col-6 col-lg-3">
+                        <article class="step-card">
+                            <span>03</span>
+                            <h3>Dapatkan E-Ticket</h3>
+                            <p>
+                                Nomor e-ticket dibuat otomatis oleh sistem
+                                sebagai bukti tanda terima resmi.
+                            </p>
+                        </article>
+                    </div>
+
+                    <div class="col-6 col-lg-3">
+                        <article class="step-card">
+                            <span>04</span>
+                            <h3>Pantau Status</h3>
+                            <p>
+                                Gunakan nomor e-ticket untuk melihat
+                                perkembangan verifikasi dan penyelesaian berkas.
+                            </p>
+                        </article>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        {{-- CEK STATUS E-TICKET --}}
+        <section class="status-section section-space" id="cek-status">
+            <div class="container-xl text-center">
+                <h2 class="section-heading">CEK STATUS PENGAJUAN</h2>
+
+                <p class="section-subtitle">
+                    Sudah mengajukan layanan? Pantau proses pengajuan berkas
+                    Anda menggunakan nomor e-ticket.
+                </p>
+
+                <form class="status-form mx-auto" id="statusForm">
+                    <input
+                        type="text"
+                        id="ticketNumber"
+                        placeholder="000123"
+                        aria-label="Nomor e-ticket"
+                        required
+                    >
+
+                    <button type="submit" class="btn btn-purple">
+                        Cek Status
+                    </button>
+                </form>
+
+                <p id="statusFeedback"
+                   class="status-feedback"
+                   aria-live="polite"></p>
+            </div>
+        </section>
+
+        {{-- FAQ --}}
+        <section class="faq-section section-space" id="faq">
+            <div class="container">
+                <div class="text-center mb-4">
+                    <span class="mini-label orange-label">
+                        Bantuan &amp; Panduan
+                    </span>
+
+                    <h2 class="section-heading">
+                        PERTANYAAN YANG SERING DIAJUKAN
+                    </h2>
+                </div>
+
+                <div class="accordion faq-accordion" id="faqAccordion">
+
+                    <div class="accordion-item">
+                        <h3 class="accordion-header">
+                            <button
+                                class="accordion-button"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faqOne"
+                                aria-expanded="true"
+                                aria-controls="faqOne">
+                                Apakah saya harus login untuk mengajukan layanan?
+                            </button>
+                        </h3>
+
+                        <div
+                            id="faqOne"
+                            class="accordion-collapse collapse show"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Tidak. Portal ULT Polinema dirancang sebagai
+                                portal publik yang dapat diakses mahasiswa,
+                                dosen, maupun masyarakat umum untuk memilih
+                                layanan, mengisi formulir, dan menerima nomor
+                                e-ticket tanpa membuat akun.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h3 class="accordion-header">
+                            <button
+                                class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faqTwo"
+                                aria-expanded="false"
+                                aria-controls="faqTwo">
+                                Bagaimana cara mendapatkan e-ticket?
+                            </button>
+                        </h3>
+
+                        <div
+                            id="faqTwo"
+                            class="accordion-collapse collapse"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Setelah Anda mengisi formulir pengajuan dan
+                                menekan tombol konfirmasi submit, sistem akan
+                                menerbitkan nomor e-ticket apabila fitur
+                                pengajuan sudah terhubung ke backend.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h3 class="accordion-header">
+                            <button
+                                class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faqThree"
+                                aria-expanded="false"
+                                aria-controls="faqThree">
+                                Bagaimana cara mengecek status pengajuan?
+                            </button>
+                        </h3>
+
+                        <div
+                            id="faqThree"
+                            class="accordion-collapse collapse"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Masukkan nomor e-ticket yang diterima pada
+                                kolom Cek Status. Status sebenarnya akan
+                                ditampilkan setelah fitur terhubung dengan
+                                database Laravel.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h3 class="accordion-header">
+                            <button
+                                class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faqFour"
+                                aria-expanded="false"
+                                aria-controls="faqFour">
+                                Bagaimana jika saya tidak tahu harus memilih
+                                layanan apa?
+                            </button>
+                        </h3>
+
+                        <div
+                            id="faqFour"
+                            class="accordion-collapse collapse"
+                            data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Gunakan kolom pencarian atau pilih kategori
+                                layanan yang sesuai. Untuk pertanyaan umum,
+                                silakan hubungi unit terkait melalui informasi
+                                kontak yang tersedia.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="text-center mt-4">
+                    <a class="btn btn-light btn-sm all-faq" href="#faqAccordion">
+                        LIHAT SEMUA FAQ
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        {{-- INFORMASI KONTAK --}}
+        <section class="contact-section section-space">
+            <div class="container-xl text-center">
+                <h2 class="section-heading">INFORMASI KONTAK</h2>
+
+                <p class="section-subtitle">
+                    Hubungi kami untuk informasi lebih lanjut.
+                </p>
+
+                <div class="row g-3 contact-grid">
+
+                    <div class="col-6 col-lg-3">
+                        <div class="contact-card">
+                            <span><i class="bi bi-geo-alt"></i></span>
+                            <strong>Alamat</strong>
+                            <p>
+                                Jl. Soekarno Hatta No. 9, Malang,<br>
+                                Jawa Timur 65141
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-lg-3">
+                        <div class="contact-card">
+                            <span><i class="bi bi-telephone"></i></span>
+                            <strong>Telepon</strong>
+                            <p>(0341) 404424</p>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-lg-3">
+                        <div class="contact-card">
+                            <span><i class="bi bi-envelope"></i></span>
+                            <strong>Email</strong>
+                            <p>ult@polinema.ac.id</p>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-lg-3">
+                        <div class="contact-card">
+                            <span><i class="bi bi-clock"></i></span>
+                            <strong>Jam Operasional</strong>
+                            <p>Senin - Jumat<br>08.00 - 16.00 WIB</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <a
+                    class="btn whatsapp-btn mt-4"
+                    href="https://wa.me/62341404424"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    <i class="bi bi-whatsapp me-2"></i>
+                    Hubungi via WhatsApp
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    {{-- FOOTER --}}
+    <footer class="site-footer">
+        <div class="container-xl">
+            <div class="row g-4">
+
+                <div class="col-lg-4 footer-about">
+                    <a class="brand-lockup footer-brand" href="#beranda">
+                        <img
+                            src="{{ asset('images/logo polinema.png') }}"
+                            alt="Logo Polinema">
+
+                        <span>
+                            <strong>UNIT LAYANAN TERPADU</strong>
+                            <small>Politeknik Negeri Malang</small>
+                        </span>
+                    </a>
+
+                    <p>
+                        Portal layanan publik terintegrasi untuk memudahkan
+                        akses informasi dan pengajuan layanan bagi mahasiswa,
+                        alumni, dosen, tenaga kependidikan, dan masyarakat umum.
+                    </p>
+                </div>
+
+                <div class="col-6 col-lg-3">
+                    <h3>Tautan Cepat</h3>
+                    <a href="#beranda">Beranda</a>
+                    <a href="#layanan">Informasi Layanan</a>
+                    <a href="#faq">FAQ</a>
+                    <a href="#kategori">Profil ULT</a>
+                </div>
+
+                <div class="col-6 col-lg-2">
+                    <h3>Unit Layanan</h3>
+                    <a href="#kategori">Akademik</a>
+                    <a href="#kategori">Keuangan</a>
+                    <a href="#kategori">Kemahasiswaan</a>
+                    <a href="#kategori">Kepegawaian</a>
+                    <a href="#kategori">Humas &amp; Kerja Sama</a>
+                </div>
+
+                <div class="col-lg-3">
+                    <h3>Kontak</h3>
+
+                    <p>
+                        <i class="bi bi-geo-alt-fill"></i>
+                        Jl. Soekarno Hatta No. 9, Malang
+                    </p>
+
+                    <p>
+                        <i class="bi bi-envelope-fill"></i>
+                        ult@polinema.ac.id
+                    </p>
+
+                    <p>
+                        <i class="bi bi-telephone-fill"></i>
+                        (0341) 404424
+                    </p>
+
+                    <div class="social-links">
+                        <a href="#" aria-label="Instagram">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        <a href="#" aria-label="YouTube">
+                            <i class="bi bi-youtube"></i>
+                        </a>
+                        <a href="#" aria-label="Facebook">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                © 2026 Politeknik Negeri Malang – Unit Layanan Terpadu.
+                All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    {{-- Bootstrap JavaScript --}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
