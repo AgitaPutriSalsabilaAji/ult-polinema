@@ -11,6 +11,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Halaman beranda pengguna
+Route::get('/', function () {
+    return view('user.beranda');
+})->name('beranda');
+
 // Login admin — harus di luar grup auth:admin
 Route::get('/login', [AdminLoginController::class, 'showLoginForm'])
     ->middleware('guest:admin')
