@@ -16,11 +16,14 @@ return new class extends Migration
             $table->string('nomor_tiket', 50)->unique('nomor_tiket');
             $table->integer('id_pengguna')->index('fk_pengajuan_pengguna');
             $table->integer('id_layanan')->index('fk_pengajuan_layanan');
+            $table->integer('id_unit')->index('fk_pengajuan_unit');
+            $table->integer('id_admin_fo')->nullable()->index('fk_pengajuan_admin_fo');
             $table->string('subjek');
             $table->text('deskripsi');
             $table->string('status', 30)->default('diajukan');
             $table->timestamp('dibuat_pada')->nullable()->useCurrent();
             $table->timestamp('diperbarui_pada')->useCurrentOnUpdate()->nullable()->useCurrent();
+            $table->timestamp('tanggal_selesai')->nullable();
         });
     }
 
