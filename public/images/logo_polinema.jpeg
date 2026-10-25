@@ -1,0 +1,2 @@
+<img src="{{ asset('images/logo polinema.jpeg') }}"
+     alt="Logo Polinema">
