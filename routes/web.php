@@ -16,6 +16,33 @@ Route::get('/', function () {
     return view('user.beranda');
 })->name('beranda');
 
+// layanan
+Route::get('/admin', function () {
+    return view('admin.dashboard');
+})->name('admin.dashboard');
+
+Route::get('/layanan', function (\Illuminate\Http\Request $request) {
+    return view('user.layanan.index', compact('services', 'kategori'));
+})->name('layanan.index');
+
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::view('/', 'admin.dashboard')->name('dashboard');
+    Route::view('/pengajuan', 'admin.pengajuan')->name('pengajuan');
+    Route::view('/detail-pengajuan', 'admin.detail-pengajuan')->name('detail-pengajuan');
+    Route::view('/tracking', 'admin.tracking')->name('tracking');
+    Route::view('/layanan', 'admin.layanan')->name('layanan');
+    Route::resource('faq', FaqController::class)->except(['create', 'show', 'edit']);
+    Route::view('/rating', 'admin.rating')->name('rating');
+    Route::view('/profil', 'admin.profil')->name('profil');
+    Route::view('/daftar-admin', 'admin.daftar-admin')->name('daftar-admin');
+});
+
+
+Route::get('/layanan/{slug}', function (string $slug) {
+    return view('user.layanan.detail', compact('layanan', 'terkait'));
+})->name('layanan.detail');
+
 // Login admin — harus di luar grup auth:admin
 Route::get('/login', [AdminLoginController::class, 'showLoginForm'])
     ->middleware('guest:admin')
@@ -106,3 +133,4 @@ Route::middleware('auth:admin')
     Route::post('/logout', [AdminLoginController::class, 'logout'])
     ->middleware('auth:admin')
     ->name('logout');
+
