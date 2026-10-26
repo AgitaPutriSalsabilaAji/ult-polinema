@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\LayananController;
 use App\Http\Controllers\Admin\PengajuanController;
+use App\Http\Controllers\Admin\RatingLayananController;
 use App\Http\Controllers\Auth\AdminLoginController;
 
 // Halaman utama
@@ -33,7 +34,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::view('/tracking', 'admin.tracking')->name('tracking');
     Route::view('/layanan', 'admin.layanan')->name('layanan');
     Route::resource('faq', FaqController::class)->except(['create', 'show', 'edit']);
-    Route::view('/rating', 'admin.rating')->name('rating');
+    // Route::view('/rating', 'admin.rating')->name('rating');
     Route::view('/profil', 'admin.profil')->name('profil');
     Route::view('/daftar-admin', 'admin.daftar-admin')->name('daftar-admin');
 });
@@ -111,8 +112,12 @@ Route::middleware('auth:admin')
         Route::resource('faq', FaqController::class)
             ->except(['create', 'show', 'edit']);
 
-        // Rating Layanan
-        Route::view('/rating', 'admin.rating')->name('rating');
+// Rating & Ulasan
+Route::get('/rating', [RatingLayananController::class, 'index'])
+    ->name('rating-ulasan.index');
+
+Route::post('/rating-ulasan', [RatingLayananController::class, 'store'])
+    ->name('rating-ulasan.store');
 
         // Profil dan Akun
         Route::view('/profil', 'admin.profil')->name('profil');
