@@ -1,0 +1,710 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ========================================
+   1. VARIABLES & GLOBAL STYLES
+======================================== */
+
+:root {
+    --cs-purple: #29216f;
+    --cs-dark: #1e194f;
+    --cs-orange: #ff9700;
+    --cs-orange-dark: #f28b00;
+    --cs-muted: #85899c;
+    --cs-ink: #29275f;
+    --cs-bg: #f5f6f9;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 90px;
+}
+
+body.status-page {
+    margin: 0;
+    background: var(--cs-bg);
+    color: #24242c;
+    font-family: 'Inter', Arial, sans-serif;
+    font-size: 14px;
+}
+
+/* ========================================
+   2. HEADER & NAVBAR
+======================================== */
+
+.status-header {
+    background: var(--cs-purple);
+    color: #fff;
+}
+
+.status-header .navbar {
+    min-height: 76px;
+    padding: 10px 0;
+}
+
+.status-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: #fff;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.status-brand:hover {
+    color: #fff;
+}
+
+.status-brand img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.status-brand span {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.35;
+}
+
+.status-brand strong {
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.status-brand small {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.status-header .navbar-nav {
+    gap: 26px;
+}
+
+.status-header .nav-link {
+    position: relative;
+    padding: 12px 0;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 13px;
+}
+
+.status-header .nav-link:hover,
+.status-header .nav-link.active {
+    color: var(--cs-orange);
+}
+
+.status-header .nav-link.active::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 4px;
+    left: 0;
+    height: 2px;
+    background: var(--cs-orange);
+}
+
+/* ========================================
+   3. BUTTON
+======================================== */
+
+.status-button {
+    padding: 11px 18px;
+    border: 1px solid var(--cs-orange);
+    border-radius: 9px;
+    background: var(--cs-orange);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-button:hover,
+.status-button:focus {
+    border-color: var(--cs-orange-dark);
+    background: var(--cs-orange-dark);
+    color: #fff;
+}
+
+/* ========================================
+   4. MAIN CONTENT
+======================================== */
+
+.status-main {
+    min-height: 600px;
+    padding: 62px 0 78px;
+}
+
+.status-intro {
+    text-align: center;
+}
+
+.status-intro h1 {
+    margin: 0 0 10px;
+    color: #201c55;
+    font-size: clamp(25px, 3vw, 30px);
+    font-weight: 800;
+    letter-spacing: -0.6px;
+}
+
+.status-intro > p {
+    margin: 0 auto;
+    color: #75809a;
+    line-height: 1.7;
+}
+
+/* ========================================
+   5. SEARCH TICKET
+======================================== */
+
+.ticket-search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 645px;
+    min-height: 58px;
+    margin: 26px auto 0;
+    padding: 8px 9px 8px 16px;
+    border: 1px solid #eff0f4;
+    border-radius: 13px;
+    background: #fff;
+    box-shadow: 0 3px 12px rgba(35, 29, 91, 0.025);
+    text-align: left;
+}
+
+.ticket-search-icon {
+    color: #7d849c;
+    font-size: 18px;
+}
+
+.ticket-input-wrap {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.ticket-input-wrap small {
+    color: #7d849c;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.ticket-input-wrap input {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--cs-ink);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+}
+
+.ticket-search .status-button {
+    min-width: 125px;
+}
+
+/* ========================================
+   6. ALERT MESSAGE
+======================================== */
+
+.status-alert {
+    max-width: 645px;
+    margin: 14px auto 0;
+    padding: 13px 16px;
+    border: 1px solid #ffd4cb;
+    border-radius: 9px;
+    background: #fff2ef;
+    color: #a72b1b;
+    font-size: 13px;
+    text-align: left;
+}
+
+/* ========================================
+   7. STATUS RESULTS LAYOUT
+======================================== */
+
+.status-results {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.3fr);
+    gap: 20px;
+    max-width: 1050px;
+    margin: 26px auto 0;
+}
+
+.info-card,
+.history-card,
+.messages-card {
+    min-width: 0;
+    padding: 24px 28px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(35, 29, 91, 0.025);
+}
+
+.info-card h2,
+.history-card h2,
+.messages-card h2 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0 0 27px;
+    color: var(--cs-purple);
+    font-size: 14px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.info-card h2 i,
+.history-card h2 i,
+.messages-card h2 i {
+    color: var(--cs-orange);
+    font-size: 16px;
+}
+
+/* ========================================
+   8. APPLICATION DETAILS
+======================================== */
+
+.application-details {
+    display: grid;
+    gap: 18px;
+    margin: 0;
+}
+
+.application-details div {
+    min-width: 0;
+}
+
+.application-details dt {
+    margin-bottom: 4px;
+    color: #81879b;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.application-details dd {
+    margin: 0;
+    color: #28265e;
+    font-size: 12px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.application-details .ticket-code {
+    letter-spacing: 0.2px;
+}
+
+/* ========================================
+   9. CURRENT STATUS
+======================================== */
+
+.current-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 28px;
+    padding: 12px 10px;
+    border-radius: 9px;
+    background: #fff3e4;
+    color: #e78300;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.current-status i {
+    font-size: 8px;
+}
+
+/* ========================================
+   10. TIMELINE
+======================================== */
+
+.timeline {
+    position: relative;
+    margin: 0 0 0 1px;
+    padding: 0;
+    list-style: none;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 11px;
+    bottom: 18px;
+    left: 10px;
+    width: 2px;
+    background: #e2e3e8;
+}
+
+.timeline-item {
+    position: relative;
+    min-width: 0;
+    padding: 0 0 27px 38px;
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.timeline-marker {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 23px;
+    height: 23px;
+    border: 2px solid #dfe1e8;
+    border-radius: 50%;
+    background: #fff;
+    color: #b9bdc9;
+    font-size: 10px;
+}
+
+.timeline-item.is-done .timeline-marker {
+    border-color: var(--cs-orange);
+    background: var(--cs-orange);
+    color: #fff;
+}
+
+.timeline-item.is-current .timeline-marker {
+    border-color: var(--cs-orange);
+    color: var(--cs-orange);
+}
+
+.timeline-content h3 {
+    margin: 1px 0 5px;
+    color: #28282d;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.timeline-content p {
+    margin: 0 0 6px;
+    color: #646673;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.timeline-content small {
+    color: #85899a;
+    font-size: 11px;
+}
+
+.timeline-item.is-current .timeline-content {
+    margin-top: -1px;
+    padding: 14px 15px;
+    border: 1px solid #ffd8b2;
+    border-radius: 5px;
+    background: #fff6ed;
+}
+
+.timeline-item.is-current .timeline-content h3 {
+    color: #18375b;
+}
+
+/* ========================================
+   11. ADMIN MESSAGES
+======================================== */
+
+.messages-card {
+    max-width: 1050px;
+    margin: 20px auto 0;
+}
+
+.messages-card h2 {
+    margin-bottom: 8px;
+}
+
+.messages-help {
+    margin-bottom: 20px;
+    color: var(--cs-muted);
+    font-size: 12px;
+}
+
+.message-item {
+    padding: 16px 0 4px;
+    border-top: 1px solid #eeeef3;
+}
+
+.message-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--cs-purple);
+    font-size: 12px;
+}
+
+.message-meta small {
+    color: var(--cs-muted);
+    font-weight: 400;
+}
+
+.message-item p {
+    margin: 8px 0 12px;
+    color: #555867;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+}
+
+/* ========================================
+   12. EMPTY STATE
+======================================== */
+
+.status-empty {
+    max-width: 650px;
+    margin: 38px auto 0;
+    padding: 32px 28px;
+    border-radius: 14px;
+    background: #fff;
+    text-align: center;
+}
+
+.status-empty > i {
+    color: var(--cs-orange);
+    font-size: 34px;
+}
+
+.status-empty h2 {
+    margin: 12px 0 8px;
+    color: var(--cs-purple);
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.status-empty p {
+    margin: 0;
+    color: var(--cs-muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* ========================================
+   13. FOOTER
+======================================== */
+
+.status-footer {
+    padding: 48px 0 20px;
+    background: var(--cs-dark);
+    color: rgba(255, 255, 255, 0.62);
+}
+
+.footer-brand {
+    margin-bottom: 18px;
+}
+
+.footer-brand img {
+    width: 34px;
+    height: 34px;
+}
+
+.footer-brand strong {
+    font-size: 13px;
+}
+
+.footer-brand small {
+    font-size: 11px;
+}
+
+.status-footer h3 {
+    margin: 7px 0 20px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.status-footer a:not(.status-brand) {
+    display: block;
+    margin-bottom: 13px;
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.status-footer a:not(.status-brand):hover {
+    color: #fff;
+}
+
+.status-footer span:not(.status-brand span) {
+    display: block;
+    margin-bottom: 13px;
+    font-size: 12px;
+}
+
+.status-footer p {
+    margin: 0 0 9px;
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.status-footer p i {
+    margin-right: 8px;
+}
+
+.footer-bottom {
+    margin-top: 30px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.42);
+    font-size: 11px;
+}
+
+/* ========================================
+   14. RESPONSIVE: TABLET
+======================================== */
+
+@media (max-width: 991.98px) {
+    .status-header .navbar-nav {
+        gap: 4px;
+        padding: 12px 0;
+    }
+
+    .status-header .nav-link.active::after {
+        right: auto;
+        width: 35px;
+    }
+
+    .status-header .status-button {
+        display: inline-block;
+        margin-bottom: 12px;
+    }
+
+    .status-results {
+        grid-template-columns: 1fr;
+        max-width: 720px;
+    }
+
+    .status-main {
+        padding-top: 46px;
+    }
+
+    .info-card,
+    .history-card,
+    .messages-card {
+        padding: 23px;
+    }
+}
+
+/* ========================================
+   15. RESPONSIVE: MOBILE
+======================================== */
+
+@media (max-width: 575.98px) {
+    .status-header .navbar {
+        min-height: 65px;
+        padding: 10px 12px;
+    }
+
+    .status-brand {
+        gap: 8px;
+    }
+
+    .status-brand img {
+        width: 32px;
+        height: 32px;
+    }
+
+    .status-brand strong {
+        font-size: 10px;
+    }
+
+    .status-brand small {
+        font-size: 8px;
+    }
+
+    .status-main {
+        padding: 36px 0 48px;
+    }
+
+    .status-intro {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    .status-intro > p {
+        font-size: 12px;
+    }
+
+    .ticket-search {
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+        padding: 12px;
+    }
+
+    .ticket-search-icon {
+        margin-left: 2px;
+    }
+
+    .ticket-input-wrap {
+        flex-basis: calc(100% - 40px);
+    }
+
+    .ticket-search .status-button {
+        width: 100%;
+    }
+
+    .status-results {
+        margin: 20px 12px 0;
+    }
+
+    .info-card,
+    .history-card,
+    .messages-card {
+        padding: 20px 17px;
+    }
+
+    .info-card h2,
+    .history-card h2,
+    .messages-card h2 {
+        margin-bottom: 22px;
+        font-size: 12px;
+    }
+
+    .timeline-item {
+        padding-bottom: 23px;
+        padding-left: 33px;
+    }
+
+    .timeline-content h3 {
+        font-size: 12px;
+    }
+
+    .timeline-content p {
+        font-size: 12px;
+    }
+
+    .timeline-item.is-current .timeline-content {
+        padding: 12px;
+    }
+
+    .messages-card {
+        margin: 16px 12px 0;
+    }
+
+    .status-empty {
+        margin: 25px 12px 0;
+        padding: 26px 20px;
+    }
+
+    .status-footer {
+        padding: 36px 18px 18px;
+    }
+
+    .footer-bottom {
+        line-height: 1.7;
+    }
+}

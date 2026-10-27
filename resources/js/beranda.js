@@ -81,29 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Pengecekan input nomor e-ticket
-    const statusForm = document.getElementById('statusForm');
-    const ticketInput = document.getElementById('ticketNumber');
-    const statusFeedback = document.getElementById('statusFeedback');
-
-    if (statusForm && ticketInput && statusFeedback) {
-        statusForm.addEventListener('submit', (event) => {
-            event.preventDefault();
-
-            const ticket = ticketInput.value.trim();
-
-            if (!ticket) {
-                statusFeedback.textContent =
-                    'Silakan masukkan nomor e-ticket terlebih dahulu.';
-                return;
-            }
-
-            statusFeedback.textContent =
-                `Nomor e-ticket ${ticket} telah dimasukkan. ` +
-                'Fitur ini perlu dihubungkan dengan route dan database ' +
-                'Laravel agar status pengajuan dapat ditampilkan.';
-        });
-    }
+    // Form cek status dikirim ke route Laravel /cek-status.
+    // Route tersebut akan mencari nomor e-ticket pada database dan menampilkan hasilnya.
 
     // Tutup menu navigasi mobile setelah tautan dipilih
     document.querySelectorAll('#mainNav .nav-link').forEach((link) => {
