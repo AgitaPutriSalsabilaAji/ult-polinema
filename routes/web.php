@@ -1,21 +1,21 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\User\CekStatusController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\LayananController;
 use App\Http\Controllers\Admin\PengajuanController;
 use App\Http\Controllers\Admin\RatingLayananController;
 use App\Http\Controllers\Auth\AdminLoginController;
 
-// Halaman utama
-Route::get('/', function () {
-    return view('welcome');
-});
-
 // Halaman beranda pengguna
 Route::get('/', function () {
     return view('user.beranda');
 })->name('beranda');
+
+// Cek status e-ticket untuk pengguna
+Route::get('/cek-status', [CekStatusController::class, 'index'])
+    ->name('cek-status');
 
 // layanan
 Route::get('/admin', function () {
@@ -138,4 +138,3 @@ Route::post('/rating-ulasan', [RatingLayananController::class, 'store'])
     Route::post('/logout', [AdminLoginController::class, 'logout'])
     ->middleware('auth:admin')
     ->name('logout');
-
