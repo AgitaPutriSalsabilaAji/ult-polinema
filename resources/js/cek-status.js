@@ -1,5 +1,3 @@
-import '../css/cek-status.css';
-
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('cekStatusForm');
     const ticketInput = document.getElementById('ticket');
