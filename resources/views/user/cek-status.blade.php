@@ -6,24 +6,26 @@
     <title>Cek Status Pengajuan | Unit Layanan Terpadu Polinema</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    @vite(['resources/js/cek-status.js'])
+    @vite(['resources/css/cek-status.css', 'resources/js/cek-status.js'])
 </head>
 <body class="status-page">
 <header class="status-header">
-    <nav class="navbar navbar-expand-lg navbar-dark container-xl">
-        <a class="navbar-brand status-brand" href="{{ route('beranda') }}">
-            <img src="{{ asset('images/logo polinema.png') }}" alt="Logo Polinema">
-            <span><strong>UNIT LAYANAN TERPADU</strong><small>POLITEKNIK NEGERI MALANG</small></span>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#statusNav" aria-controls="statusNav" aria-expanded="false" aria-label="Buka navigasi"><span class="navbar-toggler-icon"></span></button>
-        <div class="collapse navbar-collapse" id="statusNav">
-            <ul class="navbar-nav mx-auto align-items-lg-center">
-                <li class="nav-item"><a class="nav-link" href="{{ route('beranda') }}">Beranda</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('beranda') }}#layanan">Layanan</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ route('beranda') }}#faq">FAQ</a></li>
-                <li class="nav-item"><a class="nav-link active" aria-current="page" href="{{ route('cek-status') }}">E-Tiket</a></li>
-            </ul>
-            <a class="btn status-button" href="#form-cek-status"><i class="bi bi-search me-2"></i>Cek Layanan</a>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-xl">
+            <a class="navbar-brand status-brand" href="{{ route('beranda') }}">
+                <img src="{{ asset('images/logo polinema.png') }}" width="35" height="35" alt="Logo Polinema">
+                <span><strong>UNIT LAYANAN TERPADU</strong><small>POLITEKNIK NEGERI MALANG</small></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#statusNav" aria-controls="statusNav" aria-expanded="false" aria-label="Buka navigasi"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="statusNav">
+                <ul class="navbar-nav mx-auto align-items-lg-center">
+                    <li class="nav-item"><a class="nav-link" href="{{ route('beranda') }}">Beranda</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('beranda') }}#layanan">Layanan</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('beranda') }}#faq">FAQ</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="{{ route('cek-status') }}">E-Tiket</a></li>
+                </ul>
+                <a class="btn status-button" href="#form-cek-status"><i class="bi bi-search me-2"></i>Cek Layanan</a>
+            </div>
         </div>
     </nav>
 </header>
@@ -122,7 +124,7 @@
 <footer class="status-footer">
     <div class="container-xl">
         <div class="row g-4">
-            <div class="col-lg-4 col-md-6"><a class="status-brand footer-brand" href="{{ route('beranda') }}"><img src="{{ asset('images/logo polinema.png') }}" alt=""><span><strong>UNIT LAYANAN TERPADU</strong><small>Politeknik Negeri Malang</small></span></a><p>Portal layanan publik terintegrasi untuk memudahkan akses informasi dan pengajuan layanan bagi mahasiswa, alumni, dosen, tenaga kependidikan, dan masyarakat umum.</p></div>
+            <div class="col-lg-4 col-md-6 footer-about"><a class="status-brand footer-brand" href="{{ route('beranda') }}"><img src="{{ asset('images/logo polinema.png') }}" width="32" height="32" alt=""><span><strong>UNIT LAYANAN TERPADU</strong><small>Politeknik Negeri Malang</small></span></a><p>Portal layanan publik terintegrasi untuk memudahkan akses informasi dan pengajuan layanan bagi mahasiswa, alumni, dosen, tenaga kependidikan, dan masyarakat umum.</p></div>
             <div class="col-6 col-lg-3"><h3>Tautan Cepat</h3><a href="{{ route('beranda') }}">Beranda</a><a href="{{ route('beranda') }}#layanan">Informasi Layanan</a><a href="{{ route('beranda') }}#faq">FAQ</a><a href="{{ route('cek-status') }}">Cek E-Tiket</a></div>
             <div class="col-6 col-lg-2"><h3>Unit Layanan</h3><span>Akademik</span><span>Keuangan</span><span>Kemahasiswaan</span><span>Kepegawaian</span><span>Humas &amp; Kerja Sama</span></div>
             <div class="col-lg-3 col-md-6"><h3>Kontak</h3><p><i class="bi bi-geo-alt-fill"></i> Jl. Soekarno Hatta No. 9, Malang</p><p><i class="bi bi-envelope-fill"></i> ult@polinema.ac.id</p><p><i class="bi bi-telephone-fill"></i> (0341) 404424</p></div>
