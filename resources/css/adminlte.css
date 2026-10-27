@@ -11,53 +11,206 @@
 @import 'admin-lte/dist/css/adminlte.css';
 
 /* ULT Polinema Admin Sidebar */
+:root {
+    --lte-sidebar-width: 214px;
+}
+
 .app-sidebar {
+    --lte-sidebar-color: #b9c7da;
+    --lte-sidebar-hover-bg: rgba(255, 255, 255, 0.07);
+    --lte-sidebar-hover-color: #ffffff;
+    --lte-sidebar-active-color: #ffffff;
+    --lte-sidebar-menu-active-bg: #173d79;
+    --lte-sidebar-menu-active-color: #ffffff;
     background-color: #0d2542 !important;
     color: #ffffff;
 }
 
+.app-sidebar[data-bs-theme="dark"] {
+    --lte-sidebar-color: #b9c7da;
+    --lte-sidebar-hover-bg: rgba(255, 255, 255, 0.07);
+    --lte-sidebar-hover-color: #ffffff;
+    --lte-sidebar-active-color: #ffffff;
+    --lte-sidebar-menu-active-bg: #173d79;
+    --lte-sidebar-menu-active-color: #ffffff;
+}
+
+.app-sidebar .sidebar-brand {
+    justify-content: flex-start;
+    height: 64px;
+    padding: 0 16px;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.app-sidebar .brand-link {
+    width: 100%;
+    gap: 10px;
+}
+
+.app-sidebar .brand-link .brand-image {
+    width: 29px;
+    height: 29px;
+    max-height: 29px;
+    margin: 0;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.app-sidebar .brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-left: 0;
+    line-height: 1.15;
+}
+
+.app-sidebar .brand-title {
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.015em;
+}
+
+.app-sidebar .brand-subtitle {
+    color: #8fa3be;
+    font-size: 0.55rem;
+    font-weight: 400;
+    letter-spacing: 0.025em;
+}
+
+.app-sidebar .sidebar-wrapper {
+    padding: 10px 10px 12px;
+}
+
+.app-sidebar .sidebar-wrapper > nav {
+    margin-top: 0 !important;
+}
+
 .app-sidebar .nav-link {
-    color: #d6dfeb;
-    border-radius: 6px;
-    margin: 3px 10px;
-    padding: 10px 12px;
-    font-size: 0.875rem;
-    transition: background-color 0.2s ease;
+    display: flex;
+    min-height: 28px;
+    align-items: center;
+    margin: 1px 0 4px;
+    padding: 6px 9px;
+    border-left: 3px solid transparent;
+    border-radius: 7px;
+    color: #b9c7da;
+    font-size: 0.68rem;
+    line-height: 1.25;
+    transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
 }
 
 .app-sidebar .nav-link:hover {
-    background-color: #173b67;
     color: #ffffff;
 }
 
 .app-sidebar .nav-link.active {
-    background-color: #173f80;
+    border-left-color: #ffc629;
     color: #ffffff;
 }
 
 .app-sidebar .nav-link.active .nav-icon {
-    color: #ffd43b;
+    color: #ffc629;
 }
 
 .app-sidebar .nav-icon {
-    margin-right: 8px;
-    font-size: 0.95rem;
-}
-
-.app-sidebar .brand-link {
-    background-color: #0d2542;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.app-sidebar .brand-text {
-    color: #ffffff;
-    font-weight: 600;
+    width: 14px;
+    margin: 0 7px 0 0;
+    font-size: 0.7rem;
+    text-align: center;
 }
 
 .app-sidebar .nav-link p {
     display: inline;
+    margin: 0;
+    white-space: nowrap;
 }
 
+.app-sidebar .sidebar-account {
+    display: flex;
+    min-height: 58px;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.app-sidebar .sidebar-account__profile {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    align-items: center;
+    gap: 9px;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.app-sidebar .sidebar-account__avatar {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    background-color: #263f68;
+    color: #d6e2f2;
+    font-size: 0.8rem;
+    object-fit: cover;
+}
+
+.app-sidebar .sidebar-account__details {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 2px;
+    line-height: 1.2;
+}
+
+.app-sidebar .sidebar-account__name,
+.app-sidebar .sidebar-account__role {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.app-sidebar .sidebar-account__name {
+    color: #e8eef7;
+    font-size: 0.62rem;
+    font-weight: 600;
+}
+
+.app-sidebar .sidebar-account__role {
+    color: #ffc629;
+    font-size: 0.55rem;
+}
+
+.app-sidebar .sidebar-account__logout {
+    display: grid;
+    width: 24px;
+    height: 28px;
+    flex: 0 0 24px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #aab8ca;
+    font-size: 0.75rem;
+    transition: color 0.18s ease;
+}
+
+.app-sidebar .sidebar-account__logout:hover,
+.app-sidebar .sidebar-account__logout:focus-visible {
+    color: #ffffff;
+}
+
+@media (max-width: 575.98px) {
+    :root {
+        --lte-sidebar-width: min(214px, calc(100vw - 48px));
+    }
+}
 
 /* Footer rata tengah */
 .app-footer {
@@ -73,4 +226,30 @@
 
 .app-footer strong {
     margin: 0;
+}
+
+/* Shared page header */
+.page-title-header {
+    display: flex;
+    min-height: 54px;
+    align-items: center;
+    padding: 0 20px;
+    border-bottom: 1px solid #e1e5eb;
+    background-color: #ffffff;
+}
+
+.page-title-header .container-fluid {
+    padding: 0;
+}
+
+.page-title-header__title {
+    margin: 0;
+    color: #172033;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.app-main > .app-content-header {
+    display: none;
 }

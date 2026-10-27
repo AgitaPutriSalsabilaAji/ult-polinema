@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('id_layanan')->index('fk_bagian_layanan');
             $table->string('judul_bagian', 150);
             $table->text('konten');
+            $table->string('gambar_pendukung')->nullable();
             $table->integer('urutan_bagian')->nullable()->default(1);
             $table->timestamp('dibuat_pada')->nullable()->useCurrent();
         });

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nama_layanan', 150);
             $table->integer('id_unit')->index('fk_layanan_unit');
             $table->string('estimasi_waktu', 50)->default('1 - 3 Hari Kerja');
+            $table->text('deskripsi_singkat')->nullable();
             $table->string('tarif', 100)->default('Rp 0 (Gratis)');
             $table->string('jam_operasional', 100)->default('Senin - Jumat, 08.00 - 16.00 WIB');
             $table->string('status', 20)->default('aktif');

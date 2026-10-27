@@ -54,10 +54,10 @@ return [
     |
     */
 
-    'logo' => '<b>Admin</b>ULT',
-    'logo_img' => 'vendor/adminlte/img/AdminLTELogo.png',
-    'logo_img_class' => 'brand-image opacity-75 shadow',
-    'logo_img_alt' => 'AdminLTE Logo',
+    'logo' => '<span class="brand-title">ULT POLINEMA</span><span class="brand-subtitle">ADMIN WORKSPACE</span>',
+    'logo_img' => 'images/logo polinema.png',
+    'logo_img_class' => 'brand-image',
+    'logo_img_alt' => 'Logo Politeknik Negeri Malang',
 
     /*
     |--------------------------------------------------------------------------

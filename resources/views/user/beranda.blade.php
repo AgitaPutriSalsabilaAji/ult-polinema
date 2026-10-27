@@ -67,11 +67,11 @@
                             <a class="nav-link" href="#faq">FAQ</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#cek-status">Cek Status</a>
+                            <a class="nav-link" href="{{ route('cek-status') }}">E-Tiket</a>
                         </li>
                     </ul>
 
-                    <a class="btn btn-orange nav-check" href="#cek-status">
+                    <a class="btn btn-orange nav-check" href="{{ route('cek-status') }}">
                         <i class="bi bi-search me-2"></i>Cek Layanan
                     </a>
                 </div>
@@ -109,7 +109,7 @@
                                 Jelajahi Layanan
                             </a>
 
-                            <a href="#cek-status" class="btn btn-ghost">
+                            <a href="{{ route('cek-status') }}" class="btn btn-ghost">
                                 <i class="bi bi-ticket-perforated me-2"></i>
                                 Cek Status E-Ticket
                             </a>
@@ -493,11 +493,12 @@
                     Anda menggunakan nomor e-ticket.
                 </p>
 
-                <form class="status-form mx-auto" id="statusForm">
+                <form class="status-form mx-auto" id="statusForm" action="{{ route('cek-status') }}" method="GET">
                     <input
                         type="text"
                         id="ticketNumber"
-                        placeholder="000123"
+                        name="ticket"
+                        placeholder="ULT-2026-000123"
                         aria-label="Nomor e-ticket"
                         required
                     >
