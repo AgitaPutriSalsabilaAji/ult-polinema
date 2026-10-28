@@ -5,6 +5,8 @@ use App\Http\Controllers\User\LayananController as UserLayananController;
 use App\Http\Controllers\Admin\LayananController as AdminLayananController;
 use App\Http\Controllers\User\CekStatusController;
 use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\GlobalSearchController;
+use App\Http\Controllers\Admin\LayananController;
 use App\Http\Controllers\Admin\PengajuanController;
 use App\Http\Controllers\Admin\RatingLayananController;
 use App\Http\Controllers\Auth\AdminLoginController;
@@ -56,6 +58,8 @@ Route::middleware('auth:admin')
     ->group(function () {
 
         Route::view('/', 'admin.dashboard')->name('dashboard');
+        Route::get('/search', [GlobalSearchController::class, 'index'])
+            ->name('search.index');
 
         // Pengajuan
         Route::get('/pengajuan', [PengajuanController::class, 'index'])
@@ -118,3 +122,15 @@ Route::middleware('auth:admin')
         Route::view('/daftar-admin', 'admin.daftar-admin')
             ->name('daftar-admin');
     });
+
+    Route::get('/login', [AdminLoginController::class, 'showLoginForm'])
+    ->middleware('guest:admin')
+    ->name('login');
+
+    Route::post('/login', [AdminLoginController::class, 'login'])
+    ->middleware('guest:admin')
+    ->name('login.submit');
+
+    Route::post('/logout', [AdminLoginController::class, 'logout'])
+    ->middleware('auth:admin')
+    ->name('logout');
