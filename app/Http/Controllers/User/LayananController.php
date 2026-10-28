@@ -272,7 +272,7 @@ class LayananController extends Controller
             ]
         );
 
-        return view('user.layanan.index', compact(
+        return view('user.layanan.daftar_layanan', compact(
             'services',
             'kategori',
             'keyword',
@@ -309,6 +309,6 @@ class LayananController extends Controller
             ->take(4)
             ->keyBy('slug');
 
-        return view('user.layanan.detail', compact('layanan', 'terkait'));
+        return view('user.layanan.detail_layanan', compact('layanan', 'terkait'));
     }
 }

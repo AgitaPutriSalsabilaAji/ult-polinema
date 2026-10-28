@@ -32,7 +32,7 @@
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav mx-auto align-items-lg-center">
                     <li class="nav-item"><a class="nav-link active" href="#beranda">Beranda</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#layanan">Layanan</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('layanan.index') }}">Layanan</a></li>
                     <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('cek-status') }}">E-Tiket</a></li>
                 </ul>
@@ -67,7 +67,7 @@
                     </p>
 
                     <div class="d-flex flex-wrap gap-2 hero-actions">
-                        <a href="#layanan" class="btn btn-orange">
+                        <a href="{{ route('layanan.index') }}" class="btn btn-orange">
                             <i class="bi bi-grid-fill me-2"></i>Jelajahi Layanan
                         </a>
                         <a href="{{ route('cek-status') }}" class="btn btn-ghost">
@@ -147,7 +147,7 @@
                         Temukan berbagai layanan administrasi Politeknik Negeri Malang dalam satu portal.
                     </p>
                 </div>
-                <a href="#kategori" class="see-all">LIHAT SEMUA LAYANAN (38) <i class="bi bi-arrow-right"></i></a>
+                <a href="{{ route('layanan.index') }}" class="see-all">LIHAT SEMUA LAYANAN (31) <i class="bi bi-arrow-right"></i></a>
             </div>
 
             <div class="row g-3 service-list" id="serviceList">
