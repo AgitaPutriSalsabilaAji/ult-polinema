@@ -19,7 +19,7 @@ use App\Http\Controllers\Admin\DaftarAdminController;
 |--------------------------------------------------------------------------
 */
 
-Route::view('/', 'user.beranda')->name('beranda');
+Route::get('/', [UserLayananController::class, 'beranda'])->name('beranda');
 
 Route::get('/layanan', [UserLayananController::class, 'index'])
     ->name('layanan.index');
