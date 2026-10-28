@@ -126,14 +126,6 @@ Route::put('/profil/password', [ProfilController::class,'updatePassword',])->nam
         // Daftar Admin
 Route::resource('daftar-admin', DaftarAdminController::class)
     ->except(['show']);
-
-        // Profil dan daftar admin
-        Route::view('/profil', 'admin.profil')->name('profil');
-
-        Route::view('/daftar-admin', 'admin.daftar-admin')
-            ->name('daftar-admin');
-
-
     Route::get('/login', [AdminLoginController::class, 'showLoginForm'])
     ->middleware('guest:admin')
     ->name('login');
