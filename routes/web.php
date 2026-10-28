@@ -1,7 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\User\LayananController as UserLayananController;
+use App\Http\Controllers\Admin\LayananController as AdminLayananController;
+use App\Http\Controllers\User\CekStatusController;
 use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\GlobalSearchController;
 use App\Http\Controllers\Admin\LayananController;
 use App\Http\Controllers\Admin\PengajuanController;
 use App\Http\Controllers\Admin\RatingLayananController;
@@ -9,44 +13,29 @@ use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Admin\ProfilController;
 use App\Http\Controllers\Admin\DaftarAdminController;
 
-// Halaman utama
-Route::get('/', function () {
-    return view('welcome');
-});
+/*
+|--------------------------------------------------------------------------
+| Halaman Publik Pengguna
+|--------------------------------------------------------------------------
+*/
 
-// Halaman beranda pengguna
-Route::get('/', function () {
-    return view('user.beranda');
-})->name('beranda');
+Route::view('/', 'user.beranda')->name('beranda');
 
-// layanan
-Route::get('/admin', function () {
-    return view('admin.dashboard');
-})->name('admin.dashboard');
+Route::get('/layanan', [UserLayananController::class, 'index'])
+    ->name('layanan.index');
 
-Route::get('/layanan', function (\Illuminate\Http\Request $request) {
-    return view('user.layanan.index', compact('services', 'kategori'));
-})->name('layanan.index');
+Route::get('/layanan/{slug}', [UserLayananController::class, 'detail'])
+    ->name('layanan.detail');
 
+Route::get('/cek-status', [CekStatusController::class, 'index'])
+    ->name('cek-status');
 
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::view('/', 'admin.dashboard')->name('dashboard');
-    Route::view('/pengajuan', 'admin.pengajuan')->name('pengajuan');
-    Route::view('/detail-pengajuan', 'admin.detail-pengajuan')->name('detail-pengajuan');
-    Route::view('/tracking', 'admin.tracking')->name('tracking');
-    Route::view('/layanan', 'admin.layanan')->name('layanan');
-    Route::resource('faq', FaqController::class)->except(['create', 'show', 'edit']);
-    // Route::view('/rating', 'admin.rating')->name('rating');
-    Route::view('/profil', 'admin.profil')->name('profil');
-    Route::view('/daftar-admin', 'admin.daftar-admin')->name('daftar-admin');
-});
+/*
+|--------------------------------------------------------------------------
+| Autentikasi Admin
+|--------------------------------------------------------------------------
+*/
 
-
-Route::get('/layanan/{slug}', function (string $slug) {
-    return view('user.layanan.detail', compact('layanan', 'terkait'));
-})->name('layanan.detail');
-
-// Login admin — harus di luar grup auth:admin
 Route::get('/login', [AdminLoginController::class, 'showLoginForm'])
     ->middleware('guest:admin')
     ->name('login');
@@ -55,19 +44,24 @@ Route::post('/login', [AdminLoginController::class, 'login'])
     ->middleware('guest:admin')
     ->name('login.submit');
 
-// Logout admin
 Route::post('/logout', [AdminLoginController::class, 'logout'])
     ->middleware('auth:admin')
     ->name('logout');
 
-// Semua halaman admin wajib login
+/*
+|--------------------------------------------------------------------------
+| Halaman Admin — Wajib Login
+|--------------------------------------------------------------------------
+*/
+
 Route::middleware('auth:admin')
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
 
-        // Dashboard
         Route::view('/', 'admin.dashboard')->name('dashboard');
+        Route::get('/search', [GlobalSearchController::class, 'index'])
+            ->name('search.index');
 
         // Pengajuan
         Route::get('/pengajuan', [PengajuanController::class, 'index'])
@@ -77,49 +71,52 @@ Route::middleware('auth:admin')
             ->name('pengajuan.show');
 
         Route::post('/pengajuan/{pengajuan}/disposisi', [
-            PengajuanController::class, 'disposisi'
+            PengajuanController::class,
+            'disposisi'
         ])->name('pengajuan.disposisi');
 
-        // Tracking E-Ticket
+        // Tracking e-ticket
         Route::view('/tracking', 'admin.tracking')->name('tracking');
 
-        // Manajemen Informasi Layanan
-        Route::get('/layanan', [LayananController::class, 'index'])
+        // Manajemen layanan admin
+        Route::get('/layanan', [AdminLayananController::class, 'index'])
             ->name('layanan.index');
 
-        Route::get('/layanan/tambah', [LayananController::class, 'create'])
+        Route::get('/layanan/tambah', [AdminLayananController::class, 'create'])
             ->name('layanan.create');
 
-        Route::post('/layanan', [LayananController::class, 'store'])
+        Route::post('/layanan', [AdminLayananController::class, 'store'])
             ->name('layanan.store');
 
-        Route::get('/layanan/{layanan}/edit', [LayananController::class, 'edit'])
+        Route::get('/layanan/{layanan}/edit', [AdminLayananController::class, 'edit'])
             ->name('layanan.edit');
 
-        Route::put('/layanan/{layanan}', [LayananController::class, 'update'])
+        Route::put('/layanan/{layanan}', [AdminLayananController::class, 'update'])
             ->name('layanan.update');
 
         Route::patch('/layanan/{layanan}/status', [
-            LayananController::class, 'toggleStatus'
+            AdminLayananController::class,
+            'toggleStatus'
         ])->name('layanan.status');
 
         Route::delete('/layanan/{layanan}', [
-            LayananController::class, 'destroy'
+            AdminLayananController::class,
+            'destroy'
         ])->name('layanan.destroy');
 
-        Route::get('/layanan/{layanan}', [LayananController::class, 'show'])
+        Route::get('/layanan/{layanan}', [AdminLayananController::class, 'show'])
             ->name('layanan.show');
 
         // FAQ
         Route::resource('faq', FaqController::class)
             ->except(['create', 'show', 'edit']);
 
-// Rating & Ulasan
-Route::get('/rating', [RatingLayananController::class, 'index'])
-    ->name('rating-ulasan.index');
+        // Rating dan ulasan
+        Route::get('/rating', [RatingLayananController::class, 'index'])
+            ->name('rating');
 
-Route::post('/rating-ulasan', [RatingLayananController::class, 'store'])
-    ->name('rating-ulasan.store');
+        Route::post('/rating-ulasan', [RatingLayananController::class, 'store'])
+            ->name('rating-ulasan.store');
 
         // Profil & Akun Admin
 Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
@@ -129,7 +126,13 @@ Route::put('/profil/password', [ProfilController::class,'updatePassword',])->nam
         // Daftar Admin
 Route::resource('daftar-admin', DaftarAdminController::class)
     ->except(['show']);
-    });
+
+        // Profil dan daftar admin
+        Route::view('/profil', 'admin.profil')->name('profil');
+
+        Route::view('/daftar-admin', 'admin.daftar-admin')
+            ->name('daftar-admin');
+
 
     Route::get('/login', [AdminLoginController::class, 'showLoginForm'])
     ->middleware('guest:admin')
@@ -142,4 +145,4 @@ Route::resource('daftar-admin', DaftarAdminController::class)
     Route::post('/logout', [AdminLoginController::class, 'logout'])
     ->middleware('auth:admin')
     ->name('logout');
-
+});
