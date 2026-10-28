@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -208,6 +209,54 @@ class LayananController extends Controller
         ];
     }
 
+    private function slugLayananDenganHalamanDetail(): array
+    {
+        return [
+            'kunjungan-sekolah',
+            'edufair',
+            'liputan-kegiatan',
+            'informasi-spmb',
+            'informasi-pengaduan',
+        ];
+    }
+
+    public function beranda(Request $request): View
+    {
+        $kategoriLayanan = [
+            'akademik' => 'Akademik',
+            'keuangan' => 'Keuangan',
+            'kemahasiswaan' => 'Kemahasiswaan',
+            'humas' => 'Kerja Sama & Humas',
+            'kepegawaian' => 'Kepegawaian',
+        ];
+
+        $kategori = $request->query('kategori', 'humas');
+        $kategori = is_string($kategori) ? strtolower($kategori) : 'humas';
+
+        if (!array_key_exists($kategori, $kategoriLayanan)) {
+            $kategori = 'humas';
+        }
+
+        $slugsAktif = $this->slugLayananDenganHalamanDetail();
+        $all = collect($this->dataLayanan())
+            ->reject(fn ($item) => $item['slug'] === 'informasi-pengaduan-ppid')
+            ->values();
+
+        $jumlahKategori = [];
+        foreach ($kategoriLayanan as $key => $namaKategori) {
+            $jumlahKategori[$key] = $all->where('kategori', $namaKategori)->count();
+        }
+
+        $services = $all
+            ->when($kategori === 'humas', fn ($items) => $items->filter(
+                fn ($item) => in_array($item['slug'], $slugsAktif, true)
+            ))
+            ->where('kategori', $kategoriLayanan[$kategori])
+            ->values();
+
+        return view('user.beranda', compact('services', 'kategori', 'jumlahKategori', 'slugsAktif'));
+    }
+
     public function index(Request $request)
     {
         // PPID tidak ditampilkan pada daftar Humas agar jumlahnya tetap
@@ -282,14 +331,7 @@ class LayananController extends Controller
 
     public function detail(string $slug)
     {
-        // Halaman detail sementara hanya dibuka untuk lima layanan Humas.
-        $slugHumasAktif = [
-            'kunjungan-sekolah',
-            'edufair',
-            'liputan-kegiatan',
-            'informasi-spmb',
-            'informasi-pengaduan',
-        ];
+        $slugHumasAktif = $this->slugLayananDenganHalamanDetail();
 
         if (!in_array($slug, $slugHumasAktif, true)) {
             abort(404);

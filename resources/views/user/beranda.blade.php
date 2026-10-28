@@ -130,7 +130,7 @@
                     <h2>AJUKAN PERMOHONAN LAYANAN</h2>
                     <p>Pilih layanan yang Anda butuhkan dan buat e-ticket resmi tanpa perlu mendaftar akun.</p>
                 </div>
-                <a href="#layanan" class="btn btn-orange">
+                <a href="{{ route('layanan.index') }}" class="btn btn-orange">
                     <i class="bi bi-arrow-right me-2"></i>PILIH LAYANAN
                 </a>
             </div>
@@ -142,90 +142,38 @@
         <div class="container-xl">
             <div class="section-title-row">
                 <div>
-                    <h2 class="section-heading text-start">Layanan Unit Layanan Terpadu</h2>
+                    <h2 class="section-heading text-start">Layanan</h2>
                     <p class="section-subtitle text-start">
-                        Temukan berbagai layanan administrasi Politeknik Negeri Malang dalam satu portal.
+                        Temukan layanan Politeknik Negeri Malang sesuai kebutuhan Anda.
                     </p>
                 </div>
-                <a href="{{ route('layanan.index') }}" class="see-all">LIHAT SEMUA LAYANAN (31) <i class="bi bi-arrow-right"></i></a>
+                <a href="{{ route('layanan.index') }}" class="see-all">LIHAT SEMUA LAYANAN <i class="bi bi-arrow-right"></i></a>
             </div>
 
             <div class="row g-3 service-list" id="serviceList">
-                <div class="col-md-6 service-item" data-search="surat keterangan kuliah akademik surat mahasiswa">
-                    <a href="{{ route('cek-status') }}" class="service-link">
-                        <span class="service-number">01</span>
-                        <span class="service-copy">
-                            <strong>Surat Keterangan Kuliah</strong>
-                            <small>Layanan penerbitan surat resmi yang menyatakan seseorang pernah atau masih menempuh pendidikan di Polinema.</small>
-                            <em>Unit: Akademik</em>
-                        </span>
-                        <i class="bi bi-arrow-right"></i>
-                    </a>
-                </div>
+                @forelse ($services as $index => $service)
+                    <div class="col-md-6 service-item" data-search="{{ $service['nama'] }} {{ $service['deskripsi'] }} {{ $service['unit'] }}">
+                        <a href="{{ in_array($service['slug'], $slugsAktif, true) ? route('layanan.detail', ['slug' => $service['slug']]) : route('layanan.index', ['kategori' => $kategori]) }}" class="service-link">
+                            <span class="service-number">{{ sprintf('%02d', $index + 1) }}</span>
+                            <span class="service-copy">
+                                <strong>{{ $service['nama'] }}</strong>
+                                <small>{{ $service['deskripsi'] }}</small>
+                                <em>Unit: {{ $service['unit'] }}</em>
+                            </span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                @empty
+                    <div class="col-12 no-results" id="noResults">
+                        Belum ada layanan dengan halaman detail untuk kategori ini.
+                    </div>
+                @endforelse
 
-                <div class="col-md-6 service-item" data-search="legalisir dokumen akademik ijazah transkrip sertifikat">
-                    <a href="{{ route('cek-status') }}" class="service-link">
-                        <span class="service-number">02</span>
-                        <span class="service-copy">
-                            <strong>Legalisir Dokumen</strong>
-                            <small>Pengesahan dan legalisasi ijazah, transkrip nilai, dan sertifikat akademik.</small>
-                            <em>Unit: Akademik</em>
-                        </span>
-                        <i class="bi bi-arrow-right"></i>
-                    </a>
-                </div>
-
-                <div class="col-md-6 service-item" data-search="kunjungan sekolah kerja sama humas">
-                    <a href="{{ route('cek-status') }}" class="service-link">
-                        <span class="service-number">03</span>
-                        <span class="service-copy">
-                            <strong>Kunjungan Sekolah</strong>
-                            <small>Layanan penerimaan dan fasilitasi kunjungan sekolah ke Politeknik Negeri Malang.</small>
-                            <em>Unit: Kerja Sama &amp; Humas</em>
-                        </span>
-                        <i class="bi bi-arrow-right"></i>
-                    </a>
-                </div>
-
-                <div class="col-md-6 service-item" data-search="informasi pembayaran keuangan ukt tagihan virtual account">
-                    <a href="{{ route('cek-status') }}" class="service-link">
-                        <span class="service-number">04</span>
-                        <span class="service-copy">
-                            <strong>Informasi Pembayaran</strong>
-                            <small>Informasi tata cara pembayaran UKT, tagihan administrasi, dan virtual account bank.</small>
-                            <em>Unit: Keuangan</em>
-                        </span>
-                        <i class="bi bi-arrow-right"></i>
-                    </a>
-                </div>
-
-                <div class="col-md-6 service-item" data-search="internal kepegawaian pegawai">
-                    <a href="{{ route('cek-status') }}" class="service-link">
-                        <span class="service-number">05</span>
-                        <span class="service-copy">
-                            <strong>Internal</strong>
-                            <small>Layanan informasi kepegawaian Politeknik Negeri Malang.</small>
-                            <em>Unit: Kepegawaian</em>
-                        </span>
-                        <i class="bi bi-arrow-right"></i>
-                    </a>
-                </div>
-
-                <div class="col-md-6 service-item" data-search="informasi beasiswa kemahasiswaan kip kuliah prestasi bantuan">
-                    <a href="{{ route('cek-status') }}" class="service-link">
-                        <span class="service-number">06</span>
-                        <span class="service-copy">
-                            <strong>Informasi Beasiswa</strong>
-                            <small>Informasi program beasiswa KIP Kuliah, prestasi, kemitraan, dan persyaratan beasiswa.</small>
-                            <em>Unit: Kemahasiswaan</em>
-                        </span>
-                        <i class="bi bi-arrow-right"></i>
-                    </a>
-                </div>
-
-                <div class="col-12 no-results d-none" id="noResults">
-                    Layanan tidak ditemukan. Coba gunakan kata kunci lain.
-                </div>
+                @if ($services->isNotEmpty())
+                    <div class="col-12 no-results d-none" id="noResults">
+                        Layanan tidak ditemukan. Coba gunakan kata kunci lain.
+                    </div>
+                @endif
             </div>
         </div>
     </section>
@@ -238,33 +186,33 @@
 
             <div class="row g-3 justify-content-center category-grid">
                 <div class="col-6 col-md">
-                    <a class="category-card" href="#layanan" data-category="akademik">
+                    <a class="category-card" href="{{ route('beranda', ['kategori' => 'akademik']) }}#layanan">
                         <span class="category-icon"><i class="bi bi-journal-text"></i></span>
-                        <strong>AKADEMIK</strong><small>5 Layanan Tersedia</small>
+                        <strong>AKADEMIK</strong><small>{{ $jumlahKategori['akademik'] }} Layanan Tersedia</small>
                     </a>
                 </div>
                 <div class="col-6 col-md">
-                    <a class="category-card" href="#layanan" data-category="keuangan">
+                    <a class="category-card" href="{{ route('beranda', ['kategori' => 'keuangan']) }}#layanan">
                         <span class="category-icon"><i class="bi bi-cash-coin"></i></span>
-                        <strong>KEUANGAN</strong><small>7 Layanan Tersedia</small>
+                        <strong>KEUANGAN</strong><small>{{ $jumlahKategori['keuangan'] }} Layanan Tersedia</small>
                     </a>
                 </div>
                 <div class="col-6 col-md">
-                    <a class="category-card" href="#layanan" data-category="kemahasiswaan">
+                    <a class="category-card" href="{{ route('beranda', ['kategori' => 'kemahasiswaan']) }}#layanan">
                         <span class="category-icon"><i class="bi bi-people-fill"></i></span>
-                        <strong>KEMAHASISWAAN</strong><small>9 Layanan Tersedia</small>
+                        <strong>KEMAHASISWAAN</strong><small>{{ $jumlahKategori['kemahasiswaan'] }} Layanan Tersedia</small>
                     </a>
                 </div>
                 <div class="col-6 col-md">
-                    <a class="category-card" href="#layanan" data-category="humas">
+                    <a class="category-card" href="{{ route('beranda', ['kategori' => 'humas']) }}#layanan">
                         <span class="category-icon"><i class="bi bi-megaphone-fill"></i></span>
-                        <strong>KERJA SAMA &amp; HUMAS</strong><small>7 Layanan Tersedia</small>
+                        <strong>KERJA SAMA &amp; HUMAS</strong><small>{{ $jumlahKategori['humas'] }} Layanan Tersedia</small>
                     </a>
                 </div>
                 <div class="col-6 col-md">
-                    <a class="category-card" href="#layanan" data-category="kepegawaian">
+                    <a class="category-card" href="{{ route('beranda', ['kategori' => 'kepegawaian']) }}#layanan">
                         <span class="category-icon"><i class="bi bi-briefcase-fill"></i></span>
-                        <strong>KEPEGAWAIAN</strong><small>5 Layanan Tersedia</small>
+                        <strong>KEPEGAWAIAN</strong><small>{{ $jumlahKategori['kepegawaian'] }} Layanan Tersedia</small>
                     </a>
                 </div>
             </div>

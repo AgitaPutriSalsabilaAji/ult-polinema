@@ -61,26 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Filter berdasarkan kategori layanan
-    document.querySelectorAll('.category-card').forEach((card) => {
-        card.addEventListener('click', () => {
-            const category = card.dataset.category;
-
-            const categoryTerms = {
-                akademik: 'akademik',
-                keuangan: 'keuangan',
-                kemahasiswaan: 'kemahasiswaan beasiswa',
-                humas: 'humas kunjungan sekolah kerja sama',
-                kepegawaian: 'kepegawaian internal',
-            };
-
-            if (searchInput) {
-                searchInput.value = categoryTerms[category] || '';
-                filterServices(searchInput.value);
-            }
-        });
-    });
-
     // Form cek status dikirim ke route Laravel /cek-status.
     // Route tersebut akan mencari nomor e-ticket pada database dan menampilkan hasilnya.
 
