@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\LayananController;
 use App\Http\Controllers\Admin\PengajuanController;
 use App\Http\Controllers\Admin\RatingLayananController;
 use App\Http\Controllers\Auth\AdminLoginController;
+use App\Http\Controllers\Admin\ProfilController;
+use App\Http\Controllers\Admin\DaftarAdminController;
 
 // Halaman utama
 Route::get('/', function () {
@@ -119,12 +121,14 @@ Route::get('/rating', [RatingLayananController::class, 'index'])
 Route::post('/rating-ulasan', [RatingLayananController::class, 'store'])
     ->name('rating-ulasan.store');
 
-        // Profil dan Akun
-        Route::view('/profil', 'admin.profil')->name('profil');
+        // Profil & Akun Admin
+Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
+Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
+Route::put('/profil/password', [ProfilController::class,'updatePassword',])->name('profil.password');
 
         // Daftar Admin
-        Route::view('/daftar-admin', 'admin.daftar-admin')
-            ->name('daftar-admin');
+Route::resource('daftar-admin', DaftarAdminController::class)
+    ->except(['show']);
     });
 
     Route::get('/login', [AdminLoginController::class, 'showLoginForm'])
