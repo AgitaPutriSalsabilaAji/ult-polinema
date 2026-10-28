@@ -20,11 +20,13 @@ class LayananController extends Controller
             ->withCount('bagianLayanan');
 
         if ($request->filled('q')) {
-            $search = $request->q;
+            $search = mb_strtolower($request->validate([
+                'q' => ['required', 'string', 'max:100'],
+            ])['q']);
 
             $query->where(function ($q) use ($search) {
-                $q->where('nama_layanan', 'like', "%{$search}%")
-                ->orWhere('deskripsi_singkat', 'like', "%{$search}%");
+                $q->whereRaw('LOWER(nama_layanan) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER(deskripsi_singkat) LIKE ?', ["%{$search}%"]);
             });
         }
 

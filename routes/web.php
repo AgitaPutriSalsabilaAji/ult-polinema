@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\GlobalSearchController;
 use App\Http\Controllers\Admin\LayananController;
 use App\Http\Controllers\Admin\PengajuanController;
 use App\Http\Controllers\Auth\AdminLoginController;
@@ -65,6 +66,8 @@ Route::middleware('auth:admin')
 
         // Dashboard
         Route::view('/', 'admin.dashboard')->name('dashboard');
+        Route::get('/search', [GlobalSearchController::class, 'index'])
+            ->name('search.index');
 
         // Pengajuan
         Route::get('/pengajuan', [PengajuanController::class, 'index'])
@@ -133,4 +136,3 @@ Route::middleware('auth:admin')
     Route::post('/logout', [AdminLoginController::class, 'logout'])
     ->middleware('auth:admin')
     ->name('logout');
-

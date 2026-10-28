@@ -15,9 +15,13 @@ class FaqController extends Controller
             $query = Faq::with('unit');
 
             if ($request->filled('search')) {
-                $query->where(function ($q) use ($request) {
-                    $q->where('pertanyaan', 'like', '%' . $request->search . '%')
-                    ->orWhere('jawaban', 'like', '%' . $request->search . '%');
+                $search = mb_strtolower($request->validate([
+                    'search' => ['required', 'string', 'max:100'],
+                ])['search']);
+
+                $query->where(function ($q) use ($search) {
+                    $q->whereRaw('LOWER(pertanyaan) LIKE ?', ["%{$search}%"])
+                        ->orWhereRaw('LOWER(jawaban) LIKE ?', ["%{$search}%"]);
                 });
             }
 
