@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\RatingLayananController;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Admin\ProfilController;
 use App\Http\Controllers\Admin\DaftarAdminController;
+use App\Http\Controllers\Admin\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,7 +60,10 @@ Route::middleware('auth:admin')
     ->name('admin.')
     ->group(function () {
 
-        Route::view('/', 'admin.dashboard')->name('dashboard');
+        // Dashboard
+        Route::get('/', [DashboardController::class, 'index'])
+            ->name('dashboard');
+
         Route::get('/search', [GlobalSearchController::class, 'index'])
             ->name('search.index');
 
@@ -113,7 +117,7 @@ Route::middleware('auth:admin')
 
         // Rating dan ulasan
         Route::get('/rating', [RatingLayananController::class, 'index'])
-            ->name('rating');
+            ->name('rating-ulasan.index');
 
         Route::post('/rating-ulasan', [RatingLayananController::class, 'store'])
             ->name('rating-ulasan.store');

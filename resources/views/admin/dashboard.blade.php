@@ -36,11 +36,12 @@
             </div>
         </div>
 
+        
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
                     <h5>FAQ</h5>
-                    <h2>0</h2>
+                    <h2>{{ $jumlahFaq }}</h2>
                     <p class="text-secondary mb-0">
                         Pertanyaan yang tersedia
                     </p>

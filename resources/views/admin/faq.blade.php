@@ -257,9 +257,12 @@
 
                     <div class="mb-3">
                         <label class="form-label">Unit / Kategori</label>
-                        <select name="unit_id" class="form-select">
+                        <select name="id_unit" class="form-select" required>
+                            <option value="">-- Pilih Unit --</option>
+
                             @foreach ($units as $unit)
-                                <option value="{{ $unit->id }}">
+                                <option value="{{ $unit->id }}"
+                                    @selected(old('id_unit') == $unit->id)>
                                     {{ $unit->nama_unit }}
                                 </option>
                             @endforeach
