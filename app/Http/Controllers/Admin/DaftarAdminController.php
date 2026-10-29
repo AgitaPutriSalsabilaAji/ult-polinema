@@ -32,8 +32,9 @@ class DaftarAdminController extends Controller
         $admins = Admin::with('unit')
             ->orderBy('id')
             ->paginate(10);
+        $units = Unit::orderBy('nama_unit')->get();
 
-        return view('admin.daftar-admin', compact('admins'));
+        return view('admin.daftar-admin', compact('admins', 'units'));
     }
 
     public function create()
