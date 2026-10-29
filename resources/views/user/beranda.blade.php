@@ -60,7 +60,7 @@
 
             <form class="search-form mx-auto" id="serviceSearchForm" role="search">
                 <i class="bi bi-search search-icon"></i>
-                <input type="search" id="serviceSearch" aria-label="Cari layanan"
+                <input type="search" id="serviceSearch" role="combobox" aria-label="Cari layanan"
                        aria-autocomplete="list" aria-controls="serviceSearchResults"
                        aria-expanded="false"
                        placeholder="Cari layanan yang Anda butuhkan...">

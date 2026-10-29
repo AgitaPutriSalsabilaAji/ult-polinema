@@ -11,17 +11,42 @@
 <div class="layanan-page">
     @include('user.navbar', ['theme' => 'purple', 'active' => 'services'])
 
-    <section class="intro"><div class="content-width">
-        <div class="breadcrumb"><a href="{{ route('beranda') }}">Beranda</a> / <strong>Layanan</strong></div>
+    <section class="intro"><div class="container-xl">
         <h1>LAYANAN ULT POLINEMA</h1>
         <p>Pilih layanan sesuai kebutuhan Anda. Temukan informasi persyaratan, estimasi waktu penyelesaian, dan prosedur resmi berbagai layanan Politeknik Negeri Malang.</p>
     </div></section>
 
-    <section class="filters"><div class="content-width">
-        <form class="search-form" action="{{ route('layanan.index') }}" method="GET">
-            <input type="search" name="q" placeholder="Cari layanan..." value="{{ $keyword ?? request('q') }}">
-            @if ($kategori !== 'semua') <input type="hidden" name="kategori" value="{{ $kategori }}"> @endif
-            <button type="submit">Cari</button>
+    <section class="filters"><div class="container-xl">
+        <form class="search-form mx-auto" id="serviceListSearchForm" action="{{ route('layanan.index') }}" method="GET" role="search">
+                <i class="bi bi-search search-icon" aria-hidden="true"></i>
+                <input type="search"
+                       name="q"
+                       placeholder="Cari layanan yang Anda butuhkan..."
+                       value="{{ $keyword ?? request('q') }}"
+                       id="serviceListSearch"
+                       role="combobox"
+                       aria-label="Cari layanan"
+                       aria-autocomplete="list"
+                       aria-expanded="false"
+                       aria-controls="serviceListSearchResults">
+                @if ($kategori !== 'semua') <input type="hidden" name="kategori" value="{{ $kategori }}"> @endif
+                <button class="btn btn-orange" type="submit">Cari Layanan</button>
+                <div class="service-search-dropdown d-none"
+                     id="serviceListSearchResults"
+                     role="listbox"
+                     aria-label="Rekomendasi layanan">
+                @foreach ($autocompleteServices as $service)
+                    <a class="service-search-option"
+                       id="service-option-{{ $service['slug'] }}"
+                       href="{{ route('layanan.detail', ['slug' => $service['slug']]) }}"
+                       data-service-option
+                       role="option"
+                       aria-selected="false">
+                        {{ $service['nama'] }}
+                    </a>
+                @endforeach
+                <p class="service-search-empty d-none" role="status">Layanan tidak ditemukan</p>
+                </div>
         </form>
         <nav class="category-tabs">
             @php
@@ -48,7 +73,7 @@
         </div>
     </div></section>
 
-    <main class="listing"><div class="content-width">
+    <main class="listing"><div class="container-xl">
         <div class="service-grid">
             @forelse ($services as $index => $service)
                 <article class="service-card">

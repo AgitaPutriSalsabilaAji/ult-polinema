@@ -195,7 +195,7 @@ a {
 .search-form {
     position: relative;
     z-index: 5;
-    max-width: 780px;
+    width: min(100%, 645px);
     display: flex;
     align-items: center;
     background: #f5f6f9;
