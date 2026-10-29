@@ -489,13 +489,6 @@ a {
     border-radius: 12px;
     background: #fff;
     color: var(--ink);
-    transition: transform .2s, box-shadow .2s;
-}
-
-.category-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(35, 29, 91, .08);
-    color: var(--purple);
 }
 
 .category-icon {
