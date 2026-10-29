@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Layanan ULT Polinema</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    @vite(['resources/js/app.js'])
+    @vite(['resources/css/layanan.css', 'resources/js/app.js'])
 </head>
 <body>
 <div class="layanan-page">
@@ -35,7 +35,7 @@
                 ];
             @endphp
             @foreach ($daftarKategori as $key => $label)
-                <a href="{{ route('layanan.index', array_filter(['kategori' => $key === 'semua' ? null : $key, 'q' => request('q')], fn ($value) => $value !== null && $value !== '')) }}" class="{{ $kategori === $key ? 'active' : '' }}">
+                <a href="{{ route('layanan.index', array_filter(['kategori' => $key === 'semua' ? null : $key], fn ($value) => $value !== null && $value !== '')) }}" class="{{ $kategori === $key ? 'active' : '' }}">
                     {{ $label }} ({{ $jumlahKategori[$key] ?? 0 }})
                 </a>
             @endforeach
@@ -43,12 +43,7 @@
 
         <div class="result-line">
             <span>
-                Menampilkan {{ $jumlahKategori[$kategori] ?? 31 }}
-                dari 31 Layanan Tersedia
-            </span>
-
-            <span class="muted">
-                Urutan: Populer &amp; Terbanyak Diajukan
+                Menampilkan {{ $services->total() }} dari {{ $totalLayanan }} Layanan Tersedia
             </span>
         </div>
     </div></section>

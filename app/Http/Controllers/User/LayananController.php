@@ -91,6 +91,60 @@ class LayananController extends Controller
                 'dokumen'=>[['nama'=>'Identitas Pemohon','format'=>'PDF / JPG','ketentuan'=>'Wajib'],['nama'=>'Dokumen Pendukung','format'=>'PDF / DOCX','ketentuan'=>'Jika diperlukan']]
             ],
             [
+                'nama'=>'Kenaikan Jabatan & Pangkat','slug'=>'kenaikan-jabatan-pangkat','kategori'=>'Kepegawaian','unit'=>'Kepegawaian',
+                'deskripsi'=>'Layanan pengajuan dan informasi proses kenaikan jabatan serta pangkat bagi pegawai Polinema.',
+                'tentang'=>'Layanan ini membantu pegawai dalam memahami prosedur, persyaratan, dan alur pengajuan kenaikan jabatan serta pangkat sesuai ketentuan yang berlaku di Polinema.',
+                'estimasi'=>'3–5 Hari Kerja','tarif'=>'Sesuai ketentuan instansi','jam'=>'Senin–Jumat, 08.00–16.00 WIB',
+                'persyaratan'=>[['judul'=>'Identitas Pegawai','deskripsi'=>'Data diri pegawai yang melakukan pengajuan kenaikan jabatan atau pangkat.'],['judul'=>'Dokumen Pendukung','deskripsi'=>'Dokumen prestasi, SK jabatan, dan bukti penilaian kinerja yang relevan.'],['judul'=>'Rincian Pengajuan','deskripsi'=>'Uraikan jenis kenaikan, masa kerja, dan kebutuhan administrasi yang diajukan.']],
+                'prosedur'=>['Pengguna memilih layanan Kenaikan Jabatan & Pangkat.','Pengguna membaca persyaratan dan tata cara pengajuan.','Pengguna mengirim permohonan melalui E-Ticket.','Admin meninjau kelengkapan dokumen.','Unit Kepegawaian memproses pengajuan.','Pengguna memantau status melalui E-Ticket.'],
+                'dokumen'=>[['nama'=>'Identitas Pegawai','format'=>'PDF / JPG','ketentuan'=>'Wajib'],['nama'=>'SK Jabatan / Pangkat Terakhir','format'=>'PDF','ketentuan'=>'Wajib'],['nama'=>'Dokumen Pendukung Lainnya','format'=>'PDF / DOCX','ketentuan'=>'Jika diperlukan']]
+            ],
+            [
+                'nama'=>'Prosedur Cuti','slug'=>'prosedur-cuti','kategori'=>'Kepegawaian','unit'=>'Kepegawaian',
+                'deskripsi'=>'Layanan informasi dan pengajuan cuti pegawai sesuai ketentuan dan prosedur yang berlaku di Polinema.',
+                'tentang'=>'Layanan ini memfasilitasi pegawai dalam memahami proses pengajuan cuti, persyaratan administrasi, dan alur persetujuan di Unit Kepegawaian.',
+                'estimasi'=>'2–4 Hari Kerja','tarif'=>'Sesuai ketentuan instansi','jam'=>'Senin–Jumat, 08.00–16.00 WIB',
+                'persyaratan'=>[['judul'=>'Identitas Pegawai','deskripsi'=>'Data diri pegawai yang mengajukan cuti.'],['judul'=>'Jenis Cuti','deskripsi'=>'Jenis cuti yang diajukan dan alasan cuti yang relevan.'],['judul'=>'Dokumen Pendukung','deskripsi'=>'Dokumen pendukung seperti surat keterangan atau bukti kebutuhan cuti.']],
+                'prosedur'=>['Pengguna memilih layanan Prosedur Cuti.','Pengguna membaca persyaratan dan ketentuan cuti.','Pengguna mengisi formulir E-Ticket.','Admin meninjau kelengkapan berkas.','Unit Kepegawaian memproses persetujuan.','Pengguna memantau status melalui E-Ticket.'],
+                'dokumen'=>[['nama'=>'Identitas Pegawai','format'=>'PDF / JPG','ketentuan'=>'Wajib'],['nama'=>'Surat Permohonan Cuti','format'=>'PDF','ketentuan'=>'Wajib'],['nama'=>'Dokumen Pendukung','format'=>'PDF / DOCX','ketentuan'=>'Jika diperlukan']]
+            ],
+            [
+                'nama'=>'Permohonan Tugas Belajar Dosen','slug'=>'permohonan-tugas-belajar-dosen','kategori'=>'Kepegawaian','unit'=>'Kepegawaian',
+                'deskripsi'=>'Layanan informasi dan pengajuan tugas belajar dosen sesuai ketentuan dan prosedur Polinema.',
+                'tentang'=>'Layanan ini membantu dosen dalam memahami tata cara pengajuan tugas belajar, serta persyaratan administrasi yang dibutuhkan untuk proses persetujuan.',
+                'estimasi'=>'3–5 Hari Kerja','tarif'=>'Sesuai ketentuan instansi','jam'=>'Senin–Jumat, 08.00–16.00 WIB',
+                'persyaratan'=>[['judul'=>'Identitas Dosen','deskripsi'=>'Data diri dosen yang mengajukan tugas belajar.'],['judul'=>'Dokumen Pendidikan','deskripsi'=>'Izin belajar, surat pengantar, dan dokumen akademik yang relevan.'],['judul'=>'Rencana Studi','deskripsi'=>'Informasi program studi, universitas, dan durasi tugas belajar yang diajukan.']],
+                'prosedur'=>['Pengguna memilih layanan Permohonan Tugas Belajar Dosen.','Pengguna membaca persyaratan dan ketentuan.','Pengguna mengisi formulir E-Ticket.','Admin menilai kelengkapan dokumen.','Unit Kepegawaian meninjau pengajuan.','Pengguna memantau status melalui E-Ticket.'],
+                'dokumen'=>[['nama'=>'Identitas Dosen','format'=>'PDF / JPG','ketentuan'=>'Wajib'],['nama'=>'Surat Pengantar / Persetujuan','format'=>'PDF','ketentuan'=>'Wajib'],['nama'=>'Dokumen Program Studi','format'=>'PDF / DOCX','ketentuan'=>'Jika diperlukan']]
+            ],
+            [
+                'nama'=>'Pengaktifan Kembali dari Tugas Belajar','slug'=>'pengaktifan-kembali-dari-tugas-belajar','kategori'=>'Kepegawaian','unit'=>'Kepegawaian',
+                'deskripsi'=>'Layanan informasi dan pengajuan pengaktifan kembali pegawai atau dosen setelah menyelesaikan tugas belajar.',
+                'tentang'=>'Layanan ini mendukung proses pengembalian pegawai atau dosen ke unit kerja setelah menyelesaikan masa tugas belajar sesuai ketentuan dan persetujuan.',
+                'estimasi'=>'3–5 Hari Kerja','tarif'=>'Sesuai ketentuan instansi','jam'=>'Senin–Jumat, 08.00–16.00 WIB',
+                'persyaratan'=>[['judul'=>'Identitas Pegawai','deskripsi'=>'Data diri pegawai atau dosen yang akan diaktifkan kembali.'],['judul'=>'Dokumen Tugas Belajar','deskripsi'=>'Dokumen penugasan, kelulusan, dan persetujuan yang relevan.'],['judul'=>'Rencana Penempatan','deskripsi'=>'Informasi kebutuhan penempatan kerja setelah pengaktifan kembali.']],
+                'prosedur'=>['Pengguna memilih layanan Pengaktifan Kembali dari Tugas Belajar.','Pengguna membaca ketentuan dan persyaratan.','Pengguna mengirim permohonan melalui E-Ticket.','Admin memeriksa dokumen berkas.','Unit Kepegawaian menilai kesiapan penempatan.','Pengguna memantau status melalui E-Ticket.'],
+                'dokumen'=>[['nama'=>'Identitas Pegawai','format'=>'PDF / JPG','ketentuan'=>'Wajib'],['nama'=>'Dokumen Tugas Belajar / Kelulusan','format'=>'PDF','ketentuan'=>'Wajib'],['nama'=>'Surat Pengantar Penempatan','format'=>'PDF / DOCX','ketentuan'=>'Jika diperlukan']]
+            ],
+            [
+                'nama'=>'Kontrak Kerja Pegawai','slug'=>'kontrak-kerja-pegawai','kategori'=>'Kepegawaian','unit'=>'Kepegawaian',
+                'deskripsi'=>'Layanan informasi dan pengajuan kontrak kerja pegawai sesuai ketentuan administrasi kepegawaian Polinema.',
+                'tentang'=>'Layanan ini memfasilitasi proses administrasi kontrak kerja pegawai termasuk pemahaman persyaratan, alur pengajuan, dan penetapan masa kerja.',
+                'estimasi'=>'3–5 Hari Kerja','tarif'=>'Sesuai ketentuan instansi','jam'=>'Senin–Jumat, 08.00–16.00 WIB',
+                'persyaratan'=>[['judul'=>'Identitas Pegawai','deskripsi'=>'Data diri pegawai yang mengajukan kontrak kerja.'],['judul'=>'Dokumen Pengelolaan SDM','deskripsi'=>'Berkas administrasi dan lampiran yang relevan untuk kontrak kerja.'],['judul'=>'Rincian Masa Kontrak','deskripsi'=>'Jelaskan jenis kontrak, jangka waktu, dan kebutuhan pengajuan.']],
+                'prosedur'=>['Pengguna memilih layanan Kontrak Kerja Pegawai.','Pengguna membaca persyaratan dan ketentuan.','Pengguna mengisi formulir E-Ticket.','Admin meninjau kelengkapan berkas.','Unit Kepegawaian memproses kontrak kerja.','Pengguna memantau status melalui E-Ticket.'],
+                'dokumen'=>[['nama'=>'Identitas Pegawai','format'=>'PDF / JPG','ketentuan'=>'Wajib'],['nama'=>'Dokumen Administrasi Kontrak','format'=>'PDF / DOCX','ketentuan'=>'Wajib'],['nama'=>'Lampiran Pendukung','format'=>'PDF / JPG / PNG','ketentuan'=>'Jika diperlukan']]
+            ],
+            [
+                'nama'=>'Kenaikan Pangkat PNS','slug'=>'kenaikan-pangkat-pns','kategori'=>'Kepegawaian','unit'=>'Kepegawaian',
+                'deskripsi'=>'Layanan informasi dan pengajuan kenaikan pangkat Pegawai Negeri Sipil sesuai ketentuan administrasi dan evaluasi.',
+                'tentang'=>'Layanan ini membantu PNS Polinema dalam memahami tata cara, persyaratan, dan dokumen yang diperlukan untuk pengajuan kenaikan pangkat.',
+                'estimasi'=>'3–5 Hari Kerja','tarif'=>'Sesuai ketentuan instansi','jam'=>'Senin–Jumat, 08.00–16.00 WIB',
+                'persyaratan'=>[['judul'=>'Identitas Pegawai','deskripsi'=>'Data diri Pegawai Negeri Sipil yang mengajukan kenaikan pangkat.'],['judul'=>'Dokumen Kepangkatan','deskripsi'=>'Dokumen bukti pangkat terakhir, penilaian kinerja, dan data kepangkatan yang relevan.'],['judul'=>'Rincian Pengajuan','deskripsi'=>'Jelaskan masa kerja, jenis kenaikan pangkat, dan kebutuhan administrasi.']],
+                'prosedur'=>['Pengguna memilih layanan Kenaikan Pangkat PNS.','Pengguna membaca persyaratan dan tata cara.','Pengguna mengisi formulir E-Ticket.','Admin menilai kelengkapan berkas.','Unit Kepegawaian memproses pengajuan.','Pengguna memantau status melalui E-Ticket.'],
+                'dokumen'=>[['nama'=>'Identitas Pegawai','format'=>'PDF / JPG','ketentuan'=>'Wajib'],['nama'=>'SK Pangkat Terakhir','format'=>'PDF','ketentuan'=>'Wajib'],['nama'=>'Dokumen Pendukung KP / Penilaian','format'=>'PDF / DOCX','ketentuan'=>'Jika diperlukan']]
+            ],
+            [
                 'nama'=>'Beasiswa','slug'=>'beasiswa','kategori'=>'Kemahasiswaan','unit'=>'Kemahasiswaan',
                 'deskripsi'=>'Layanan informasi dan pengajuan beasiswa untuk membantu mahasiswa memperoleh dukungan biaya pendidikan.',
                 'tentang'=>'Layanan informasi mengenai program beasiswa, persyaratan, jadwal, dan prosedur pengajuan yang tersedia bagi mahasiswa Polinema.',
@@ -194,10 +248,6 @@ class LayananController extends Controller
                 'deskripsi'=>'Layanan informasi program pengembangan minat, bakat, dan kompetensi mahasiswa.',
             ],
             [
-                'nama'=>'Eksternal','slug'=>'eksternal','kategori'=>'Kepegawaian','unit'=>'Kepegawaian',
-                'deskripsi'=>'Layanan yang ditujukan bagi masyarakat umum, instansi, atau pihak luar yang membutuhkan informasi layanan kepegawaian Polinema.',
-            ],
-            [
                 'nama'=>'Informasi & Pengaduan PPID','slug'=>'informasi-pengaduan-ppid','kategori'=>'Kerja Sama & Humas','unit'=>'Kerja Sama & Humas',
                 'deskripsi'=>'Layanan penyampaian informasi, pertanyaan, kritik, dan pengaduan terkait layanan atau kegiatan Polinema.',
                 'tentang'=>'Layanan untuk menyampaikan permintaan informasi publik atau pengaduan yang perlu ditindaklanjuti oleh unit berwenang di Polinema.',
@@ -299,6 +349,10 @@ class LayananController extends Controller
             $jumlahKategori[$key] = $all->where('kategori', $namaKategori)->count();
         }
 
+        $totalLayanan = $kategori === 'semua'
+            ? $all->count()
+            : $all->where('kategori', $map[$kategori])->count();
+
         $hasil = $all
             ->when($kategori !== 'semua', function ($items) use ($map, $kategori) {
                 return $items->where('kategori', $map[$kategori]);
@@ -332,7 +386,8 @@ class LayananController extends Controller
             'services',
             'kategori',
             'keyword',
-            'jumlahKategori'
+            'jumlahKategori',
+            'totalLayanan'
         ));
     }
 

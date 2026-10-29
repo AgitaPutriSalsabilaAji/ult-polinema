@@ -1,5 +1,3 @@
-import '../css/beranda.css';
-
 document.addEventListener('DOMContentLoaded', () => {
     // Elemen pencarian layanan
     const searchForm = document.getElementById('serviceSearchForm');
