@@ -6,44 +6,11 @@
     <title>Beranda | Unit Layanan Terpadu Polinema</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
     @vite(['resources/css/beranda.css', 'resources/js/beranda.js'])
 </head>
 <body>
 
-<header class="site-header sticky-top">
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container-xl">
-            <a class="navbar-brand brand-lockup" href="{{ route('beranda') }}" aria-label="Beranda ULT Polinema">
-                <img src="{{ asset('images/logo polinema.png') }}" alt="Logo Politeknik Negeri Malang">
-                <span>
-                    <strong>UNIT LAYANAN TERPADU</strong>
-                    <small>POLITEKNIK NEGERI MALANG</small>
-                </span>
-            </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#mainNav" aria-controls="mainNav"
-                    aria-expanded="false" aria-label="Buka navigasi">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="mainNav">
-                <ul class="navbar-nav mx-auto align-items-lg-center">
-                    <li class="nav-item"><a class="nav-link active" href="#beranda">Beranda</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('layanan.index') }}">Layanan</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('cek-status') }}">E-Tiket</a></li>
-                </ul>
-
-                <a class="btn btn-orange nav-check" href="{{ route('cek-status') }}">
-                    <i class="bi bi-search me-2"></i>Cek Layanan
-                </a>
-            </div>
-        </div>
-    </nav>
-</header>
+@include('user.navbar', ['theme' => 'light', 'active' => 'home', 'sticky' => true])
 
 <main>
     {{-- HERO --}}
@@ -52,11 +19,7 @@
 
         <div class="container-xl hero-content">
             <div class="row align-items-center g-4">
-                <div class="col-lg-7">
-                    <span class="eyebrow">
-                        <span class="eyebrow-dot"></span>
-                        UNIT LAYANAN TERPADU
-                    </span>
+                <div class="col-lg-6">
 
                     <h1>Layanan Polinema<br>Dalam Satu Pintu</h1>
 
@@ -76,23 +39,12 @@
                     </div>
                 </div>
 
-                <div class="col-lg-5">
-                    <div class="hero-stat-card ms-lg-auto">
-                        <div class="stat-top">
-                            <strong>38+</strong>
-                            <span>Total Jenis Layanan</span>
-                        </div>
-                        <div class="stat-middle">
-                            <strong>1–3 Hari Kerja</strong>
-                            <span>Rata-rata Respons</span>
-                        </div>
-                        <div class="stat-bottom">
-                            <span class="open-pill">
-                                <i class="bi bi-circle-fill"></i>100% Terbuka
-                            </span>
-                            <span>Akses Tanpa Akun</span>
-                        </div>
-                    </div>
+                <div class="col-lg-6 d-flex justify-content-lg-end">
+                    <figure class="hero-illustration mb-0">
+                        <img src="{{ asset('images/ilustrasi layanan.png') }}"
+                             alt="Ilustrasi Layanan ULT Polinema"
+                             class="img-fluid">
+                    </figure>
                 </div>
             </div>
         </div>
@@ -109,15 +61,27 @@
             <form class="search-form mx-auto" id="serviceSearchForm" role="search">
                 <i class="bi bi-search search-icon"></i>
                 <input type="search" id="serviceSearch" aria-label="Cari layanan"
+                       aria-autocomplete="list" aria-controls="serviceSearchResults"
+                       aria-expanded="false"
                        placeholder="Cari layanan yang Anda butuhkan...">
                 <button class="btn btn-orange" type="submit">Cari Layanan</button>
+                <div class="service-search-dropdown d-none" id="serviceSearchResults"
+                     role="listbox" aria-label="Rekomendasi layanan">
+                    @foreach ($searchServices as $service)
+                        <a class="service-search-option" role="option"
+                           href="{{ route('layanan.detail', ['slug' => $service['slug']]) }}"
+                           data-service-option>
+                            {{ $service['nama'] }}
+                        </a>
+                    @endforeach
+                    <p class="service-search-empty d-none" role="status">Layanan tidak ditemukan</p>
+                </div>
             </form>
 
             <p class="search-hint">
                 Belum tahu layanan yang tepat?
                 <a href="#kategori">＋ Cek Semua Kategori Layanan</a>
             </p>
-            <p class="search-feedback" id="searchFeedback" aria-live="polite"></p>
         </div>
     </section>
 
@@ -321,53 +285,14 @@
                 <div class="col-6 col-lg-3"><div class="contact-card"><span><i class="bi bi-clock"></i></span><strong>Jam Operasional</strong><p>Senin - Jumat<br>08.00 - 16.00 WIB</p></div></div>
             </div>
 
-            <a class="btn whatsapp-btn mt-4" href="https://wa.me/62341404424" target="_blank" rel="noopener noreferrer">
+            <a class="btn whatsapp-btn mt-4" href="https://wa.me/6285117479099" target="_blank" rel="noopener noreferrer">
                 <i class="bi bi-whatsapp me-2"></i>Hubungi via WhatsApp
             </a>
         </div>
     </section>
 </main>
 
-{{-- FOOTER --}}
-<footer class="site-footer">
-    <div class="container-xl">
-        <div class="row g-4">
-            <div class="col-lg-4 footer-about">
-                <a class="brand-lockup footer-brand" href="{{ route('beranda') }}">
-                    <img src="{{ asset('images/logo polinema.png') }}" alt="Logo Polinema">
-                    <span><strong>UNIT LAYANAN TERPADU</strong><small>Politeknik Negeri Malang</small></span>
-                </a>
-                <p>Portal layanan publik terintegrasi untuk memudahkan akses informasi dan pengajuan layanan bagi mahasiswa, alumni, dosen, tenaga kependidikan, dan masyarakat umum.</p>
-            </div>
-
-            <div class="col-6 col-lg-3">
-                <h3>Tautan Cepat</h3>
-                <a href="#beranda">Beranda</a><a href="#layanan">Informasi Layanan</a><a href="#faq">FAQ</a><a href="#kategori">Profil ULT</a>
-            </div>
-
-            <div class="col-6 col-lg-2">
-                <h3>Unit Layanan</h3>
-                <a href="#kategori">Akademik</a><a href="#kategori">Keuangan</a><a href="#kategori">Kemahasiswaan</a><a href="#kategori">Kepegawaian</a><a href="#kategori">Humas &amp; Kerja Sama</a>
-            </div>
-
-            <div class="col-lg-3">
-                <h3>Kontak</h3>
-                <p><i class="bi bi-geo-alt-fill"></i> Jl. Soekarno Hatta No. 9, Malang</p>
-                <p><i class="bi bi-envelope-fill"></i> ult@polinema.ac.id</p>
-                <p><i class="bi bi-telephone-fill"></i> (0341) 404424</p>
-                <div class="social-links">
-                    <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-                    <a href="#" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
-                    <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-bottom">
-            © 2026 Politeknik Negeri Malang – Unit Layanan Terpadu. All Rights Reserved.
-        </div>
-    </div>
-</footer>
+@include('user.footer')
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

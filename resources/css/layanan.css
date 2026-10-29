@@ -1,4 +1,7 @@
 /* resources/css/layanan.css */
+@import './navbar-purple.css';
+@import './footer.css';
+
 :root {
     --layanan-purple: #29216f;
     --layanan-dark: #201951;
@@ -11,15 +14,6 @@ body { overflow-x:hidden; }
 .layanan-page { width:100%; min-height:100vh; margin:0; color: var(--layanan-dark); font-family: Arial, Helvetica, sans-serif; font-size: 14px; background:#fff; }
 .layanan-page * { box-sizing:border-box; }
 .layanan-page a { text-decoration:none; }
-.layanan-page .topbar { min-height:72px; padding:0 4%; background:var(--layanan-purple); color:#fff; display:flex; align-items:center; justify-content:space-between; gap:24px; }
-.layanan-page .brand { display:flex; align-items:center; gap:12px; color:#fff; flex-shrink:0; }
-.layanan-page .brand img { width:40px; height:40px; object-fit:contain; }
-.layanan-page .brand-name { font-size:14px; font-weight:700; line-height:1.5; }
-.layanan-page .brand-subtitle { color:#ffb300; font-size:10px; font-weight:700; }
-.layanan-page .nav-links { display:flex; align-items:center; gap:30px; }
-.layanan-page .nav-links a { color:#fff; padding:25px 0 20px; border-bottom:2px solid transparent; font-size:13px; }
-.layanan-page .nav-links a.active { color:var(--layanan-orange); border-color:var(--layanan-orange); }
-.layanan-page .check-button { background:var(--layanan-orange); color:#fff; padding:12px 18px; border-radius:8px; font-weight:700; white-space:nowrap; }
 .layanan-page .content-width { width:min(1120px, 100%); margin:0 auto; }
 .layanan-page .intro { background:var(--layanan-bg); padding:36px 24px; }
 .layanan-page .breadcrumb { color:var(--layanan-muted); font-size:12px; margin-bottom:10px; }
@@ -52,14 +46,7 @@ body { overflow-x:hidden; }
 .layanan-page .page-button.disabled { color:#a6a4b8; }
 .layanan-page .page-numbers { display:flex; gap:5px; }
 .layanan-page .page-numbers a.active { background:var(--layanan-purple); color:#fff; }
-.layanan-page .site-footer { background:var(--layanan-dark); color:#fff; padding:44px 24px 20px; }
-.layanan-page .footer-grid { width:min(1020px,100%); margin:auto; display:grid; grid-template-columns:1.3fr 1fr 1.2fr 1fr; gap:36px; }
-.layanan-page .footer-title { font-weight:700; margin-bottom:18px; }
-.layanan-page .footer-copy, .layanan-page .footer-links a, .layanan-page .contact-line { color:#a6a4c3; font-size:12px; line-height:1.7; }
-.layanan-page .footer-links { display:flex; flex-direction:column; gap:12px; }
-.layanan-page .footer-links a:hover { color:#fff; }
-.layanan-page .socials { display:flex; gap:8px; margin-top:16px; }
-.layanan-page .socials a { padding:9px 11px; background:#373064; color:#fff; border-radius:7px; }
+
 .layanan-page .copyright { width:min(1020px,100%); margin:32px auto 0; color:#a6a4c3; font-size:11px; }
 .detail-page .detail-content { display:grid; grid-template-columns:minmax(0,2.1fr) minmax(260px,.95fr); gap:28px; padding:28px 24px 50px; align-items:start; }
 .detail-page .detail-left { min-width:0; }
@@ -103,9 +90,6 @@ body { overflow-x:hidden; }
 .detail-page .help-card p { color:var(--layanan-muted); font-size:11px; line-height:1.6; }
 .detail-page .whatsapp-button { display:inline-block; background:#16c765; color:#fff; }
 @media(max-width:850px) {
- .layanan-page .topbar { padding:16px 22px; flex-wrap:wrap; }
- .layanan-page .nav-links { order:3; width:100%; justify-content:center; gap:20px; }
- .layanan-page .footer-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
 @media(max-width:760px) {
  .detail-page .detail-content { grid-template-columns:1fr; padding:24px 18px 36px; }
@@ -114,12 +98,10 @@ body { overflow-x:hidden; }
  .detail-page .related-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
 @media(max-width:600px) {
- .layanan-page .topbar { padding:14px 16px; }
- .layanan-page .nav-links { justify-content:space-between; gap:10px; font-size:12px; }
  .layanan-page .intro { padding:28px 18px; }
  .layanan-page h1 { font-size:24px; }
  .layanan-page .filters, .layanan-page .listing { padding-left:18px; padding-right:18px; }
- .layanan-page .service-grid, .layanan-page .footer-grid { grid-template-columns:1fr; }
+ .layanan-page .service-grid { grid-template-columns:1fr; }
  .layanan-page .result-line { flex-direction:column; }
  .layanan-page .pagination { flex-wrap:wrap; justify-content:center; }
  .detail-page .detail-content { padding-left:18px; padding-right:18px; }
@@ -133,8 +115,3 @@ body { overflow-x:hidden; }
     pointer-events: none;
     text-decoration: none;
 }
-/* Logo Polinema pada footer */
-.layanan-page .footer-brand { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
-.layanan-page .footer-brand .logo-polinema { width:45px; height:45px; object-fit:contain; flex-shrink:0; }
-.layanan-page .footer-brand .footer-title { margin-bottom:4px; }
-.layanan-page .footer-subtitle { color:#a6a4c3; font-size:11px; }
