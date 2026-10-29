@@ -10,7 +10,7 @@ class Layanan extends Model
 {
     protected $table = 'layanan';
 
-    protected $primaryKey = 'id_layanan';
+    protected $primaryKey = 'id';
 
     const CREATED_AT = 'dibuat_pada';
     const UPDATED_AT = 'diperbarui_pada';
@@ -34,7 +34,7 @@ class Layanan extends Model
         return $this->belongsTo(
             Unit::class,
             'id_unit',
-            'id_unit'
+            'id'
         );
     }
 
@@ -46,7 +46,7 @@ class Layanan extends Model
         return $this->hasMany(
             BagianLayanan::class,
             'id_layanan',
-            'id_layanan'
+            'id'
         )->orderBy('urutan_bagian');
     }
 
@@ -58,7 +58,7 @@ class Layanan extends Model
         return $this->hasMany(
             RatingLayanan::class,
             'id_layanan',
-            'id_layanan'
+            'id'
         );
     }
 }

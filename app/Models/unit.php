@@ -9,7 +9,7 @@ class Unit extends Model
 {
     protected $table = 'unit';
 
-    protected $primaryKey = 'id_unit';
+    protected $primaryKey = 'id';
 
     const CREATED_AT = 'dibuat_pada';
     const UPDATED_AT = 'diperbarui_pada';
@@ -29,7 +29,7 @@ class Unit extends Model
         return $this->hasMany(
             Layanan::class,
             'id_unit',
-            'id_unit'
+            'id'
         );
     }
 }
