@@ -79,7 +79,7 @@ class RatingLayananController extends Controller
             'id_layanan' => [
                 'required',
                 'integer',
-                Rule::exists('layanan', 'id_layanan'),
+                Rule::exists('layanan', 'id'),
             ],
 
             'rating' => [

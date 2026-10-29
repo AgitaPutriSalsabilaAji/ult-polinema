@@ -36,7 +36,7 @@ class RatingLayanan extends Model
         return $this->belongsTo(
             Layanan::class,
             'id_layanan',
-            'id_layanan'
+            'id'
         );
     }
 
