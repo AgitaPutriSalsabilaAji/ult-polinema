@@ -2,12 +2,45 @@
 
 namespace Tests\Feature;
 
-use PHPUnit\Framework\Attributes\DataProvider;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Testing\TestResponse;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class HomepageServicesTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Schema::create('unit', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('nama_unit');
+        });
+
+        Schema::create('layanan', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('nama_layanan');
+            $table->integer('id_unit');
+            $table->string('estimasi_waktu')->nullable();
+            $table->text('deskripsi_singkat')->nullable();
+            $table->string('tarif')->nullable();
+            $table->string('jam_operasional')->nullable();
+        });
+
+        Schema::create('bagian_layanan', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('id_layanan');
+            $table->string('judul_bagian');
+            $table->text('konten');
+            $table->string('gambar_pendukung')->nullable();
+            $table->integer('urutan_bagian')->nullable();
+        });
+    }
+
     public function test_user_navbar_supports_both_themes_without_check_services_menu(): void
     {
         $lightNavbar = view('user.navbar', ['theme' => 'light', 'active' => 'home'])->render();
@@ -44,6 +77,10 @@ class HomepageServicesTest extends TestCase
                 ->assertDontSee('Hubungi via WA')
                 ->assertDontSee('Cek Layanan', false);
 
+            if ($url === route('layanan.index') || $url === route('layanan.detail', ['slug' => 'kunjungan-sekolah'])) {
+                $response->assertDontSee('class="breadcrumb"', false);
+            }
+
             $this->assertSame(1, substr_count($response->getContent(), 'class="navbar navbar-expand-lg'));
             $this->assertSame(1, substr_count($response->getContent(), '<footer class="ult-footer">'));
             $response->assertDontSee('Profil ULT');
@@ -55,6 +92,25 @@ class HomepageServicesTest extends TestCase
                 );
             }
         }
+    }
+
+    public function test_service_list_autocomplete_uses_current_category_services_and_their_detail_routes(): void
+    {
+        $response = $this->withoutVite()
+            ->get(route('layanan.index', ['kategori' => 'humas']));
+
+        $response->assertOk()
+            ->assertSee('id="serviceListSearchResults"', false)
+            ->assertSee('role="combobox"', false)
+            ->assertSee('aria-autocomplete="list"', false)
+            ->assertSee('Layanan tidak ditemukan')
+            ->assertSeeText('Kunjungan Sekolah')
+            ->assertSee(
+                'href="'.route('layanan.detail', ['slug' => 'kunjungan-sekolah']).'"',
+                false
+            )
+            ->assertDontSee('Surat Keterangan Kuliah')
+            ->assertDontSee('class="breadcrumb"', false);
     }
 
     public function test_homepage_lists_only_humas_services_with_detail_routes(): void
@@ -176,6 +232,99 @@ class HomepageServicesTest extends TestCase
                 ->assertOk()
                 ->assertSeeText($name);
         }
+    }
+
+    public function test_service_detail_displays_only_saved_sections_for_that_service_in_order(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('layanan/pendukung.png', 'image-content');
+
+        DB::table('unit')->insert([
+            'id' => 1,
+            'nama_unit' => 'Unit dari Admin',
+        ]);
+
+        DB::table('layanan')->insert([
+            [
+                'id' => 1,
+                'nama_layanan' => 'KUNJUNGAN SEKOLAH',
+                'id_unit' => 1,
+                'estimasi_waktu' => 'Estimasi dari Admin',
+                'deskripsi_singkat' => 'Deskripsi layanan dari Admin',
+                'tarif' => 'Tarif dari Admin',
+                'jam_operasional' => 'Jam dari Admin',
+            ],
+            [
+                'id' => 2,
+                'nama_layanan' => 'EDUFAIR',
+                'id_unit' => 1,
+                'estimasi_waktu' => null,
+                'deskripsi_singkat' => null,
+                'tarif' => null,
+                'jam_operasional' => null,
+            ],
+        ]);
+
+        DB::table('bagian_layanan')->insert([
+            [
+                'id' => 1,
+                'id_layanan' => 1,
+                'judul_bagian' => 'Tentang Layanan Dinamis',
+                'konten' => '<script>alert(1)</script>'."\n".'Baris kedua',
+                'gambar_pendukung' => null,
+                'urutan_bagian' => 2,
+            ],
+            [
+                'id' => 2,
+                'id_layanan' => 1,
+                'judul_bagian' => 'Informasi Pertama',
+                'konten' => "Baris satu\nBaris dua",
+                'gambar_pendukung' => 'layanan/pendukung.png',
+                'urutan_bagian' => 1,
+            ],
+            [
+                'id' => 3,
+                'id_layanan' => 2,
+                'judul_bagian' => 'Bagian Milik Edufair',
+                'konten' => 'Konten layanan lain',
+                'gambar_pendukung' => null,
+                'urutan_bagian' => 1,
+            ],
+        ]);
+
+        $response = $this->withoutVite()
+            ->get(route('layanan.detail', ['slug' => 'kunjungan-sekolah']));
+        $html = $response->getContent();
+
+        $response->assertOk()
+            ->assertSee('id="serviceInformationAccordion"', false)
+            ->assertSee('class="accordion-button collapsed"', false)
+            ->assertSee('data-bs-toggle="collapse"', false)
+            ->assertSeeText('Tentang Layanan Dinamis')
+            ->assertSeeText('Informasi Pertama')
+            ->assertSeeText('Deskripsi layanan dari Admin')
+            ->assertSeeText('Unit dari Admin')
+            ->assertSeeText('Estimasi dari Admin')
+            ->assertSeeText('Tarif dari Admin')
+            ->assertSeeText('Jam dari Admin')
+            ->assertDontSee('Bagian Milik Edufair')
+            ->assertSee('&lt;script&gt;alert(1)&lt;/script&gt;', false)
+            ->assertSee(
+                'src="'.Storage::disk('public')->url('layanan/pendukung.png').'"',
+                false
+            )
+            ->assertSee(
+                'href="https://wa.me/6285117479099" target="_blank" rel="noopener noreferrer"',
+                false
+            )
+            ->assertDontSee('LAYANAN TERKAIT')
+            ->assertDontSee('related-section', false)
+            ->assertDontSee('Data Identitas Pemohon');
+
+        $this->assertLessThan(
+            strpos($html, 'Tentang Layanan Dinamis'),
+            strpos($html, 'Informasi Pertama')
+        );
     }
 
     public static function homepageCategories(): array

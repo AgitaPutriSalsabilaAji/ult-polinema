@@ -1,86 +1,151 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Elemen pencarian layanan
-    const searchForm = document.getElementById('serviceSearchForm');
-    const searchInput = document.getElementById('serviceSearch');
-    const searchResults = document.getElementById('serviceSearchResults');
-    const searchOptions = Array.from(
-        document.querySelectorAll('[data-service-option]')
-    );
-    const searchEmpty = searchResults?.querySelector('.service-search-empty');
+const normalizeText = (value) => value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('id-ID');
 
-    function closeSearchResults() {
-        if (!searchResults || !searchInput) {
+export function initializeServiceSearch({
+    form,
+    input,
+    dropdown,
+    emptyMessage,
+    optionSelector = '[data-service-option]',
+    searchText = (option) => option.dataset.name || option.textContent,
+    onEmptySubmit = null,
+}) {
+    if (!form || !input || !dropdown || !emptyMessage) return;
+
+    const options = Array.from(dropdown.querySelectorAll(optionSelector));
+    let activeOptionIndex = -1;
+
+    const matchingOptions = () => options.filter((option) => !option.hidden && !option.classList.contains('d-none'));
+
+    const closeDropdown = () => {
+        dropdown.classList.add('d-none');
+        input.setAttribute('aria-expanded', 'false');
+        input.removeAttribute('aria-activedescendant');
+        activeOptionIndex = -1;
+        options.forEach((option) => option.setAttribute('aria-selected', 'false'));
+    };
+
+    const updateDropdown = () => {
+        const query = normalizeText(input.value.trim());
+
+        if (!query) {
+            options.forEach((option) => {
+                option.hidden = false;
+                option.classList.remove('d-none');
+            });
+            emptyMessage.classList.add('d-none');
+            closeDropdown();
+            return [];
+        }
+
+        const matches = [];
+        options.forEach((option) => {
+            const isMatch = normalizeText(searchText(option).trim()).includes(query);
+            option.hidden = !isMatch;
+            option.classList.toggle('d-none', !isMatch);
+            option.setAttribute('aria-selected', 'false');
+            if (isMatch) matches.push(option);
+        });
+
+        emptyMessage.classList.toggle('d-none', matches.length > 0);
+        dropdown.classList.remove('d-none');
+        input.setAttribute('aria-expanded', 'true');
+        input.removeAttribute('aria-activedescendant');
+        activeOptionIndex = -1;
+
+        return matches;
+    };
+
+    const setActiveOption = (index) => {
+        const visibleOptions = matchingOptions();
+        if (visibleOptions.length === 0) return;
+
+        activeOptionIndex = (index + visibleOptions.length) % visibleOptions.length;
+        options.forEach((option) => {
+            option.setAttribute('aria-selected', String(option === visibleOptions[activeOptionIndex]));
+        });
+
+        const activeOption = visibleOptions[activeOptionIndex];
+        if (!activeOption.id) {
+            activeOption.id = `service-option-${activeOptionIndex}`;
+        }
+        input.setAttribute('aria-activedescendant', activeOption.id);
+        activeOption.scrollIntoView({ block: 'nearest' });
+    };
+
+    input.addEventListener('input', updateDropdown);
+    input.addEventListener('focus', updateDropdown);
+    input.addEventListener('keydown', (event) => {
+        const visibleOptions = matchingOptions();
+
+        if (event.key === 'Escape') {
+            closeDropdown();
+        } else if (event.key === 'ArrowDown' && !dropdown.classList.contains('d-none')) {
+            event.preventDefault();
+            setActiveOption(activeOptionIndex + 1);
+        } else if (event.key === 'ArrowUp' && !dropdown.classList.contains('d-none')) {
+            event.preventDefault();
+            setActiveOption(activeOptionIndex < 0 ? visibleOptions.length - 1 : activeOptionIndex - 1);
+        }
+    });
+
+    dropdown.addEventListener('pointerover', (event) => {
+        const option = event.target.closest(optionSelector);
+        if (!option || option.hidden || option.classList.contains('d-none')) return;
+
+        setActiveOption(matchingOptions().indexOf(option));
+    });
+
+    dropdown.addEventListener('click', (event) => {
+        if (event.target.closest(optionSelector)) closeDropdown();
+    });
+
+    form.addEventListener('submit', (event) => {
+        const selectedIndex = activeOptionIndex;
+        const matches = updateDropdown();
+        if (matches.length > 0) {
+            event.preventDefault();
+            const selectedOption = selectedIndex < 0
+                ? matches[0]
+                : matches[selectedIndex];
+            window.location.assign(selectedOption.href);
             return;
         }
 
-        searchResults.classList.add('d-none');
-        searchInput.setAttribute('aria-expanded', 'false');
-    }
+        onEmptySubmit?.(event, input.value.trim());
+    });
 
-    function updateSearchResults() {
-        if (!searchInput || !searchResults || !searchEmpty) {
-            return [];
+    document.addEventListener('click', (event) => {
+        if (!form.contains(event.target) && !dropdown.contains(event.target)) {
+            closeDropdown();
         }
+    });
+}
 
-        const query = searchInput.value.trim().toLocaleLowerCase('id-ID');
-
-        if (!query) {
-            searchOptions.forEach((option) => option.classList.remove('d-none'));
-            searchEmpty.classList.add('d-none');
-            closeSearchResults();
-
-            return [];
-        }
-
-        const matches = searchOptions.filter((option) => {
-            const isMatch = option.textContent
-                .trim()
-                .toLocaleLowerCase('id-ID')
-                .includes(query);
-
-            option.classList.toggle('d-none', !isMatch);
-
-            return isMatch;
-        });
-
-        searchEmpty.classList.toggle('d-none', matches.length > 0);
-        searchResults.classList.remove('d-none');
-        searchInput.setAttribute('aria-expanded', 'true');
-
-        return matches;
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    const searchForm = document.getElementById('serviceSearchForm');
+    const searchInput = document.getElementById('serviceSearch');
+    const searchResults = document.getElementById('serviceSearchResults');
+    const searchEmpty = searchResults?.querySelector('.service-search-empty');
 
     if (searchForm && searchInput && searchResults) {
-        searchInput.addEventListener('input', updateSearchResults);
-        searchInput.addEventListener('focus', updateSearchResults);
-        searchInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                closeSearchResults();
-            }
-        });
-
-        searchForm.addEventListener('submit', (event) => {
-            event.preventDefault();
-
-            const matches = updateSearchResults();
-
-            if (matches.length > 0) {
-                window.location.assign(matches[0].href);
-                return;
-            }
-
-            if (!searchInput.value.trim()) {
-                document.getElementById('layanan')?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start',
-                });
-            }
-        });
-
-        document.addEventListener('click', (event) => {
-            if (!searchForm.contains(event.target)) {
-                closeSearchResults();
-            }
+        initializeServiceSearch({
+            form: searchForm,
+            input: searchInput,
+            dropdown: searchResults,
+            emptyMessage: searchEmpty,
+            searchText: (option) => option.textContent,
+            onEmptySubmit: (event, query) => {
+                event.preventDefault();
+                if (!query) {
+                    document.getElementById('layanan')?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start',
+                    });
+                }
+            },
         });
     }
 

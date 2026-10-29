@@ -1,4 +1,5 @@
-/* resources/js/layanan.js */
+import { initializeServiceSearch } from './beranda.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const page = document.querySelector('.layanan-page');
     if (!page) return;
@@ -8,6 +9,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (searchInput) {
         searchInput.setAttribute('aria-label', 'Cari layanan');
+    }
+
+    const autocomplete = page.querySelector('#serviceListSearchResults');
+    const autocompleteEmpty = autocomplete?.querySelector('.service-search-empty');
+
+    if (searchForm && searchInput && autocomplete) {
+        initializeServiceSearch({
+            form: searchForm,
+            input: searchInput,
+            dropdown: autocomplete,
+            emptyMessage: autocompleteEmpty,
+        });
     }
 
     page.querySelectorAll('.category-tabs a').forEach((link) => {

@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Layanan;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Str;
 
 class LayananController extends Controller
 {
@@ -365,6 +366,12 @@ class LayananController extends Controller
             })
             ->values();
 
+        $autocompleteServices = $all
+            ->when($kategori !== 'semua', function ($items) use ($map, $kategori) {
+                return $items->where('kategori', $map[$kategori]);
+            })
+            ->values();
+
         // Sepuluh kartu per halaman. Halaman yang tersedia mengikuti jumlah data.
         $perPage = 10;
         $currentPage = max(1, $request->integer('page', 1));
@@ -387,7 +394,8 @@ class LayananController extends Controller
             'kategori',
             'keyword',
             'jumlahKategori',
-            'totalLayanan'
+            'totalLayanan',
+            'autocompleteServices'
         ));
     }
 
@@ -398,16 +406,44 @@ class LayananController extends Controller
             ->values();
         $layanan = $all->firstWhere('slug', $slug);
 
-        if (!$layanan) {
+        if (! $layanan) {
             abort(404);
         }
 
-        $terkait = $all
-            ->where('kategori', $layanan['kategori'])
-            ->reject(fn ($item) => $item['slug'] === $slug)
-            ->take(4)
-            ->keyBy('slug');
+        $namaLayananDatabase = match ($slug) {
+            'informasi-spmb' => 'SPMB',
+            'informasi-pengaduan' => 'PPID',
+            default => $layanan['nama'],
+        };
 
-        return view('user.layanan.detail_layanan', compact('layanan', 'terkait'));
+        $layananDatabase = Layanan::query()
+            ->with([
+                'unit',
+                'bagianLayanan' => function ($query) {
+                    $query->whereNotNull('judul_bagian')
+                        ->where('judul_bagian', '<>', '')
+                        ->whereNotNull('konten')
+                        ->where('konten', '<>', '')
+                        ->orderBy('urutan_bagian')
+                        ->orderBy('id');
+                },
+            ])
+            ->whereRaw('LOWER(nama_layanan) = ?', [
+                mb_strtolower($namaLayananDatabase),
+            ])
+            ->first();
+
+        $bagian = $layananDatabase?->bagianLayanan ?? collect();
+
+        if ($layananDatabase) {
+            $layanan['nama'] = $layananDatabase->nama_layanan;
+            $layanan['deskripsi'] = $layananDatabase->deskripsi_singkat;
+            $layanan['unit'] = $layananDatabase->unit?->nama_unit;
+            $layanan['estimasi'] = $layananDatabase->estimasi_waktu;
+            $layanan['tarif'] = $layananDatabase->tarif;
+            $layanan['jam'] = $layananDatabase->jam_operasional;
+        }
+
+        return view('user.layanan.detail_layanan', compact('layanan', 'bagian'));
     }
 }
