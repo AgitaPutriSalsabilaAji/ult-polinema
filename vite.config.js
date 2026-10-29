@@ -11,6 +11,8 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/css/beranda.css',
                 'resources/js/beranda.js',
+                'resources/css/cek-status.css',
+                'resources/js/cek-status.js',
                 'resources/css/adminlte.css',
                 'resources/js/adminlte.js',
             ],

@@ -1,0 +1,127 @@
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+.ult-footer {
+    padding: 48px 0 20px;
+    background: #1e194f;
+    color: rgba(255, 255, 255, .62);
+    font-family: 'Inter', Arial, sans-serif;
+}
+
+.ult-footer__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    color: #fff;
+    text-decoration: none;
+}
+
+.ult-footer__brand img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.ult-footer__brand span {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.35;
+}
+
+.ult-footer__brand strong {
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.ult-footer__brand small {
+    color: rgba(255, 255, 255, .58);
+    font-size: 9px;
+    font-weight: 500;
+}
+
+.ult-footer__about > p {
+    max-width: 310px;
+    margin: 0;
+    color: rgba(255, 255, 255, .58);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.ult-footer__heading {
+    margin: 4px 0 18px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.ult-footer__links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ult-footer__links a,
+.ult-footer__contact a {
+    color: rgba(255, 255, 255, .62);
+    font-size: 12px;
+    line-height: 1.6;
+    text-decoration: none;
+    transition: color .2s ease;
+}
+
+.ult-footer__links a:hover,
+.ult-footer__contact a:hover {
+    color: #fff;
+}
+
+.ult-footer__contact {
+    margin: 0;
+    font-style: normal;
+}
+
+.ult-footer__contact p {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0 0 10px;
+    color: rgba(255, 255, 255, .62);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.ult-footer__contact i {
+    flex: 0 0 16px;
+    margin-top: 2px;
+    color: #fff;
+    font-size: 14px;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.ult-footer__contact span,
+.ult-footer__contact a {
+    min-width: 0;
+}
+
+.ult-footer__bottom {
+    margin-top: 32px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, .12);
+    color: rgba(255, 255, 255, .46);
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+@media (max-width: 575.98px) {
+    .ult-footer {
+        padding: 38px 0 18px;
+    }
+
+    .ult-footer__bottom {
+        margin-top: 26px;
+    }
+}

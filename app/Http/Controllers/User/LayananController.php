@@ -241,6 +241,7 @@ class LayananController extends Controller
         $all = collect($this->dataLayanan())
             ->reject(fn ($item) => $item['slug'] === 'informasi-pengaduan-ppid')
             ->values();
+        $searchServices = $all;
 
         $jumlahKategori = [];
         foreach ($kategoriLayanan as $key => $namaKategori) {
@@ -254,7 +255,13 @@ class LayananController extends Controller
             ->where('kategori', $kategoriLayanan[$kategori])
             ->values();
 
-        return view('user.beranda', compact('services', 'kategori', 'jumlahKategori', 'slugsAktif'));
+        return view('user.beranda', compact(
+            'services',
+            'searchServices',
+            'kategori',
+            'jumlahKategori',
+            'slugsAktif'
+        ));
     }
 
     public function index(Request $request)
@@ -331,22 +338,17 @@ class LayananController extends Controller
 
     public function detail(string $slug)
     {
-        $slugHumasAktif = $this->slugLayananDenganHalamanDetail();
-
-        if (!in_array($slug, $slugHumasAktif, true)) {
-            abort(404);
-        }
-
-        $all = collect($this->dataLayanan());
+        $all = collect($this->dataLayanan())
+            ->reject(fn ($item) => $item['slug'] === 'informasi-pengaduan-ppid')
+            ->values();
         $layanan = $all->firstWhere('slug', $slug);
 
-        if (!$layanan || $layanan['kategori'] !== 'Kerja Sama & Humas') {
+        if (!$layanan) {
             abort(404);
         }
 
         $terkait = $all
-            ->where('kategori', 'Kerja Sama & Humas')
-            ->filter(fn ($item) => in_array($item['slug'], $slugHumasAktif, true))
+            ->where('kategori', $layanan['kategori'])
             ->reject(fn ($item) => $item['slug'] === $slug)
             ->take(4)
             ->keyBy('slug');
