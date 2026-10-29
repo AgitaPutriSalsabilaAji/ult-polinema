@@ -71,6 +71,8 @@
                                             data-nip="{{ $item->nip }}"
                                             data-role="{{ $item->peran }}"
                                             data-unit="{{ $item->id_unit }}">
+                                    <a href="{{ route('admin.daftar-admin.edit', $item) }}"
+                                    class="btn btn-sm btn-primary">
                                         Edit
                                     </button>
 
@@ -81,6 +83,18 @@
                                                 data-name="{{ $item->nama_lengkap_gelar }}">
                                             Hapus
                                         </button>
+                                        <form
+                                            action="{{ route('admin.daftar-admin.destroy', $item) }}"
+                                            method="POST"
+                                            class="d-inline"
+                                            onsubmit="return confirm('Yakin ingin menghapus akun admin ini?')">
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                Hapus
+                                            </button>
+                                        </form>
                                     @endif
                                 </td>
                             </tr>

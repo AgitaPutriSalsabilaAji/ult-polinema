@@ -93,23 +93,26 @@
                     </div>
 
                     <div class="d-flex gap-2">
-                        <button type="button"
-                            class="btn btn-sm btn-outline-primary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modalEditFaq{{ $faq->id }}">
-                            <i class="fas fa-edit me-1"></i> Edit
+                    {{-- Tombol Edit --}}
+                    <button type="button"
+                        class="btn btn-sm btn-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modalEditFaq{{ $faq->id }}">
+                        Edit
+                    </button>
+
+    {{-- Tombol Hapus --}}
+                    <form action="{{ route('admin.faq.destroy', $faq->id) }}"
+                        method="POST"
+                        class="d-inline"
+                        onsubmit="return confirm('Yakin ingin menghapus FAQ ini?')">
+                        @csrf
+                        @method('DELETE')
+
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            Hapus
                         </button>
-
-                        <form action="{{ route('admin.faq.destroy', $faq->id) }}"
-                            method="POST"
-                            onsubmit="return confirm('Yakin ingin menghapus FAQ ini?')">
-                            @csrf
-                            @method('DELETE')
-
-                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                <i class="fas fa-trash me-1"></i> Delete
-                            </button>
-                        </form>
+                    </form>
                     </div>
                 </div>
 
