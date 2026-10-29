@@ -1,0 +1,15 @@
+@import './navbar.css';
+
+.ult-navbar--purple {
+    background: var(--ult-navbar-purple);
+    color: #fff;
+}
+
+.ult-navbar--purple .ult-navbar__brand,
+.ult-navbar--purple .navbar-nav .nav-link {
+    color: var(--ult-navbar-dark-text);
+}
+
+.ult-navbar--purple .navbar-toggler {
+    border-color: rgba(255, 255, 255, .4);
+}

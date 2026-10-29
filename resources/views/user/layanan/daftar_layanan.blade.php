@@ -4,23 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Layanan ULT Polinema</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     @vite(['resources/js/app.js'])
 </head>
 <body>
 <div class="layanan-page">
-    <header class="topbar">
-        <a href="{{ route('beranda') }}" class="brand">
-            <img src="{{ asset('images/logo polinema.png') }}" alt="Logo Polinema">
-            <span><span class="brand-name">UNIT LAYANAN TERPADU</span><br><span class="brand-subtitle">POLITEKNIK NEGERI MALANG</span></span>
-        </a>
-        <nav class="nav-links">
-            <a href="{{ route('beranda') }}">Beranda</a>
-            <a href="{{ route('layanan.index') }}" class="active">Layanan</a>
-            <a href="/faq">FAQ</a>
-            <a href="/e-tiket">E-Tiket</a>
-        </nav>
-        <a href="{{ route('layanan.index') }}" class="check-button">⌕ Cek Layanan</a>
-    </header>
+    @include('user.navbar', ['theme' => 'purple', 'active' => 'services'])
 
     <section class="intro"><div class="content-width">
         <div class="breadcrumb"><a href="{{ route('beranda') }}">Beranda</a> / <strong>Layanan</strong></div>
@@ -114,12 +103,8 @@
         @endif
     </div></main>
 
-    <footer class="site-footer"><div class="footer-grid">
-        <div><div class="footer-brand"><img src="{{ asset('images/logo polinema.png') }}" alt="Logo Politeknik Negeri Malang" class="logo-polinema"><div><div class="footer-title">UNIT LAYANAN TERPADU</div><div class="footer-subtitle">Politeknik Negeri Malang</div></div></div><p class="footer-copy">Portal layanan publik terintegrasi untuk memudahkan akses informasi dan pengajuan layanan bagi mahasiswa, alumni, dosen, tenaga kependidikan, dan masyarakat umum.</p></div>
-        <div><div class="footer-title">Tautan Cepat</div><div class="footer-links"><a href="{{ route('beranda') }}">Beranda</a><a href="{{ route('layanan.index') }}">Informasi Layanan</a><a href="/faq">FAQ</a><a href="#">Profil ULT</a></div></div>
-        <div><div class="footer-title">Unit Layanan</div><div class="footer-links"><a href="{{ route('layanan.index',['kategori'=>'akademik']) }}">Akademik</a><a href="{{ route('layanan.index',['kategori'=>'keuangan']) }}">Keuangan</a><a href="{{ route('layanan.index',['kategori'=>'kemahasiswaan']) }}">Kemahasiswaan</a><a href="{{ route('layanan.index',['kategori'=>'kepegawaian']) }}">Kepegawaian</a><a href="{{ route('layanan.index',['kategori'=>'humas']) }}">Humas &amp; Kerja Sama</a></div></div>
-        <div><div class="footer-title">Kontak</div><div class="contact-line">⌖ &nbsp; Jl. Soekarno Hatta No. 9, Malang</div><div class="contact-line">✉ &nbsp; ult@polinema.ac.id</div><div class="contact-line">☎ &nbsp; (0341) 404424</div><div class="socials"><a href="#">◎</a><a href="#">▶</a><a href="#">f</a></div></div>
-    </div><div class="copyright">© 2026 Politeknik Negeri Malang — Unit Layanan Terpadu. All Rights Reserved.</div></footer>
+    @include('user.footer')
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

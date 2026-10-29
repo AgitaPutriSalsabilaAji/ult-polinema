@@ -4,59 +4,84 @@ document.addEventListener('DOMContentLoaded', () => {
     // Elemen pencarian layanan
     const searchForm = document.getElementById('serviceSearchForm');
     const searchInput = document.getElementById('serviceSearch');
-    const searchFeedback = document.getElementById('searchFeedback');
-    const serviceItems = Array.from(
-        document.querySelectorAll('.service-item')
+    const searchResults = document.getElementById('serviceSearchResults');
+    const searchOptions = Array.from(
+        document.querySelectorAll('[data-service-option]')
     );
-    const noResults = document.getElementById('noResults');
+    const searchEmpty = searchResults?.querySelector('.service-search-empty');
 
-    // Filter daftar layanan berdasarkan kata kunci
-    function filterServices(query) {
-        const normalized = query.trim().toLocaleLowerCase('id-ID');
-        let visible = 0;
+    function closeSearchResults() {
+        if (!searchResults || !searchInput) {
+            return;
+        }
 
-        serviceItems.forEach((item) => {
-            const text = (
-                item.innerText + ' ' + (item.dataset.search || '')
-            ).toLocaleLowerCase('id-ID');
+        searchResults.classList.add('d-none');
+        searchInput.setAttribute('aria-expanded', 'false');
+    }
 
-            const matches = !normalized || text.includes(normalized);
+    function updateSearchResults() {
+        if (!searchInput || !searchResults || !searchEmpty) {
+            return [];
+        }
 
-            item.classList.toggle('d-none', !matches);
+        const query = searchInput.value.trim().toLocaleLowerCase('id-ID');
 
-            if (matches) {
-                visible += 1;
+        if (!query) {
+            searchOptions.forEach((option) => option.classList.remove('d-none'));
+            searchEmpty.classList.add('d-none');
+            closeSearchResults();
+
+            return [];
+        }
+
+        const matches = searchOptions.filter((option) => {
+            const isMatch = option.textContent
+                .trim()
+                .toLocaleLowerCase('id-ID')
+                .includes(query);
+
+            option.classList.toggle('d-none', !isMatch);
+
+            return isMatch;
+        });
+
+        searchEmpty.classList.toggle('d-none', matches.length > 0);
+        searchResults.classList.remove('d-none');
+        searchInput.setAttribute('aria-expanded', 'true');
+
+        return matches;
+    }
+
+    if (searchForm && searchInput && searchResults) {
+        searchInput.addEventListener('input', updateSearchResults);
+        searchInput.addEventListener('focus', updateSearchResults);
+        searchInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeSearchResults();
             }
         });
 
-        if (noResults) {
-            noResults.classList.toggle('d-none', visible !== 0);
-        }
-
-        if (searchFeedback) {
-            searchFeedback.textContent = normalized
-                ? `${visible} layanan ditampilkan dari ${serviceItems.length} layanan yang tersedia pada halaman ini.`
-                : '';
-        }
-    }
-
-    // Proses pencarian ketika formulir dikirim
-    if (searchForm && searchInput) {
         searchForm.addEventListener('submit', (event) => {
             event.preventDefault();
 
-            filterServices(searchInput.value);
+            const matches = updateSearchResults();
 
-            document.getElementById('layanan')?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
-            });
+            if (matches.length > 0) {
+                window.location.assign(matches[0].href);
+                return;
+            }
+
+            if (!searchInput.value.trim()) {
+                document.getElementById('layanan')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                });
+            }
         });
 
-        // Reset hasil pencarian ketika input dikosongkan
-        searchInput.addEventListener('input', () => {
-            if (searchInput.value.trim() === '') {
-                filterServices('');
+        document.addEventListener('click', (event) => {
+            if (!searchForm.contains(event.target)) {
+                closeSearchResults();
             }
         });
     }
