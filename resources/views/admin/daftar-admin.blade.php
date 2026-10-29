@@ -74,7 +74,7 @@
                                 </td>
                                 <td class="text-end text-nowrap">
                                     <a href="{{ route('admin.daftar-admin.edit', $item) }}"
-                                       class="btn btn-sm btn-link">
+                                    class="btn btn-sm btn-primary">
                                         Edit
                                     </a>
 
@@ -87,8 +87,7 @@
                                             @csrf
                                             @method('DELETE')
 
-                                            <button type="submit"
-                                                    class="btn btn-sm btn-link text-danger">
+                                            <button type="submit" class="btn btn-sm btn-danger">
                                                 Hapus
                                             </button>
                                         </form>
