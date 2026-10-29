@@ -1,11 +1,29 @@
 /* resources/js/layanan.js */
 document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.querySelector('.layanan-page .search-form input[name="q"]');
-    if (searchInput) searchInput.setAttribute('aria-label', 'Cari layanan');
+    const page = document.querySelector('.layanan-page');
+    if (!page) return;
 
-    document.querySelectorAll('.layanan-page .category-tabs a').forEach((link) => {
-        link.addEventListener('click', () => {
-            // Filter kategori diproses Laravel melalui query string.
+    const searchForm = page.querySelector('.search-form');
+    const searchInput = searchForm ? searchForm.querySelector('input[name="q"]') : null;
+
+    if (searchInput) {
+        searchInput.setAttribute('aria-label', 'Cari layanan');
+    }
+
+    page.querySelectorAll('.category-tabs a').forEach((link) => {
+        link.addEventListener('click', (event) => {
+            const href = link.getAttribute('href');
+            if (!href) return;
+
+            const targetUrl = new URL(href, window.location.href);
+            targetUrl.searchParams.delete('q');
+
+            if (searchInput) {
+                searchInput.value = '';
+            }
+
+            event.preventDefault();
+            window.location.assign(targetUrl.toString());
         });
     });
 });
