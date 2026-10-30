@@ -6,7 +6,7 @@
 <div class="container-fluid py-4 admin-list-page">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="fw-bold mb-1">Daftar Admin</h4>
+            <h4 class="admin-page-title mb-1">Daftar Admin</h4>
             <p class="text-muted mb-0">Kelola akun dan akses administrator ULT Polinema.</p>
         </div>
 
@@ -178,18 +178,18 @@
 
 @push('css')
 <style>
-    .admin-list-page .table thead th { font-size: .72rem; text-transform: none; }
+    .admin-list-page .table thead th { text-transform: none; }
     .admin-modal .modal-content { border: 0; border-radius: .55rem; box-shadow: 0 1rem 3rem rgba(0,0,0,.2); }
     .admin-modal .modal-header { padding: 1.25rem 1.5rem .75rem; border-bottom: 0; }
     .admin-modal .modal-body { padding: .5rem 1.5rem 1rem; }
     .admin-modal .modal-footer { padding: .75rem 1.5rem 1.25rem; border-top: 0; }
-    .admin-modal .modal-title { font-size: 1rem; font-weight: 700; }
-    .modal-subtitle { color: #8b95a7; font-size: .7rem; }
-    .admin-modal .form-label { font-size: .68rem; font-weight: 600; margin-bottom: .35rem; }
-    .admin-modal .form-control, .admin-modal .form-select { min-height: 34px; font-size: .72rem; border-color: #e4e9f0; border-radius: .3rem; }
-    .admin-modal .form-text { font-size: .62rem; color: #8b95a7; }
-    .admin-modal .btn { font-size: .72rem; border-radius: .3rem; padding: .4rem .8rem; }
-    .admin-delete-modal .modal-body { font-size: .75rem; color: #667085; }
+    .admin-modal .modal-title { font-weight: 700; }
+    .modal-subtitle { color: #8b95a7; }
+    .admin-modal .form-label { font-weight: 600; margin-bottom: .35rem; }
+    .admin-modal .form-control, .admin-modal .form-select { min-height: 34px; border-color: #e4e9f0; border-radius: .3rem; }
+    .admin-modal .form-text { color: #8b95a7; }
+    .admin-modal .btn { border-radius: .3rem; padding: .4rem .8rem; }
+    .admin-delete-modal .modal-body { color: #667085; }
     @media (max-width: 575.98px) { .admin-modal .modal-dialog { margin: .75rem; } }
 </style>
 @endpush

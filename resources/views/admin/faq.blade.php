@@ -4,7 +4,7 @@
 @section('title', 'Manajemen FAQ & Pusat Bantuan')
 
 @section('content_header')
-    <h3 class="fw-bold mb-1">Manajemen FAQ & Pusat Bantuan</h3>
+    <h3 class="admin-page-title mb-1">Manajemen FAQ & Pusat Bantuan</h3>
     <p class="text-muted mb-0">Kelola pertanyaan dan jawaban yang ditampilkan kepada pengguna.</p>
 @stop
 
