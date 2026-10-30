@@ -161,18 +161,20 @@ Route::middleware('auth:admin')
         Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
         Route::put('/profil/password', [ProfilController::class, 'updatePassword'])->name('profil.password');
 
-        // Daftar Admin
+    // Daftar Admin — Khusus Admin ULT
+    Route::middleware('can:akses-daftar-admin')->group(function () {
         Route::resource('daftar-admin', DaftarAdminController::class)
             ->except(['show']);
-        Route::get('/login', [AdminLoginController::class, 'showLoginForm'])
-            ->middleware('guest:admin')
-            ->name('login');
-
-        Route::post('/login', [AdminLoginController::class, 'login'])
-            ->middleware('guest:admin')
-            ->name('login.submit');
-
-        Route::post('/logout', [AdminLoginController::class, 'logout'])
-            ->middleware('auth:admin')
-            ->name('logout');
     });
+    Route::get('/login', [AdminLoginController::class, 'showLoginForm'])
+    ->middleware('guest:admin')
+    ->name('login');
+
+    Route::post('/login', [AdminLoginController::class, 'login'])
+    ->middleware('guest:admin')
+    ->name('login.submit');
+
+    Route::post('/logout', [AdminLoginController::class, 'logout'])
+    ->middleware('auth:admin')
+    ->name('logout');
+});

@@ -33,17 +33,19 @@
                            placeholder="Cari ID, nama pemohon, atau subjek...">
                 </div>
 
-                <div class="col-lg-3 mb-2">
-                    <select name="unit" class="form-control">
-                        <option value="">Semua Unit Pelaksana</option>
-                        @foreach($units as $unit)
-                            <option value="{{ $unit->id }}"
-                                @selected((string)request('unit') === (string)$unit->id)>
-                                {{ $unit->nama_unit }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                @if($isAdminUlt)
+                    <div class="col-lg-3 mb-2">
+                        <select name="unit" class="form-control">
+                            <option value="">Semua Unit Pelaksana</option>
+                            @foreach($units as $unit)
+                                <option value="{{ $unit->id }}"
+                                    @selected((string)request('unit') === (string)$unit->id)>
+                                    {{ $unit->nama_unit }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
 
                 <div class="col-lg-2 mb-2">
                     <select name="status" class="form-control">
@@ -140,11 +142,11 @@
                             <td>{{ $item->nama_admin_fo ?? 'Belum ditugaskan' }}</td>
                             <td class="text-nowrap">
                                 <a href="{{ route('admin.pengajuan.show', $item->id) }}"
-                                   class="btn btn-xs btn-outline-secondary">
+                                class="btn btn-xs btn-outline-secondary">
                                     Detail
                                 </a>
 
-                                @if(!in_array($item->status, ['selesai', 'ditolak']))
+                                @if($isAdminUlt && !in_array($item->status, ['selesai', 'ditolak']))
                                     <button type="button"
                                             class="btn btn-xs btn-primary"
                                             data-toggle="modal"
@@ -181,6 +183,7 @@
     </div>
 </div>
 
+@if($isAdminUlt)
 {{-- MODAL DISPOSISI --}}
 <div class="modal fade" id="modalDisposisi" tabindex="-1"
      aria-labelledby="judulModalDisposisi" aria-hidden="true">
@@ -274,6 +277,7 @@
         </div>
     </div>
 </div>
+@endif
 @stop
 
 @section('css')
@@ -347,7 +351,7 @@ $(function () {
         ) }};
 
         admins.forEach(function (admin) {
-            if (String(admin.unit) === unitId) {
+            if (String(admin.id_unit) === unitId) {
                 selectAdmin.append(
                     new Option(admin.nama, admin.id)
                 );

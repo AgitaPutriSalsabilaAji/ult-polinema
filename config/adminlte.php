@@ -282,6 +282,7 @@ return [
         'text' => 'Daftar Admin',
         'url' => 'admin/daftar-admin',
         'icon' => 'bi bi-people',
+        'can' => 'akses-daftar-admin',
     ],
 ],
 
