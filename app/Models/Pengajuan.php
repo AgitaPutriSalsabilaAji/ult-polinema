@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class Pengajuan extends Model
 {
@@ -31,14 +32,26 @@ class Pengajuan extends Model
         'tanggal_selesai' => 'datetime',
     ];
 
+    public static function generateNomorTiket(int $id): string
+    {
+        return sprintf('ULT-%s-%06d', date('Y'), $id);
+    }
+
     public function layanan(): BelongsTo
     {
         return $this->belongsTo(Layanan::class, 'id_layanan');
     }
 
-    public function unit(): BelongsTo
+    public function unit(): HasOneThrough
     {
-        return $this->belongsTo(Unit::class, 'id_unit');
+        return $this->hasOneThrough(
+            Unit::class,
+            Layanan::class,
+            'id',
+            'id',
+            'id_layanan',
+            'id_unit'
+        );
     }
 
     public function disposisi(): HasMany

@@ -18,7 +18,7 @@ class PengajuanController extends Controller
     {
         $query = DB::table('pengajuan as p')
             ->leftJoin('layanan as l', 'l.id', '=', 'p.id_layanan')
-            ->leftJoin('unit as un', 'un.id', '=', 'p.id_unit')
+            ->leftJoin('unit as un', 'un.id', '=', 'l.id_unit')
             ->leftJoin('admin as a', 'a.id', '=', 'p.id_admin_fo')
             ->select(
                 'p.*',
@@ -86,7 +86,7 @@ class PengajuanController extends Controller
         }
 
         if ($request->filled('unit')) {
-            $query->where('p.id_unit', $request->input('unit'));
+            $query->where('l.id_unit', $request->input('unit'));
         }
 
         if ($request->filled('status')) {
@@ -116,8 +116,7 @@ class PengajuanController extends Controller
     public function show(Pengajuan $pengajuan)
     {
         $pengajuan->load([
-            'layanan',
-            'unit',
+            'layanan.unit',
             'disposisi.unitTujuan',
             'riwayat',
         ]);
@@ -196,8 +195,13 @@ class PengajuanController extends Controller
                 'status_disposisi' => 'dikirim',
             ]);
 
+            if (Schema::hasColumn('pengajuan', 'id_unit')) {
+                $locked->update([
+                    'id_unit' => $data['id_unit_tujuan'],
+                ]);
+            }
+
             $locked->update([
-                'id_unit' => $data['id_unit_tujuan'],
                 'status' => 'didisposisikan',
             ]);
 

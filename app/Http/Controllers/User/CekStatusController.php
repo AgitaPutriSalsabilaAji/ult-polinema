@@ -20,7 +20,7 @@ class CekStatusController extends Controller
         if ($ticket !== '') {
             $pengajuan = DB::table('pengajuan as p')
                 ->leftJoin('layanan as l', 'l.id', '=', 'p.id_layanan')
-                ->leftJoin('unit as un', 'un.id', '=', 'p.id_unit')
+                ->leftJoin('unit as un', 'un.id', '=', 'l.id_unit')
                 ->leftJoin('pengguna as u', 'u.id', '=', 'p.id_pengguna')
                 ->where('p.nomor_tiket', $ticket)
                 ->select([

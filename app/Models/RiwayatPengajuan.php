@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Schema;
 
 class RiwayatPengajuan extends Model
 {
@@ -28,6 +29,22 @@ class RiwayatPengajuan extends Model
     protected $casts = [
         'dibuat_pada' => 'datetime',
     ];
+
+    protected static function filterMissingColumns(array $attributes): array
+    {
+        if (!Schema::hasTable((new static)->getTable())) {
+            return $attributes;
+        }
+
+        $allowedColumns = array_flip(Schema::getColumnListing((new static)->getTable()));
+
+        return array_intersect_key($attributes, $allowedColumns);
+    }
+
+    public static function create(array $attributes = [])
+    {
+        return static::query()->create(static::filterMissingColumns($attributes));
+    }
 
     public function pengajuan(): BelongsTo
     {
