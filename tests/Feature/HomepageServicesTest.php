@@ -29,6 +29,7 @@ class HomepageServicesTest extends TestCase
             $table->text('deskripsi_singkat')->nullable();
             $table->string('tarif')->nullable();
             $table->string('jam_operasional')->nullable();
+            $table->string('status')->default('aktif');
         });
 
         Schema::create('bagian_layanan', function (Blueprint $table) {
@@ -60,6 +61,7 @@ class HomepageServicesTest extends TestCase
     public function test_public_pages_render_one_shared_navbar_and_footer_with_the_expected_theme(): void
     {
         $this->withoutVite();
+        $this->createService('Kunjungan Sekolah', 'Unit Humas dan Kerjasama');
 
         $pages = [
             'homepage' => [route('beranda'), 'ult-navbar--light'],
@@ -96,6 +98,9 @@ class HomepageServicesTest extends TestCase
 
     public function test_service_list_autocomplete_uses_current_category_services_and_their_detail_routes(): void
     {
+        $serviceId = $this->createService('Kunjungan Sekolah', 'Unit Humas dan Kerjasama');
+        $this->createService('Surat Keterangan Kuliah', 'Unit Akademik');
+
         $response = $this->withoutVite()
             ->get(route('layanan.index', ['kategori' => 'humas']));
 
@@ -106,7 +111,7 @@ class HomepageServicesTest extends TestCase
             ->assertSee('Layanan tidak ditemukan')
             ->assertSeeText('Kunjungan Sekolah')
             ->assertSee(
-                'href="'.route('layanan.detail', ['slug' => 'kunjungan-sekolah']).'"',
+                'href="'.route('layanan.detail', ['slug' => $serviceId]).'"',
                 false
             )
             ->assertDontSee('Surat Keterangan Kuliah')
@@ -115,6 +120,17 @@ class HomepageServicesTest extends TestCase
 
     public function test_homepage_lists_only_humas_services_with_detail_routes(): void
     {
+        $serviceIds = [];
+        foreach ([
+            'Kunjungan Sekolah',
+            'Edufair',
+            'Liputan Kegiatan',
+            'Informasi SPMB',
+            'Informasi & Pengaduan',
+        ] as $serviceName) {
+            $serviceIds[] = $this->createService($serviceName, 'Unit Humas dan Kerjasama');
+        }
+
         $response = $this->withoutVite()->get(route('beranda'));
         $serviceCardText = $this->serviceCardText($response);
 
@@ -144,15 +160,9 @@ class HomepageServicesTest extends TestCase
             );
         }
 
-        foreach ([
-            'kunjungan-sekolah',
-            'edufair',
-            'liputan-kegiatan',
-            'informasi-spmb',
-            'informasi-pengaduan',
-        ] as $slug) {
+        foreach ($serviceIds as $serviceId) {
             $response->assertSee(
-                'href="'.route('layanan.detail', ['slug' => $slug]).'" class="service-link"',
+                'href="'.route('layanan.detail', ['slug' => $serviceId]).'" class="service-link"',
                 false
             );
         }
@@ -165,6 +175,19 @@ class HomepageServicesTest extends TestCase
         string $excludedService,
         int $serviceCount
     ): void {
+        $unitByCategory = [
+            'akademik' => 'Unit Akademik',
+            'keuangan' => 'Unit Keuangan',
+            'kemahasiswaan' => 'Unit Kemahasiswaan',
+            'humas' => 'Unit Humas dan Kerjasama',
+            'kepegawaian' => 'Unit Kepegawaian',
+        ];
+        $this->createService($includedService, $unitByCategory[$category]);
+        $this->createService(
+            $excludedService,
+            $unitByCategory[$category === 'akademik' ? 'keuangan' : 'akademik']
+        );
+
         $response = $this->withoutVite()->get(route('beranda', ['kategori' => $category]));
         $serviceCardText = $this->serviceCardText($response);
 
@@ -175,18 +198,21 @@ class HomepageServicesTest extends TestCase
         $this->assertStringContainsString($includedService, $serviceCardText);
         $this->assertStringNotContainsString($excludedService, $serviceCardText);
 
-        if ($category !== 'humas') {
-            $response->assertSee(
-                'href="'.route('layanan.index', ['kategori' => $category]).'" class="service-link"',
-                false
-            );
-        }
-
         $this->assertSame($serviceCount, substr_count($response->getContent(), 'class="service-link"'));
     }
 
     public function test_homepage_search_links_services_to_their_own_detail_pages(): void
     {
+        $serviceIds = [];
+        foreach ([
+            ['Kunjungan Sekolah', 'Unit Humas dan Kerjasama'],
+            ['Edufair', 'Unit Humas dan Kerjasama'],
+            ['Surat Keterangan Kuliah', 'Unit Akademik'],
+            ['Pembayaran UKT', 'Unit Keuangan'],
+        ] as [$serviceName, $unitName]) {
+            $serviceIds[$serviceName] = $this->createService($serviceName, $unitName);
+        }
+
         $response = $this->withoutVite()->get(route('beranda'));
 
         $response->assertOk()
@@ -198,14 +224,9 @@ class HomepageServicesTest extends TestCase
             ->assertDontSee('1–3 Hari Kerja')
             ->assertDontSee('100% Terbuka');
 
-        foreach ([
-            'kunjungan-sekolah' => 'Kunjungan Sekolah',
-            'edufair' => 'Edufair',
-            'surat-keterangan-kuliah' => 'Surat Keterangan Kuliah',
-            'pembayaran-ukt' => 'Pembayaran UKT',
-        ] as $slug => $name) {
+        foreach ($serviceIds as $name => $serviceId) {
             $response->assertSee(
-                'href="'.route('layanan.detail', ['slug' => $slug]).'"',
+                'href="'.route('layanan.detail', ['slug' => $serviceId]).'"',
                 false
             )->assertSeeText($name);
         }
@@ -214,6 +235,9 @@ class HomepageServicesTest extends TestCase
     public function test_service_detail_route_renders_different_catalog_services(): void
     {
         $this->withoutVite();
+        $this->createService('Kunjungan Sekolah', 'Unit Humas dan Kerjasama');
+        $this->createService('Pembayaran UKT', 'Unit Keuangan');
+        $this->createService('Surat Keterangan Kuliah', 'Unit Akademik');
 
         $homepage = $this->get(route('beranda'))->assertOk();
         preg_match_all(
@@ -327,15 +351,102 @@ class HomepageServicesTest extends TestCase
         );
     }
 
+    public function test_service_detail_apply_link_selects_the_same_database_service(): void
+    {
+        $serviceId = $this->createService('Layanan Administrasi', 'Unit Akademik');
+
+        $detailResponse = $this->withoutVite()
+            ->get(route('layanan.detail', ['slug' => $serviceId]));
+
+        $detailResponse->assertOk()
+            ->assertSee(route('pengajuan.form', ['layanan' => $serviceId]), false);
+
+        $this->get(route('pengajuan.form', ['layanan' => $serviceId]))
+            ->assertOk()
+            ->assertSee('name="id_layanan" value="'.$serviceId.'"', false);
+    }
+
+    public function test_service_list_uses_database_search_unit_filter_and_saved_images(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('layanan/kartu.png', 'image-content');
+
+        $serviceId = $this->createService(
+            'Surat Keterangan Kuliah',
+            'Unit Akademik',
+            ['deskripsi_singkat' => 'Deskripsi yang disimpan dari admin.']
+        );
+        $this->createService('Pengajuan Dana', 'Unit Keuangan');
+        $this->createService('Layanan Tidak Aktif', 'Unit Akademik', ['status' => 'nonaktif']);
+
+        DB::table('bagian_layanan')->insert([
+            'id_layanan' => $serviceId,
+            'judul_bagian' => 'Informasi',
+            'konten' => 'Konten layanan',
+            'gambar_pendukung' => 'layanan/kartu.png',
+            'urutan_bagian' => 1,
+        ]);
+
+        $response = $this->withoutVite()->get(route('layanan.index', [
+            'kategori' => 'akademik',
+            'q' => 'keterangan',
+        ]));
+
+        $response->assertOk()
+            ->assertSeeText('Surat Keterangan Kuliah')
+            ->assertSeeText('Deskripsi yang disimpan dari admin.')
+            ->assertSeeText('Unit Akademik')
+            ->assertSee('src="'.Storage::disk('public')->url('layanan/kartu.png').'"', false)
+            ->assertSee('href="'.route('layanan.detail', ['slug' => $serviceId]).'"', false)
+            ->assertDontSee('Pengajuan Dana')
+            ->assertDontSee('Layanan Tidak Aktif');
+    }
+
+    public function test_service_list_search_matches_names_instead_of_descriptions(): void
+    {
+        $this->createService(
+            'Surat Keterangan Kuliah',
+            'Unit Akademik',
+            ['deskripsi_singkat' => 'Kata khusus pencarian deskripsi.']
+        );
+
+        $response = $this->withoutVite()->get(route('layanan.index', ['q' => 'deskripsi']));
+
+        $response->assertOk()
+            ->assertSee('Layanan tidak ditemukan. Coba kata kunci lain.')
+            ->assertDontSee('<h2>Surat Keterangan Kuliah</h2>', false);
+    }
+
     public static function homepageCategories(): array
     {
         return [
-            'akademik' => ['akademik', 'Surat Keterangan Kuliah', 'Pembayaran UKT', 16],
-            'keuangan' => ['keuangan', 'Pembayaran UKT', 'Surat Keterangan Kuliah', 4],
-            'kemahasiswaan' => ['kemahasiswaan', 'Beasiswa', 'Pembayaran UKT', 4],
-            'humas' => ['humas', 'Kunjungan Sekolah', 'Surat Keterangan Kuliah', 5],
-            'kepegawaian' => ['kepegawaian', 'Internal', 'Surat Keterangan Kuliah', 2],
+            'akademik' => ['akademik', 'Surat Keterangan Kuliah', 'Pembayaran UKT', 1],
+            'keuangan' => ['keuangan', 'Pembayaran UKT', 'Surat Keterangan Kuliah', 1],
+            'kemahasiswaan' => ['kemahasiswaan', 'Beasiswa', 'Pembayaran UKT', 1],
+            'humas' => ['humas', 'Kunjungan Sekolah', 'Surat Keterangan Kuliah', 1],
+            'kepegawaian' => ['kepegawaian', 'Internal', 'Surat Keterangan Kuliah', 1],
         ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
+    private function createService(string $name, string $unitName, array $attributes = []): int
+    {
+        $unitId = DB::table('unit')
+            ->where('nama_unit', $unitName)
+            ->value('id');
+
+        if ($unitId === null) {
+            $unitId = DB::table('unit')->insertGetId(['nama_unit' => $unitName]);
+        }
+
+        return (int) DB::table('layanan')->insertGetId(array_merge([
+            'nama_layanan' => $name,
+            'id_unit' => $unitId,
+            'deskripsi_singkat' => 'Deskripsi '.$name,
+            'status' => 'aktif',
+        ], $attributes));
     }
 
     private function serviceCardText(TestResponse $response): string

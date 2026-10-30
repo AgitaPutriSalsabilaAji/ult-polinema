@@ -42,6 +42,14 @@ body {
 
 .layanan-page * { box-sizing: border-box; }
 .layanan-page a { text-decoration: none; }
+.layanan-page:not(.detail-page) .intro {
+    padding: 36px 0 14px;
+}
+
+.layanan-page:not(.detail-page) .intro .container-xl {
+    text-align: left;
+}
+
 .layanan-page .intro {
     background: var(--layanan-bg);
     padding: 42px 0 28px;
@@ -67,28 +75,21 @@ body {
 
 .layanan-page .filters {
     background: #fff;
-    padding: 28px 0 12px;
+    padding: 8px 0 12px;
 }
 
 .layanan-page .search-form {
     position: relative;
     z-index: 5;
-    width: min(100%, 720px);
-    left: -37.5px;
+    width: min(100%, 680px);
     display: flex;
     align-items: center;
     gap: 10px;
-    margin: 24px auto 18px;
+    margin: 0 auto 18px;
     padding: 8px;
     background: #f5f6f9;
     border: 1px solid #f0f1f5;
     border-radius: 10px;
-}
-
-@media (max-width: 991.98px) {
-    .layanan-page .search-form {
-        left: 0;
-    }
 }
 
 .layanan-page .search-icon {
@@ -261,6 +262,14 @@ body {
     display: flex;
     align-items: flex-start;
     gap: 14px;
+}
+
+.layanan-page .service-image {
+    flex: 0 0 72px;
+    width: 72px;
+    height: 54px;
+    border-radius: 8px;
+    object-fit: cover;
 }
 
 .layanan-page .service-number {
@@ -499,7 +508,8 @@ body {
 
 @media(max-width:600px) {
  .layanan-page { font-size:12px; }
- .layanan-page .intro { padding:28px 0 22px; }
+ .layanan-page:not(.detail-page) .intro { padding:24px 0 10px; }
+ .layanan-page.detail-page .intro { padding:28px 0 22px; }
  .layanan-page h1 { font-size:18px; }
  .layanan-page .search-form {
     flex-wrap:wrap;
@@ -513,6 +523,9 @@ body {
  .layanan-page .filters,
  .layanan-page .listing {
     padding-top: 18px;
+ }
+ .layanan-page:not(.detail-page) .filters {
+    padding-top: 6px;
  }
  .layanan-page .service-grid { grid-template-columns:1fr; }
  .layanan-page .result-line { flex-direction:column; }

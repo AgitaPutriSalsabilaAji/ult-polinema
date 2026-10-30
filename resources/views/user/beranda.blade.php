@@ -69,7 +69,7 @@
                      role="listbox" aria-label="Rekomendasi layanan">
                     @foreach ($searchServices as $service)
                         <a class="service-search-option" role="option"
-                           href="{{ route('layanan.detail', ['slug' => $service['slug']]) }}"
+                           href="{{ route('layanan.detail', ['slug' => $service['id']]) }}"
                            data-service-option>
                             {{ $service['nama'] }}
                         </a>
@@ -117,7 +117,7 @@
             <div class="row g-3 service-list" id="serviceList">
                 @forelse ($services as $index => $service)
                     <div class="col-md-6 service-item" data-search="{{ $service['nama'] }} {{ $service['deskripsi'] }} {{ $service['unit'] }}">
-                        <a href="{{ in_array($service['slug'], $slugsAktif, true) ? route('layanan.detail', ['slug' => $service['slug']]) : route('layanan.index', ['kategori' => $kategori]) }}" class="service-link">
+                        <a href="{{ route('layanan.detail', ['slug' => $service['id']]) }}" class="service-link">
                             <span class="service-number">{{ sprintf('%02d', $index + 1) }}</span>
                             <span class="service-copy">
                                 <strong>{{ $service['nama'] }}</strong>
@@ -129,7 +129,7 @@
                     </div>
                 @empty
                     <div class="col-12 no-results" id="noResults">
-                        Belum ada layanan dengan halaman detail untuk kategori ini.
+                        Belum ada layanan untuk kategori ini.
                     </div>
                 @endforelse
 

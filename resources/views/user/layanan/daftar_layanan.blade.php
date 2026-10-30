@@ -37,8 +37,8 @@
                      aria-label="Rekomendasi layanan">
                 @foreach ($autocompleteServices as $service)
                     <a class="service-search-option"
-                       id="service-option-{{ $service['slug'] }}"
-                       href="{{ route('layanan.detail', ['slug' => $service['slug']]) }}"
+                       id="service-option-{{ $service['id'] }}"
+                       href="{{ route('layanan.detail', ['slug' => $service['id']]) }}"
                        data-service-option
                        role="option"
                        aria-selected="false">
@@ -80,24 +80,13 @@
                     <div class="service-main">
                         <span class="service-number">{{ sprintf('%02d', ($services->firstItem() ?? 1) + $index) }}</span>
                         <div><h2>{{ $service['nama'] }}</h2><p>{{ $service['deskripsi'] }}</p></div>
+                        @if ($service['gambar'])
+                            <img class="service-image" src="{{ $service['gambar'] }}" alt="{{ $service['nama'] }}" loading="lazy">
+                        @endif
                     </div>
                     <div class="service-bottom">
                         <span class="unit-tag">Unit: {{ $service['unit'] }}</span>
-                        @php
-                            $slugHumasAktif = [
-                                'kunjungan-sekolah',
-                                'edufair',
-                                'liputan-kegiatan',
-                                'informasi-spmb',
-                                'informasi-pengaduan',
-                            ];
-                            $detailAktif = in_array($service['slug'], $slugHumasAktif, true);
-                        @endphp
-                        @if ($detailAktif)
-                            <a class="detail-link" href="{{ route('layanan.detail', ['slug' => $service['slug']]) }}">→ Detail Layanan</a>
-                        @else
-                            <span class="detail-link detail-disabled" aria-disabled="true" title="Detail layanan belum tersedia">Detail Belum Tersedia</span>
-                        @endif
+                        <a class="detail-link" href="{{ route('layanan.detail', ['slug' => $service['id']]) }}">→ Detail Layanan</a>
                     </div>
                 </article>
             @empty
