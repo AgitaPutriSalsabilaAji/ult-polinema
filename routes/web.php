@@ -140,8 +140,11 @@ Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update'
 Route::put('/profil/password', [ProfilController::class,'updatePassword',])->name('profil.password');
 
         // Daftar Admin
-Route::resource('daftar-admin', DaftarAdminController::class)
-    ->except(['show']);
+    // Daftar Admin — Khusus Admin ULT
+    Route::middleware('can:akses-daftar-admin')->group(function () {
+        Route::resource('daftar-admin', DaftarAdminController::class)
+            ->except(['show']);
+    });
     Route::get('/login', [AdminLoginController::class, 'showLoginForm'])
     ->middleware('guest:admin')
     ->name('login');
