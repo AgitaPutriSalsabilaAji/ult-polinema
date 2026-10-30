@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import './auth.css';
 
 .ult-navbar {
     --ult-navbar-height: 72px;
@@ -97,6 +98,92 @@
     padding: 6px 9px;
 }
 
+.ult-navbar .ult-profile {
+    position: relative;
+}
+
+.ult-navbar .ult-profile__toggle {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    list-style: none;
+}
+
+.ult-navbar .ult-profile__toggle::-webkit-details-marker {
+    display: none;
+}
+
+.ult-navbar .ult-profile__avatar {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border: 2px solid rgba(255, 255, 255, .75);
+    border-radius: 50%;
+    background: var(--ult-navbar-orange);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.ult-navbar .ult-profile__avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.ult-navbar .ult-profile__menu {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    z-index: 1040;
+    display: grid;
+    width: min(280px, calc(100vw - 32px));
+    gap: 7px;
+    padding: 16px;
+    border: 1px solid #e8e7f0;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(30, 25, 79, .16);
+    color: #29275f;
+}
+
+.ult-navbar .ult-profile__menu strong {
+    color: #29216f;
+    font-size: 13px;
+}
+
+.ult-navbar .ult-profile__menu > span {
+    overflow-wrap: anywhere;
+    color: #73778b;
+    font-size: 11px;
+}
+
+.ult-navbar .ult-profile__menu form {
+    margin-top: 6px;
+}
+
+.ult-navbar .ult-profile__menu button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 7px;
+    background: #f3ecff;
+    color: #4a1d7a;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: left;
+}
+
+.ult-navbar .ult-profile__menu button:hover {
+    background: #e8dcfa;
+}
+
 @media (max-width: 991.98px) {
     .ult-navbar .navbar-collapse {
         padding: 8px 0 12px;
@@ -109,6 +196,16 @@
 
     .ult-navbar .navbar-nav .nav-link {
         padding: 10px 0;
+    }
+
+    .ult-navbar .ult-profile-item {
+        padding: 8px 0;
+    }
+
+    .ult-navbar .ult-profile__menu {
+        top: calc(100% + 6px);
+        right: auto;
+        left: 0;
     }
 
     .ult-navbar .navbar-nav .nav-link.active::after,
