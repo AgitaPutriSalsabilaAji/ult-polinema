@@ -12,11 +12,13 @@ class Pengajuan extends Model
     protected $table = 'pengajuan';
 
     const CREATED_AT = 'dibuat_pada';
+
     const UPDATED_AT = 'diperbarui_pada';
 
     protected $fillable = [
         'nomor_tiket',
         'id_pengguna',
+        'user_id',
         'id_layanan',
         'id_unit',
         'id_admin_fo',
@@ -40,6 +42,11 @@ class Pengajuan extends Model
     public function layanan(): BelongsTo
     {
         return $this->belongsTo(Layanan::class, 'id_layanan');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function unit(): HasOneThrough

@@ -15,6 +15,7 @@ export default defineConfig({
                 'resources/js/cek-status.js',
                 'resources/css/form_pengajuan.css',
                 'resources/js/form_pengajuan.js',
+                'resources/js/auth.js',
                 'resources/css/pengajuan_berhasil.css',
                 'resources/css/adminlte.css',
                 'resources/js/adminlte.js',
