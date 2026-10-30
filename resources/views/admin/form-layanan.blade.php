@@ -410,7 +410,7 @@
 
     .bagian-title {
         color: #253858;
-        font-size: 1rem;
+        font-size: 14px;
     }
 
     #tambah-bagian {

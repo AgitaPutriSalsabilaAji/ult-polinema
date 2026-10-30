@@ -4,7 +4,7 @@
 @section('title', 'Dashboard ULT Polinema')
 
 @section('content_header')
-    <h3>Dashboard</h3>
+    <h3 class="admin-page-title">Dashboard</h3>
     <p class="text-secondary">
         Selamat datang di halaman Admin ULT Polinema.
     </p>

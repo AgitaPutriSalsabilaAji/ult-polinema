@@ -7,7 +7,7 @@
 
     {{-- Header --}}
     <div class="mb-4">
-        <h4 class="fw-bold mb-1">Rating & Ulasan Layanan ULT</h4>
+        <h4 class="admin-page-title mb-1">Rating & Ulasan Layanan ULT</h4>
         <p class="text-muted mb-0">
             Lihat penilaian dan feedback langsung dari pemohon layanan ULT Polinema.
         </p>

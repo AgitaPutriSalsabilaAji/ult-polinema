@@ -3,7 +3,7 @@
 @section('title', 'Informasi Layanan')
 
 @section('content_header')
-    <h1>Manajemen Informasi Layanan</h1>
+    <h1 class="admin-page-title">Manajemen Informasi Layanan</h1>
 @stop
 
 @section('content')
