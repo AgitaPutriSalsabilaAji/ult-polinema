@@ -113,9 +113,6 @@ Route::middleware('auth:admin')
             'disposisi',
         ])->name('pengajuan.disposisi');
 
-        // Tracking e-ticket
-        Route::view('/tracking', 'admin.tracking')->name('tracking');
-
         // Manajemen layanan admin
         Route::get('/layanan', [AdminLayananController::class, 'index'])
             ->name('layanan.index');
