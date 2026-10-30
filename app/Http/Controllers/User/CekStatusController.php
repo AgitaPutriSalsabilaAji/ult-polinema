@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CekStatusController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View|RedirectResponse
     {
         $ticket = strtoupper(trim((string) $request->query('ticket', '')));
         $pengajuan = null;
@@ -18,11 +21,16 @@ class CekStatusController extends Controller
         $error = null;
 
         if ($ticket !== '') {
+            if (! Auth::guard('web')->check()) {
+                return redirect()->guest(route('user.login'));
+            }
+
             $pengajuan = DB::table('pengajuan as p')
                 ->leftJoin('layanan as l', 'l.id', '=', 'p.id_layanan')
-                ->leftJoin('unit as un', 'un.id', '=', 'p.id_unit')
+                ->leftJoin('unit as un', 'un.id', '=', 'l.id_unit')
                 ->leftJoin('pengguna as u', 'u.id', '=', 'p.id_pengguna')
                 ->where('p.nomor_tiket', $ticket)
+                ->where('p.user_id', Auth::guard('web')->id())
                 ->select([
                     'p.id',
                     'p.nomor_tiket',

@@ -16,9 +16,19 @@ class PengajuanController extends Controller
 {
     public function index(Request $request)
     {
+        $adminLogin = auth('admin')->user();
+
+        if (!$adminLogin) {
+            abort(401, 'Silakan login terlebih dahulu.');
+        }
+
+        if (!in_array($adminLogin->peran, ['admin_ult', 'admin_unit'])) {
+            abort(403, 'Anda tidak memiliki akses.');
+        }
+
         $query = DB::table('pengajuan as p')
             ->leftJoin('layanan as l', 'l.id', '=', 'p.id_layanan')
-            ->leftJoin('unit as un', 'un.id', '=', 'p.id_unit')
+            ->leftJoin('unit as un', 'un.id', '=', 'l.id_unit')
             ->leftJoin('admin as a', 'a.id', '=', 'p.id_admin_fo')
             ->select(
                 'p.*',
@@ -57,6 +67,11 @@ class PengajuanController extends Controller
             }
         }
 
+        // Hak akses berdasarkan role admin
+        if ($adminLogin->peran === 'admin_unit') {
+            $query->where('p.id_unit', $adminLogin->id_unit);
+        }
+
         if ($request->filled('q')) {
             $keyword = $request->input('q');
 
@@ -86,7 +101,7 @@ class PengajuanController extends Controller
         }
 
         if ($request->filled('unit')) {
-            $query->where('p.id_unit', $request->input('unit'));
+            $query->where('l.id_unit', $request->input('unit'));
         }
 
         if ($request->filled('status')) {
@@ -98,26 +113,57 @@ class PengajuanController extends Controller
             ->paginate(5)
             ->withQueryString();
 
-        $units = Unit::orderBy('nama_unit')->get();
+        // Mengatur data berdasarkan role admin
+        if ($adminLogin->peran === 'admin_ult') {
 
-        $adminTujuan = DB::table('admin')
-            ->where('peran', 'admin_unit')
-            ->select('id', 'nama_lengkap_gelar', 'id_unit')
-            ->orderBy('nama_lengkap_gelar')
-            ->get();
+            // Admin ULT bisa melihat semua unit dan memilih admin tujuan
+            $units = Unit::orderBy('nama_unit')->get();
+
+            $adminTujuan = DB::table('admin')
+                ->where('peran', 'admin_unit')
+                ->select('id', 'nama_lengkap_gelar', 'id_unit')
+                ->orderBy('nama_lengkap_gelar')
+                ->get();
+
+        } else {
+
+            // Admin Unit hanya mendapatkan unit miliknya
+            $units = Unit::where('id', $adminLogin->id_unit)->get();
+
+            $adminTujuan = collect();
+        }
+
+        $isAdminUlt = $adminLogin->peran === 'admin_ult';
 
         return view('admin.pengajuan', compact(
             'pengajuans',
             'units',
-            'adminTujuan'
+            'adminTujuan',
+            'isAdminUlt'
         ));
     }
 
     public function show(Pengajuan $pengajuan)
     {
+        $adminLogin = auth('admin')->user();
+
+        if (!$adminLogin) {
+            abort(401);
+        }
+
+        if (
+            $adminLogin->peran === 'admin_unit' &&
+            (int) $pengajuan->id_unit !== (int) $adminLogin->id_unit
+        ) {
+            abort(403, 'Anda tidak memiliki akses ke pengajuan ini.');
+        }
+
+        if (!in_array($adminLogin->peran, ['admin_ult', 'admin_unit'])) {
+            abort(403);
+        }
+
         $pengajuan->load([
-            'layanan',
-            'unit',
+            'layanan.unit',
             'disposisi.unitTujuan',
             'riwayat',
         ]);
@@ -196,8 +242,13 @@ class PengajuanController extends Controller
                 'status_disposisi' => 'dikirim',
             ]);
 
+            if (Schema::hasColumn('pengajuan', 'id_unit')) {
+                $locked->update([
+                    'id_unit' => $data['id_unit_tujuan'],
+                ]);
+            }
+
             $locked->update([
-                'id_unit' => $data['id_unit_tujuan'],
                 'status' => 'didisposisikan',
             ]);
 

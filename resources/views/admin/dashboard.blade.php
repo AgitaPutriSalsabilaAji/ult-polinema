@@ -4,7 +4,7 @@
 @section('title', 'Dashboard ULT Polinema')
 
 @section('content_header')
-    <h3>Dashboard</h3>
+    <h3 class="admin-page-title">Dashboard</h3>
     <p class="text-secondary">
         Selamat datang di halaman Admin ULT Polinema.
     </p>
@@ -28,7 +28,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5>Informasi Layanan</h5>
-                    <h2>0</h2>
+                    <h2>{{ $jumlahLayanan }}</h2>
                     <p class="text-secondary mb-0">
                         Informasi yang dikelola
                     </p>
@@ -36,11 +36,12 @@
             </div>
         </div>
 
+        
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
                     <h5>FAQ</h5>
-                    <h2>0</h2>
+                    <h2>{{ $jumlahFaq }}</h2>
                     <p class="text-secondary mb-0">
                         Pertanyaan yang tersedia
                     </p>

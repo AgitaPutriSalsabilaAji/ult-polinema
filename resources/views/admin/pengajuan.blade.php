@@ -3,7 +3,7 @@
 @section('title', 'Data Pengajuan')
 
 @section('content_header')
-    <h1 class="h4 font-weight-bold">Data Pengajuan Pelayanan</h1>
+    <h1 class="admin-page-title">Data Pengajuan Pelayanan</h1>
 @stop
 
 @section('content')
@@ -33,17 +33,19 @@
                            placeholder="Cari ID, nama pemohon, atau subjek...">
                 </div>
 
-                <div class="col-lg-3 mb-2">
-                    <select name="unit" class="form-control">
-                        <option value="">Semua Unit Pelaksana</option>
-                        @foreach($units as $unit)
-                            <option value="{{ $unit->id }}"
-                                @selected((string)request('unit') === (string)$unit->id)>
-                                {{ $unit->nama_unit }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                @if($isAdminUlt)
+                    <div class="col-lg-3 mb-2">
+                        <select name="unit" class="form-control">
+                            <option value="">Semua Unit Pelaksana</option>
+                            @foreach($units as $unit)
+                                <option value="{{ $unit->id }}"
+                                    @selected((string)request('unit') === (string)$unit->id)>
+                                    {{ $unit->nama_unit }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
 
                 <div class="col-lg-2 mb-2">
                     <select name="status" class="form-control">
@@ -140,11 +142,11 @@
                             <td>{{ $item->nama_admin_fo ?? 'Belum ditugaskan' }}</td>
                             <td class="text-nowrap">
                                 <a href="{{ route('admin.pengajuan.show', $item->id) }}"
-                                   class="btn btn-xs btn-outline-secondary">
+                                class="btn btn-xs btn-outline-secondary">
                                     Detail
                                 </a>
 
-                                @if(!in_array($item->status, ['selesai', 'ditolak']))
+                                @if($isAdminUlt && !in_array($item->status, ['selesai', 'ditolak']))
                                     <button type="button"
                                             class="btn btn-xs btn-primary"
                                             data-toggle="modal"
@@ -181,6 +183,7 @@
     </div>
 </div>
 
+@if($isAdminUlt)
 {{-- MODAL DISPOSISI --}}
 <div class="modal fade" id="modalDisposisi" tabindex="-1"
      aria-labelledby="judulModalDisposisi" aria-hidden="true">
@@ -274,6 +277,7 @@
         </div>
     </div>
 </div>
+@endif
 @stop
 
 @section('css')
@@ -281,10 +285,10 @@
     .table th, .table td {
         vertical-align: middle;
         padding: 11px 9px;
-        font-size: 12px;
+        font-size: 14px;
     }
     .table thead th { white-space: nowrap; }
-    .btn-xs { padding: 4px 7px; font-size: 11px; }
+    .btn-xs { padding: 4px 7px; }
     .modal-content { border: 0; border-radius: 10px; overflow: hidden; }
 </style>
 @stop
@@ -347,7 +351,7 @@ $(function () {
         ) }};
 
         admins.forEach(function (admin) {
-            if (String(admin.unit) === unitId) {
+            if (String(admin.id_unit) === unitId) {
                 selectAdmin.append(
                     new Option(admin.nama, admin.id)
                 );

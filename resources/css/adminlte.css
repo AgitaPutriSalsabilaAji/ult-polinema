@@ -6,9 +6,42 @@
  *
  * Option A (default): import the prebuilt CSS — fastest, no SCSS toolchain.
  */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import 'bootstrap-icons/font/bootstrap-icons.css';
 @import 'overlayscrollbars/overlayscrollbars.css';
 @import 'admin-lte/dist/css/adminlte.css';
+
+:root {
+    --admin-font-family: 'Inter', sans-serif;
+    --admin-font-size-primary: 14px;
+    --admin-font-size-secondary: 12px;
+    --admin-font-size-page-title: 20px;
+}
+
+.app-wrapper {
+    font-family: var(--admin-font-family);
+    font-size: var(--admin-font-size-primary);
+}
+
+.app-wrapper :where(button, input, optgroup, select, textarea) {
+    font-family: inherit;
+}
+
+.app-wrapper :where(.form-control, .form-select, .btn, .table, .alert, .badge, .card, .nav-link, .form-label, .input-group-text) {
+    font-size: var(--admin-font-size-primary);
+}
+
+.app-wrapper :where(.text-muted, .text-secondary, .text-body-secondary, .small, small, .form-text, .modal-subtitle) {
+    font-size: var(--admin-font-size-secondary) !important;
+}
+
+.app-content-header :where(h1, h2, h3, h4, h5, h6),
+.admin-page-title {
+    font-family: var(--admin-font-family);
+    font-size: var(--admin-font-size-page-title) !important;
+    font-weight: 700;
+    line-height: 1.25;
+}
 
 /* ULT Polinema Admin Sidebar */
 :root {
@@ -301,7 +334,34 @@
 .page-title-header__title {
     margin: 0;
     color: #172033;
-    font-size: 1.5rem;
+    font-size: var(--admin-font-size-page-title);
     font-weight: 700;
     line-height: 1.3;
+}
+
+/* Keep shared typography ahead of component-specific defaults. */
+.app-sidebar .nav-link {
+    font-size: 0.75rem !important;
+}
+
+.admin-global-search .form-control,
+.admin-global-search .btn {
+    font-size: var(--admin-font-size-primary) !important;
+}
+
+.admin-list-page .table thead th,
+.admin-modal .modal-title,
+.admin-modal .form-label,
+.admin-modal .form-control,
+.admin-modal .form-select,
+.admin-modal .btn,
+.admin-delete-modal .modal-body,
+.bagian-title,
+.btn-xs {
+    font-size: var(--admin-font-size-primary) !important;
+}
+
+.admin-modal .form-text,
+.modal-subtitle {
+    font-size: var(--admin-font-size-secondary) !important;
 }

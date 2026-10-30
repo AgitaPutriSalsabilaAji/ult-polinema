@@ -1,11 +1,42 @@
-/* resources/js/layanan.js */
-document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.querySelector('.layanan-page .search-form input[name="q"]');
-    if (searchInput) searchInput.setAttribute('aria-label', 'Cari layanan');
+import { initializeServiceSearch } from './beranda.js';
 
-    document.querySelectorAll('.layanan-page .category-tabs a').forEach((link) => {
-        link.addEventListener('click', () => {
-            // Filter kategori diproses Laravel melalui query string.
+document.addEventListener('DOMContentLoaded', () => {
+    const page = document.querySelector('.layanan-page');
+    if (!page) return;
+
+    const searchForm = page.querySelector('.search-form');
+    const searchInput = searchForm ? searchForm.querySelector('input[name="q"]') : null;
+
+    if (searchInput) {
+        searchInput.setAttribute('aria-label', 'Cari layanan');
+    }
+
+    const autocomplete = page.querySelector('#serviceListSearchResults');
+    const autocompleteEmpty = autocomplete?.querySelector('.service-search-empty');
+
+    if (searchForm && searchInput && autocomplete) {
+        initializeServiceSearch({
+            form: searchForm,
+            input: searchInput,
+            dropdown: autocomplete,
+            emptyMessage: autocompleteEmpty,
+        });
+    }
+
+    page.querySelectorAll('.category-tabs a').forEach((link) => {
+        link.addEventListener('click', (event) => {
+            const href = link.getAttribute('href');
+            if (!href) return;
+
+            const targetUrl = new URL(href, window.location.href);
+            targetUrl.searchParams.delete('q');
+
+            if (searchInput) {
+                searchInput.value = '';
+            }
+
+            event.preventDefault();
+            window.location.assign(targetUrl.toString());
         });
     });
 });
