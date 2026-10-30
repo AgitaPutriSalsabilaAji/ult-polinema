@@ -7,7 +7,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="fw-bold mb-1">Profil & Pengaturan Akun</h4>
+            <h4 class="admin-page-title mb-1">Profil & Pengaturan Akun</h4>
             <p class="text-muted mb-0">
                 Kelola informasi profil dan keamanan akun Anda.
             </p>

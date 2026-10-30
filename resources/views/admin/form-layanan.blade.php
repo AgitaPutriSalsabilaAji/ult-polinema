@@ -266,18 +266,23 @@
                                        placeholder="Contoh: Persyaratan Pengajuan">
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">
-                                    Penjelasan
-                                    <span class="text-danger">*</span>
-                                </label>
+<div class="mb-3">
+    <label class="form-label">
+        Penjelasan
+        <span class="text-danger">*</span>
+    </label>
 
-                                <textarea name="bagian[{{ $i }}][konten]"
-                                          class="form-control"
-                                          rows="5"
-                                          required
-                                          placeholder="Tuliskan penjelasan secara lengkap...">{{ $section['konten'] ?? '' }}</textarea>
-                            </div>
+    {{-- Rich Text Editor --}}
+    <div class="quill-editor">
+        {!! $section['konten'] ?? '' !!}
+    </div>
+
+    {{-- Menyimpan isi editor ke form --}}
+    <textarea name="bagian[{{ $i }}][konten]"
+              class="quill-content"
+              data-field="konten"
+              hidden></textarea>
+</div>
 
                             @if(!empty($section['gambar_pendukung']))
                                 <div class="mb-3">
@@ -364,16 +369,17 @@
                    placeholder="Contoh: Persyaratan Pengajuan">
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">
-                Penjelasan <span class="text-danger">*</span>
-            </label>
+<div class="mb-3">
+    <label class="form-label">
+        Penjelasan <span class="text-danger">*</span>
+    </label>
 
-            <textarea data-field="konten"
-                      class="form-control"
-                      rows="5" required
-                      placeholder="Tuliskan penjelasan secara lengkap..."></textarea>
-        </div>
+    <div class="quill-editor"></div>
+
+    <textarea data-field="konten"
+              class="quill-content"
+              hidden></textarea>
+</div>
 
         <div class="mb-2">
             <label class="form-label">Gambar Pendukung (Opsional)</label>
@@ -392,6 +398,10 @@
 @stop
 
 @section('css')
+
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css"
+      rel="stylesheet">
+
 <style>
     .bagian-item {
         background: #fff;
@@ -400,61 +410,184 @@
 
     .bagian-title {
         color: #253858;
-        font-size: 1rem;
+        font-size: 14px;
     }
 
     #tambah-bagian {
         border-style: dashed;
     }
+
+    /* Tampilan Rich Text Editor */
+    .quill-editor {
+        background: #fff;
+        min-height: 150px;
+        font-size: 14px;
+    }
+
+    .quill-editor .ql-editor {
+        min-height: 100px;
+        font-family: inherit;
+        font-size: 14px;
+    }
+
+    .quill-editor .ql-toolbar {
+        border-radius: 8px 8px 0 0;
+        background: #f8f9fa;
+    }
+
+    .quill-editor .ql-container {
+        border-radius: 0 0 8px 8px;
+    }
+
+    .quill-editor.is-invalid .ql-toolbar,
+    .quill-editor.is-invalid .ql-container {
+        border-color: #dc3545;
+    }
 </style>
 @stop
 
 @section('js')
+
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
     const container = document.getElementById('bagian-container');
     const template = document.getElementById('template-bagian');
+    const form = container.closest('form');
+
+    // =====================================
+    // INISIALISASI QUILL EDITOR
+    // =====================================
+
+    function initQuill(item) {
+
+        const editorElement = item.querySelector('.quill-editor');
+
+        if (!editorElement || editorElement._quill) {
+            return;
+        }
+
+        const quill = new Quill(editorElement, {
+            theme: 'snow',
+
+            modules: {
+                toolbar: [
+                    ['bold', 'italic'],
+                    [{ list: 'bullet' }, { list: 'ordered' }],
+                    ['link']
+                ]
+            },
+
+            placeholder: 'Tuliskan penjelasan secara lengkap...'
+        });
+
+        editorElement._quill = quill;
+
+        const textarea = item.querySelector('.quill-content');
+
+        // Sinkronisasi isi editor dengan textarea
+        quill.on('text-change', function () {
+
+            textarea.value = quill.root.innerHTML;
+
+            editorElement.classList.remove('is-invalid');
+        });
+
+        textarea.value = quill.root.innerHTML;
+    }
+
+
+    // =====================================
+    // RAPIIKAN NOMOR DAN NAME INPUT
+    // =====================================
 
     function rapikanBagian() {
+
         container.querySelectorAll('.bagian-item').forEach((item, index) => {
+
             item.querySelector('.bagian-title').textContent =
                 'Bagian Informasi ' + (index + 1);
 
+            // Perbarui nama input yang sudah memiliki name
             item.querySelectorAll('[name]').forEach(input => {
+
                 input.name = input.name.replace(
                     /^bagian\[\d+\]/,
                     'bagian[' + index + ']'
                 );
+
             });
 
+            // Perbarui name input dari template
             item.querySelectorAll('[data-field]').forEach(input => {
+
                 input.name = 'bagian[' + index + '][' +
                     input.dataset.field + ']';
+
             });
+
+            // Pastikan setiap bagian mempunyai Quill Editor
+            initQuill(item);
+
         });
     }
 
+
+    // =====================================
+    // INISIALISASI EDITOR AWAL
+    // =====================================
+
+    rapikanBagian();
+
+
+    // =====================================
+    // TAMBAH BAGIAN INFORMASI
+    // =====================================
+
     document.getElementById('tambah-bagian')
         .addEventListener('click', function () {
-            container.appendChild(template.content.cloneNode(true));
+
+            container.appendChild(
+                template.content.cloneNode(true)
+            );
+
             rapikanBagian();
+
         });
 
+
+    // =====================================
+    // HAPUS BAGIAN INFORMASI
+    // =====================================
+
     container.addEventListener('click', function (event) {
+
         const button = event.target.closest('.remove-bagian');
 
         if (!button) return;
 
         if (container.querySelectorAll('.bagian-item').length <= 1) {
+
             alert('Minimal harus ada satu bagian informasi.');
+
             return;
         }
 
         button.closest('.bagian-item').remove();
+
         rapikanBagian();
+
     });
 
+
+    // =====================================
+    // VALIDASI GAMBAR
+    // =====================================
+
     container.addEventListener('change', function (event) {
+
         const input = event.target;
 
         if (!input.matches('.gambar-input') || !input.files.length) {
@@ -462,6 +595,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const file = input.files[0];
+
         const allowedTypes = [
             'image/jpeg',
             'image/png',
@@ -469,18 +603,87 @@ document.addEventListener('DOMContentLoaded', function () {
         ];
 
         if (!allowedTypes.includes(file.type)) {
+
             alert('Gunakan gambar JPG, PNG, atau WEBP.');
+
             input.value = '';
+
             return;
         }
 
         if (file.size > 5 * 1024 * 1024) {
+
             alert('Ukuran gambar maksimal 5 MB.');
+
             input.value = '';
+
         }
+
     });
 
-    rapikanBagian();
+
+    // =====================================
+    // SINKRONISASI DAN VALIDASI FORM
+    // =====================================
+
+    form.addEventListener('submit', function (event) {
+
+        let valid = true;
+        let firstInvalidEditor = null;
+
+        container.querySelectorAll('.bagian-item').forEach(item => {
+
+            const editorElement = item.querySelector('.quill-editor');
+            const textarea = item.querySelector('.quill-content');
+
+            const quill = editorElement._quill;
+
+            // Simpan HTML editor ke textarea
+            textarea.value = quill.root.innerHTML;
+
+            // Validasi isi penjelasan
+            const plainText = quill.getText().trim();
+
+            if (!plainText) {
+
+                valid = false;
+
+                editorElement.classList.add('is-invalid');
+
+                if (!firstInvalidEditor) {
+                    firstInvalidEditor = editorElement;
+                }
+
+            } else {
+
+                editorElement.classList.remove('is-invalid');
+
+            }
+
+        });
+
+
+        if (!valid) {
+
+            event.preventDefault();
+
+            alert('Penjelasan pada setiap bagian informasi wajib diisi.');
+
+            if (firstInvalidEditor) {
+
+                firstInvalidEditor.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+
+                firstInvalidEditor._quill.focus();
+
+            }
+
+        }
+
+    });
+
 });
 </script>
 @stop

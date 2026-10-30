@@ -3,7 +3,7 @@
 @section('title', 'Data Pengajuan')
 
 @section('content_header')
-    <h1 class="h4 font-weight-bold">Data Pengajuan Pelayanan</h1>
+    <h1 class="admin-page-title">Data Pengajuan Pelayanan</h1>
 @stop
 
 @section('content')
@@ -281,10 +281,10 @@
     .table th, .table td {
         vertical-align: middle;
         padding: 11px 9px;
-        font-size: 12px;
+        font-size: 14px;
     }
     .table thead th { white-space: nowrap; }
-    .btn-xs { padding: 4px 7px; font-size: 11px; }
+    .btn-xs { padding: 4px 7px; }
     .modal-content { border: 0; border-radius: 10px; overflow: hidden; }
 </style>
 @stop
