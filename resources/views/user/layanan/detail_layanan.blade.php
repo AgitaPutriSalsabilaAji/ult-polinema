@@ -60,7 +60,7 @@
                 @if (!empty($layanan['jam']))
                     <div class="information-row"><span>Jam Operasional Layanan</span><strong>{{ $layanan['jam'] }}</strong></div>
                 @endif
-                <a href="/e-tiket" class="apply-button">✎ &nbsp; AJUKAN LAYANAN</a>
+                <a href="{{ route('pengajuan.form') }}?layanan={{ $layanan['slug'] }}" class="apply-button">✎ &nbsp; AJUKAN LAYANAN</a>
                 <a href="{{ route('layanan.index') }}" class="back-button">‹ &nbsp; Kembali ke Daftar Layanan</a>
             </div>
             <div class="help-card"><strong><span class="section-icon">⊙</span> Butuh Bantuan?</strong><p>Silakan hubungi helpdesk Bagian Kerja Sama &amp; Humas Polinema.</p><a href="https://wa.me/6285117479099" target="_blank" rel="noopener noreferrer" class="whatsapp-button">◉ &nbsp; Hubungi via WhatsApp</a></div>

@@ -4,9 +4,16 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Layanan;
+
+use App\Models\Pengajuan;
+use App\Models\Pengguna;
+use App\Models\RiwayatPengajuan;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class LayananController extends Controller
@@ -445,5 +452,157 @@ class LayananController extends Controller
         }
 
         return view('user.layanan.detail_layanan', compact('layanan', 'bagian'));
+    }
+
+    public function formPengajuan(Request $request): View
+    {
+        $layananList = Layanan::query()
+            ->with('unit')
+            ->orderBy('nama_layanan')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'nama' => $item->nama_layanan,
+                    'slug' => Str::slug($item->nama_layanan),
+                    'unit' => $item->unit?->nama_unit ?? 'Unit Layanan',
+                ];
+            });
+
+        $selectedSlug = $request->query('layanan');
+        $selectedLayanan = $layananList->firstWhere('slug', $selectedSlug) ?? $layananList->first();
+
+        return view('user.form_pengajuan', [
+            'layananList' => $layananList,
+            'selectedLayanan' => $selectedLayanan,
+        ]);
+    }
+
+    public function submitPengajuan(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'nama_lengkap' => ['required', 'string', 'max:150'],
+            'email' => ['required', 'email', 'max:100'],
+            'nomor_telepon' => ['required', 'string', 'max:30'],
+            'nim_nip' => ['nullable', 'string', 'max:50'],
+            'id_layanan' => ['required', 'integer', 'exists:layanan,id'],
+            'subjek' => ['required', 'string', 'max:150'],
+            'deskripsi' => ['required', 'string', 'max:5000'],
+            'dokumen' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:5120'],
+        ]);
+
+        $layanan = Layanan::findOrFail($data['id_layanan']);
+
+        $pengguna = Pengguna::firstOrNew(['email' => $data['email']]);
+        $pengguna->nama_lengkap = $data['nama_lengkap'];
+        $pengguna->nim_nip = $data['nim_nip'] ?? $pengguna->nim_nip;
+        $pengguna->nomor_telepon = $data['nomor_telepon'];
+
+        if (!$pengguna->exists) {
+            $pengguna->kata_sandi = bcrypt(Str::random(20));
+        }
+
+        $pengguna->save();
+
+        $duplicatePengajuan = Pengajuan::query()
+            ->where('id_pengguna', $pengguna->id)
+            ->where('id_layanan', $layanan->id)
+            ->where('subjek', $data['subjek'])
+            ->where('deskripsi', $data['deskripsi'])
+            ->where('status', 'diajukan')
+            ->latest('dibuat_pada')
+            ->first();
+
+        if ($duplicatePengajuan) {
+            return redirect()->route('pengajuan.berhasil', ['nomorTiket' => $duplicatePengajuan->nomor_tiket])
+                ->with('success', 'Pengajuan Anda sudah tercatat. Nomor E-Tiket Anda: ' . $duplicatePengajuan->nomor_tiket);
+        }
+
+        $pengajuanData = [
+            'id_pengguna' => $pengguna->id,
+            'id_layanan' => $layanan->id,
+            'id_admin_fo' => null,
+            'subjek' => $data['subjek'],
+            'deskripsi' => $data['deskripsi'],
+            'status' => 'diajukan',
+        ];
+
+        if (Schema::hasColumn('pengajuan', 'id_unit') && !is_null($layanan->id_unit ?? null)) {
+            $pengajuanData['id_unit'] = $layanan->id_unit;
+        }
+
+        $pengajuan = DB::transaction(function () use ($pengajuanData) {
+            $lastPengajuan = Pengajuan::query()->lockForUpdate()->orderByDesc('id')->first();
+            $nextSequence = $lastPengajuan ? (int) $lastPengajuan->id + 1 : 1;
+
+            $pengajuanData['nomor_tiket'] = Pengajuan::generateNomorTiket($nextSequence);
+
+            $pengajuan = Pengajuan::create($pengajuanData);
+
+            RiwayatPengajuan::create([
+                'id_pengajuan' => $pengajuan->id,
+                'status_sebelumnya' => null,
+                'status_baru' => 'diajukan',
+                'judul_status' => 'Pengajuan diterima',
+                'deskripsi' => 'Pengajuan layanan berhasil dibuat dan menunggu verifikasi admin ULT.',
+                'nama_aktor' => 'Sistem',
+                'id_admin' => null,
+                'dibuat_pada' => now(),
+            ]);
+
+            return $pengajuan;
+        });
+
+        $nomorTiket = $pengajuan->nomor_tiket;
+
+        if ($request->hasFile('dokumen') && Schema::hasTable('dokumen_pengajuan')) {
+            $uploadedFile = $request->file('dokumen');
+            $storedPath = $uploadedFile->storeAs(
+                'pengajuan',
+                time() . '_' . $uploadedFile->getClientOriginalName(),
+                'public'
+            );
+
+            DB::table('dokumen_pengajuan')->insert([
+                'id_pengajuan' => $pengajuan->id,
+                'nama_file' => $uploadedFile->getClientOriginalName(),
+                'path_file' => $storedPath,
+                'ukuran_file' => (string) $uploadedFile->getSize(),
+                'diunggah_pada' => now(),
+            ]);
+        }
+
+        return redirect()->route('pengajuan.berhasil', ['nomorTiket' => $nomorTiket])
+            ->with('success', 'Pengajuan berhasil dibuat. Nomor E-Tiket Anda: ' . $nomorTiket);
+    }
+
+    public function detailPengajuan(string $nomorTiket): View
+    {
+        $pengajuan = Pengajuan::query()
+            ->with(['layanan.unit', 'riwayat'])
+            ->where('nomor_tiket', $nomorTiket)
+            ->firstOrFail();
+
+        $pemohon = Pengguna::find($pengajuan->id_pengguna);
+
+        return view('user.detail_pengajuan', [
+            'pengajuan' => $pengajuan,
+            'pemohon' => $pemohon,
+        ]);
+    }
+
+    public function successPengajuan(string $nomorTiket): View
+    {
+        $pengajuan = Pengajuan::query()
+            ->with(['layanan.unit', 'riwayat'])
+            ->where('nomor_tiket', $nomorTiket)
+            ->firstOrFail();
+
+        $pemohon = Pengguna::find($pengajuan->id_pengguna);
+
+        return view('user.pengajuan_berhasil', [
+            'pengajuan' => $pengajuan,
+            'pemohon' => $pemohon,
+        ]);
     }
 }

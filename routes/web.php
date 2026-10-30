@@ -31,6 +31,18 @@ Route::get('/layanan/{slug}', [UserLayananController::class, 'detail'])
 Route::get('/cek-status', [CekStatusController::class, 'index'])
     ->name('cek-status');
 
+Route::get('/e-tiket/form', [UserLayananController::class, 'formPengajuan'])
+    ->name('pengajuan.form');
+
+Route::post('/e-tiket/form', [UserLayananController::class, 'submitPengajuan'])
+    ->name('pengajuan.submit');
+
+Route::get('/e-tiket/{nomorTiket}/berhasil', [UserLayananController::class, 'successPengajuan'])
+    ->name('pengajuan.berhasil');
+
+Route::get('/e-tiket/{nomorTiket}', [UserLayananController::class, 'detailPengajuan'])
+    ->name('pengajuan.detail');
+
 /*
 |--------------------------------------------------------------------------
 | Autentikasi Admin
