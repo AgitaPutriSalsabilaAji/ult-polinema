@@ -62,26 +62,28 @@
                                 </td>
                                 <td>{{ $item->unit?->nama_unit ?? '-' }}</td>
                                 <td class="text-end text-nowrap">
-                                    <button type="button" class="btn btn-sm btn-link edit-admin"
-                                            data-bs-toggle="modal" data-bs-target="#editAdminModal"
-                                            data-id="{{ $item->id }}"
-                                            data-name="{{ $item->nama_lengkap_gelar }}"
-                                            data-email="{{ $item->email }}"
-                                            data-phone="{{ $item->nomor_telepon }}"
-                                            data-nip="{{ $item->nip }}"
-                                            data-role="{{ $item->peran }}"
-                                            data-unit="{{ $item->id_unit }}">
-                                        Edit
-                                    </button>
-
-                                    @if ($item->id !== auth('admin')->id())
-                                        <button type="button" class="btn btn-sm btn-link text-danger delete-admin"
-                                                data-bs-toggle="modal" data-bs-target="#deleteAdminModal"
+                                    <div class="d-inline-flex align-items-center gap-1">
+                                        <button type="button" class="btn btn-sm btn-primary edit-admin"
+                                                data-bs-toggle="modal" data-bs-target="#editAdminModal"
                                                 data-id="{{ $item->id }}"
-                                                data-name="{{ $item->nama_lengkap_gelar }}">
-                                            Hapus
+                                                data-name="{{ $item->nama_lengkap_gelar }}"
+                                                data-email="{{ $item->email }}"
+                                                data-phone="{{ $item->nomor_telepon }}"
+                                                data-nip="{{ $item->nip }}"
+                                                data-role="{{ $item->peran }}"
+                                                data-unit="{{ $item->id_unit }}">
+                                            Edit
                                         </button>
-                                    @endif
+
+                                        @if ($item->id !== auth('admin')->id())
+                                            <button type="button" class="btn btn-sm btn-danger delete-admin"
+                                                    data-bs-toggle="modal" data-bs-target="#deleteAdminModal"
+                                                    data-id="{{ $item->id }}"
+                                                    data-name="{{ $item->nama_lengkap_gelar }}">
+                                                Hapus
+                                            </button>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @empty
