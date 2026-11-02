@@ -10,6 +10,7 @@ class DisposisiPengajuan extends Model
     protected $table = 'disposisi_pengajuan';
 
     const CREATED_AT = 'tanggal_disposisi';
+
     const UPDATED_AT = 'diperbarui_pada';
 
     protected $fillable = [
@@ -34,5 +35,10 @@ class DisposisiPengajuan extends Model
     public function unitTujuan(): BelongsTo
     {
         return $this->belongsTo(Unit::class, 'id_unit_tujuan');
+    }
+
+    public function adminTujuan(): BelongsTo
+    {
+        return $this->belongsTo(Admin::class, 'id_admin_tujuan');
     }
 }

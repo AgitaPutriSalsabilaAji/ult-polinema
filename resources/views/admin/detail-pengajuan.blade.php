@@ -9,6 +9,20 @@
 @section('content')
 <div class="container-fluid">
 
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    @if($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <div class="mb-3">
         <a href="{{ route('admin.pengajuan.index') }}"
            class="btn btn-sm btn-outline-secondary">
@@ -68,7 +82,7 @@
                         </tr>
                         <tr>
                             <th>Status</th>
-                            <td>{{ strtoupper($pengajuan->status) }}</td>
+                            <td>@include('admin.partials.status-badge', ['status' => $pengajuan->status])</td>
                         </tr>
                     </table>
                 </div>
@@ -92,6 +106,7 @@
                     <tr>
                         <th>Tanggal</th>
                         <th>Unit Tujuan</th>
+                        <th>Admin Tujuan</th>
                         <th>Catatan</th>
                         <th>Status</th>
                     </tr>
@@ -101,12 +116,13 @@
                     <tr>
                         <td>{{ $item->tanggal_disposisi?->format('d/m/Y H:i') ?? '-' }}</td>
                         <td>{{ $item->unitTujuan?->nama_unit ?? '-' }}</td>
+                        <td>{{ $item->adminTujuan?->nama_lengkap_gelar ?? '-' }}</td>
                         <td>{{ $item->catatan_disposisi ?: '-' }}</td>
-                        <td>{{ strtoupper($item->status_disposisi) }}</td>
+                        <td>@include('admin.partials.status-badge', ['status' => $item->status_disposisi])</td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="text-center p-3">
+                        <td colspan="5" class="text-center p-3">
                             Belum ada riwayat disposisi.
                         </td>
                     </tr>
@@ -137,8 +153,14 @@
                     <tr>
                         <td>{{ $item->dibuat_pada?->format('d/m/Y H:i') ?? '-' }}</td>
                         <td>{{ $item->judul_status }}</td>
-                        <td>{{ $item->status_sebelumnya ?? '-' }}</td>
-                        <td>{{ $item->status_baru ?? '-' }}</td>
+                        <td>
+                            @if($item->status_sebelumnya)
+                                @include('admin.partials.status-badge', ['status' => $item->status_sebelumnya])
+                            @else
+                                -
+                            @endif
+                        </td>
+                        <td>@include('admin.partials.status-badge', ['status' => $item->status_baru])</td>
                         <td>{{ $item->nama_aktor }}</td>
                         <td>{{ $item->deskripsi }}</td>
                     </tr>
@@ -153,5 +175,53 @@
             </table>
         </div>
     </div>
+
+    @if(auth('admin')->user()?->peran === 'admin_unit'
+        && $pengajuan->status === 'diproses')
+        <div class="card">
+            <div class="card-header"><strong>Tindakan Pengajuan</strong></div>
+            <div class="card-body d-flex flex-wrap gap-2">
+                <form method="POST" action="{{ route('admin.pengajuan.selesai', $pengajuan) }}">
+                    @csrf
+                    <button class="btn btn-success" type="submit">
+                        <i class="fas fa-check"></i> Selesai
+                    </button>
+                </form>
+                <form method="POST" action="{{ route('admin.pengajuan.tolak', $pengajuan) }}">
+                    @csrf
+                    <div class="input-group">
+                        <input type="text" name="alasan" class="form-control"
+                               placeholder="Alasan penolakan (opsional)" maxlength="5000">
+                        <button class="btn btn-outline-danger" type="submit">
+                            <i class="fas fa-times"></i> Tolak
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
 </div>
+@stop
+
+@section('css')
+<style>
+    .ticket-status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.2;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+    .ticket-status-badge--baru { color: #1d4ed8; background: #dbeafe; }
+    .ticket-status-badge--didisposisikan { color: #7e22ce; background: #f3e8ff; }
+    .ticket-status-badge--diproses { color: #b45309; background: #fef3c7; }
+    .ticket-status-badge--selesai { color: #047857; background: #d1fae5; }
+    .ticket-status-badge--ditolak { color: #be123c; background: #ffe4e6; }
+    .ticket-status-badge--default { color: #475569; background: #e2e8f0; }
+</style>
 @stop
