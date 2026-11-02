@@ -17,6 +17,7 @@ class Pengajuan extends Model
     protected $fillable = [
         'nomor_tiket',
         'id_pengguna',
+        'user_id',
         'id_layanan',
         'id_unit',
         'id_admin_fo',
@@ -41,6 +42,11 @@ class Pengajuan extends Model
     public function layanan(): BelongsTo
     {
         return $this->belongsTo(Layanan::class, 'id_layanan');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function pengguna(): BelongsTo

@@ -134,9 +134,13 @@
                                     <span class="upload-zone__text">Tarik dokumen ke sini atau <span class="upload-zone__link">klik untuk memilih file</span></span>
                                     <small>Mendukung format PDF, JPG, JPEG, PNG (Maks 5 MB)</small>
                                 </label>
-                                <input id="dokumen" name="dokumen" type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" data-max-size="5242880">
+                                <input id="dokumen" name="dokumen" type="file" accept=".pdf,.jpg,.jpeg,.png" data-max-size="5242880">
                             </div>
 
+                            <p id="documentValidationMessage" class="upload-error" role="alert" hidden></p>
+                            @error('dokumen')
+                                    <p class="upload-error" role="alert">{{ $message }}</p>
+                            @enderror
                             <div id="selectedFileList" class="selected-file-list" aria-live="polite"></div>
                         </div>
 
