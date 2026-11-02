@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class Pengajuan extends Model
 {
@@ -49,16 +48,9 @@ class Pengajuan extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function unit(): HasOneThrough
+    public function unit(): BelongsTo
     {
-        return $this->hasOneThrough(
-            Unit::class,
-            Layanan::class,
-            'id',
-            'id',
-            'id_layanan',
-            'id_unit'
-        );
+        return $this->belongsTo(Unit::class, 'id_unit');
     }
 
     public function disposisi(): HasMany

@@ -113,6 +113,16 @@ Route::middleware('auth:admin')
             'disposisi',
         ])->name('pengajuan.disposisi');
 
+        Route::post('/pengajuan/{pengajuan}/selesai', [
+            PengajuanController::class,
+            'selesai',
+        ])->name('pengajuan.selesai');
+
+        Route::post('/pengajuan/{pengajuan}/tolak', [
+            PengajuanController::class,
+            'tolak',
+        ])->name('pengajuan.tolak');
+
         // Tracking e-ticket
         Route::view('/tracking', 'admin.tracking')->name('tracking');
 
@@ -161,20 +171,20 @@ Route::middleware('auth:admin')
         Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
         Route::put('/profil/password', [ProfilController::class, 'updatePassword'])->name('profil.password');
 
-    // Daftar Admin — Khusus Admin ULT
-    Route::middleware('can:akses-daftar-admin')->group(function () {
-        Route::resource('daftar-admin', DaftarAdminController::class)
-            ->except(['show']);
+        // Daftar Admin — Khusus Admin ULT
+        Route::middleware('can:akses-daftar-admin')->group(function () {
+            Route::resource('daftar-admin', DaftarAdminController::class)
+                ->except(['show']);
+        });
+        Route::get('/login', [AdminLoginController::class, 'showLoginForm'])
+            ->middleware('guest:admin')
+            ->name('login');
+
+        Route::post('/login', [AdminLoginController::class, 'login'])
+            ->middleware('guest:admin')
+            ->name('login.submit');
+
+        Route::post('/logout', [AdminLoginController::class, 'logout'])
+            ->middleware('auth:admin')
+            ->name('logout');
     });
-    Route::get('/login', [AdminLoginController::class, 'showLoginForm'])
-    ->middleware('guest:admin')
-    ->name('login');
-
-    Route::post('/login', [AdminLoginController::class, 'login'])
-    ->middleware('guest:admin')
-    ->name('login.submit');
-
-    Route::post('/logout', [AdminLoginController::class, 'logout'])
-    ->middleware('auth:admin')
-    ->name('logout');
-});
