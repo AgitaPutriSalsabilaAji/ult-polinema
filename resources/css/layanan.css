@@ -489,6 +489,7 @@ body {
 .detail-page .information-row .time-value { color:#07976d; }
 .detail-page .apply-button, .detail-page .back-button, .detail-page .whatsapp-button { display:block; text-align:center; padding:12px; border-radius:9px; font-size:11px; font-weight:700; }
 .detail-page .apply-button { margin-top:20px; background:var(--layanan-orange); color:#fff; }
+.detail-page button.apply-button { width:100%; border:0; font-family:inherit; cursor:pointer; }
 .detail-page .back-button { margin-top:8px; background:#fff; color:var(--layanan-dark); }
 .detail-page .help-card { margin-top:18px; padding:0 12px; }
 .detail-page .help-card strong { font-size:12px; }

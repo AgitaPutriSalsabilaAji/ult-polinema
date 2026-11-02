@@ -44,6 +44,7 @@ class HomepageServicesTest extends TestCase
 
     public function test_user_navbar_supports_both_themes_without_check_services_menu(): void
     {
+        $this->withoutVite();
         $lightNavbar = view('user.navbar', ['theme' => 'light', 'active' => 'home'])->render();
         $purpleNavbar = view('user.navbar', ['theme' => 'purple', 'active' => 'services'])->render();
         $ticketNavbar = view('user.navbar', ['theme' => 'purple', 'active' => 'ticket'])->render();
@@ -145,7 +146,7 @@ class HomepageServicesTest extends TestCase
             ->assertSee('<h2 class="section-heading text-start">Layanan</h2>', false)
             ->assertSee('href="'.route('layanan.index').'" class="see-all">LIHAT SEMUA LAYANAN', false)
             ->assertSee('href="'.route('layanan.index').'" class="btn btn-orange">', false)
-            ->assertDontSee('data-bs-toggle="modal"', false)
+            ->assertDontSee('data-bs-target="#loginModal"', false)
             ->assertSee('href="'.route('beranda', ['kategori' => 'humas']).'#layanan"', false);
 
         $this->assertStringNotContainsString('Surat Keterangan Kuliah', $serviceCardText);
@@ -193,7 +194,7 @@ class HomepageServicesTest extends TestCase
 
         $response->assertOk()
             ->assertSeeText($includedService)
-            ->assertDontSee('data-bs-toggle="modal"', false);
+            ->assertDontSee('data-bs-target="#loginModal"', false);
 
         $this->assertStringContainsString($includedService, $serviceCardText);
         $this->assertStringNotContainsString($excludedService, $serviceCardText);
@@ -359,11 +360,14 @@ class HomepageServicesTest extends TestCase
             ->get(route('layanan.detail', ['slug' => $serviceId]));
 
         $detailResponse->assertOk()
-            ->assertSee(route('pengajuan.form', ['layanan' => $serviceId]), false);
+            ->assertSee('data-service-id="'.$serviceId.'"', false)
+            ->assertSee('data-bs-target="#loginModal"', false);
 
-        $this->get(route('pengajuan.form', ['layanan' => $serviceId]))
-            ->assertOk()
-            ->assertSee('name="id_layanan" value="'.$serviceId.'"', false);
+        $formUrl = route('pengajuan.form', ['layanan' => $serviceId]);
+
+        $this->get($formUrl)
+            ->assertRedirect(route('user.login'))
+            ->assertSessionHas('url.intended', $formUrl);
     }
 
     public function test_service_list_uses_database_search_unit_filter_and_saved_images(): void

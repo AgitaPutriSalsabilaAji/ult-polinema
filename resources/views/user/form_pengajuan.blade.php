@@ -64,7 +64,7 @@
                                 </div>
                                 <div class="field-group">
                                     <label for="nama_lengkap">Nama Lengkap <span class="required-mark">*</span></label>
-                                    <input id="nama_lengkap" name="nama_lengkap" type="text" value="{{ old('nama_lengkap') }}" required>
+                                    <input id="nama_lengkap" name="nama_lengkap" type="text" value="{{ old('nama_lengkap', $user->name) }}" readonly required>
                                 </div>
                                 <div class="field-group">
                                     <label for="nim_nip">NIM / NIP</label>
@@ -72,7 +72,7 @@
                                 </div>
                                 <div class="field-group">
                                     <label for="email">Email Aktif <span class="required-mark">*</span></label>
-                                    <input id="email" name="email" type="email" value="{{ old('email') }}" required>
+                                    <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}" readonly required>
                                 </div>
                                 <div class="field-group field-group--wa">
                                     <label for="nomor_telepon">Nomor WhatsApp Aktif <span class="required-mark">*</span></label>

@@ -17,6 +17,7 @@ export default defineConfig({
                 'resources/js/form_pengajuan.js',
                 'resources/css/detail_pengajuan.css',
                 'resources/js/detail_pengajuan.js',
+                'resources/js/auth.js',
                 'resources/css/pengajuan_berhasil.css',
                 'resources/css/adminlte.css',
                 'resources/js/adminlte.js',

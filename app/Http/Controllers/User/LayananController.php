@@ -8,6 +8,7 @@ use App\Models\Pengajuan;
 use App\Models\Pengguna;
 use App\Models\RatingLayanan;
 use App\Models\RiwayatPengajuan;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -310,6 +311,7 @@ class LayananController extends Controller
         return view('user.form_pengajuan', [
             'layananList' => $layananList,
             'selectedLayanan' => $selectedLayanan,
+            'user' => $request->user(),
         ]);
     }
 
@@ -317,7 +319,7 @@ class LayananController extends Controller
     {
         $data = $request->validate([
             'nama_lengkap' => ['required', 'string', 'max:150'],
-            'email' => ['required', 'email', 'max:100'],
+            'email' => ['required', 'email', 'max:255'],
             'nomor_telepon' => ['required', 'string', 'max:30'],
             'nim_nip' => ['nullable', 'string', 'max:50'],
             'jenis_pemohon' => ['required', 'string', 'max:50'],
@@ -327,25 +329,31 @@ class LayananController extends Controller
             'dokumen' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:5120'],
         ]);
 
-        $layanan = Layanan::findOrFail($data['id_layanan']);
+        $user = $request->user();
+        abort_unless($user instanceof User, 403);
 
-        $pengguna = Pengguna::firstOrNew(['email' => $data['email']]);
-        $pengguna->nama_lengkap = $data['nama_lengkap'];
+        $layanan = Layanan::query()
+            ->where('status', 'aktif')
+            ->findOrFail($data['id_layanan']);
+
+        $pengguna = Pengguna::firstOrNew(['email' => $user->email]);
+        $pengguna->nama_lengkap = $user->name;
         $pengguna->nim_nip = $data['nim_nip'] ?? $pengguna->nim_nip;
         $pengguna->nomor_telepon = $data['nomor_telepon'];
 
         if (! $pengguna->exists) {
-            $pengguna->kata_sandi = bcrypt(Str::random(20));
+            $pengguna->kata_sandi = $user->getAuthPassword();
         }
 
         $pengguna->save();
 
         $duplicatePengajuan = Pengajuan::query()
             ->where('id_pengguna', $pengguna->id)
+            ->where('user_id', $user->getKey())
             ->where('id_layanan', $layanan->id)
             ->where('subjek', $data['subjek'])
             ->where('deskripsi', $data['deskripsi'])
-            ->where('status', 'diajukan')
+            ->whereIn('status', ['baru', 'diajukan'])
             ->latest('dibuat_pada')
             ->first();
 
@@ -356,12 +364,13 @@ class LayananController extends Controller
 
         $pengajuanData = [
             'id_pengguna' => $pengguna->id,
+            'user_id' => $user->getKey(),
             'id_layanan' => $layanan->id,
             'id_admin_fo' => null,
             'jenis_pemohon' => $data['jenis_pemohon'],
             'subjek' => $data['subjek'],
             'deskripsi' => $data['deskripsi'],
-            'status' => 'diajukan',
+            'status' => 'baru',
         ];
 
         if (Schema::hasColumn('pengajuan', 'id_unit') && ! is_null($layanan->id_unit ?? null)) {
@@ -379,7 +388,7 @@ class LayananController extends Controller
             RiwayatPengajuan::create([
                 'id_pengajuan' => $pengajuan->id,
                 'status_sebelumnya' => null,
-                'status_baru' => 'diajukan',
+                'status_baru' => 'baru',
                 'judul_status' => 'Pengajuan diterima',
                 'deskripsi' => 'Pengajuan layanan berhasil dibuat dan menunggu verifikasi admin ULT.',
                 'nama_aktor' => 'Sistem',
@@ -413,9 +422,12 @@ class LayananController extends Controller
             ->with('success', 'Pengajuan berhasil dibuat. Nomor E-Tiket Anda: '.$nomorTiket);
     }
 
-    public function detailPengajuan(string $nomorTiket): View
+    public function detailPengajuan(Request $request, string $nomorTiket): View
     {
-        $pengajuan = Pengajuan::query()
+        $user = $request->user();
+        abort_unless($user instanceof User, 403);
+
+        $pengajuan = $user->pengajuan()
             ->with(['layanan.unit', 'riwayat'])
             ->where('nomor_tiket', $nomorTiket)
             ->firstOrFail();
@@ -520,6 +532,7 @@ class LayananController extends Controller
         ]);
     }
 
+<<<<<<< HEAD
     public function storePesan(Request $request, string $nomorTiket): RedirectResponse
     {
         $pengajuan = Pengajuan::query()
@@ -694,8 +707,14 @@ class LayananController extends Controller
     }
 
     public function successPengajuan(string $nomorTiket): View
+=======
+    public function successPengajuan(Request $request, string $nomorTiket): View
+>>>>>>> cf76120c7ee175d0dd6c9bba8348e405423973e5
     {
-        $pengajuan = Pengajuan::query()
+        $user = $request->user();
+        abort_unless($user instanceof User, 403);
+
+        $pengajuan = $user->pengajuan()
             ->with(['layanan.unit', 'riwayat'])
             ->where('nomor_tiket', $nomorTiket)
             ->firstOrFail();

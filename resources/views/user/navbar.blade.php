@@ -43,6 +43,31 @@
                        href="{{ route('cek-status') }}"
                        @if ($active === 'ticket') aria-current="page" @endif>E-Tiket</a>
                 </li>
+                @auth('web')
+                    @php($authenticatedUser = auth('web')->user())
+                    @php($avatarPath = $authenticatedUser->getAttribute('avatar'))
+                    <li class="nav-item ult-profile-item">
+                        <details class="ult-profile">
+                            <summary class="ult-profile__toggle" aria-label="Buka profil {{ $authenticatedUser->name }}">
+                                <span class="ult-profile__avatar" aria-hidden="true">
+                                    @if (filled($avatarPath))
+                                        <img src="{{ asset('storage/'.$avatarPath) }}" alt="">
+                                    @else
+                                        {{ mb_strtoupper(mb_substr(trim($authenticatedUser->name), 0, 1)) }}
+                                    @endif
+                                </span>
+                            </summary>
+                            <div class="ult-profile__menu">
+                                <strong>{{ $authenticatedUser->name }}</strong>
+                                <span>{{ $authenticatedUser->email }}</span>
+                                <button type="button" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                                    Logout
+                                </button>
+                            </div>
+                        </details>
+                    </li>
+                @endauth
             </ul>
             @if ($showServiceCta)
                 <a class="ult-navbar__cta" href="{{ route('layanan.index') }}"><i class="bi bi-search" aria-hidden="true"></i>Cek Layanan</a>
@@ -50,3 +75,6 @@
         </div>
     </div>
 </nav>
+
+@include('auth.user-modals')
+@vite('resources/js/auth.js')
