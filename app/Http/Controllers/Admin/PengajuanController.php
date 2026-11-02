@@ -203,9 +203,25 @@ class PengajuanController extends Controller
                 ->first();
         }
 
+        $dokumenPengajuan = Schema::hasTable('dokumen_pengajuan')
+            ? DB::table('dokumen_pengajuan')
+                ->where('id_pengajuan', $pengajuan->id)
+                ->orderBy('diunggah_pada')
+                ->get()
+            : collect();
+
+        $pesanPengajuan = Schema::hasTable('pesan_pengajuan')
+            ? DB::table('pesan_pengajuan')
+                ->where('id_pengajuan', $pengajuan->id)
+                ->orderBy('dibuat_pada')
+                ->get()
+            : collect();
+
         return view('admin.detail-pengajuan', compact(
             'pengajuan',
-            'pemohon'
+            'pemohon',
+            'dokumenPengajuan',
+            'pesanPengajuan'
         ));
     }
 
@@ -225,15 +241,16 @@ class PengajuanController extends Controller
             ->with('success', 'Pengajuan berhasil diselesaikan.');
     }
 
-    public function tolak(Request $request, Pengajuan $pengajuan): RedirectResponse
+    public function tolak(Pengajuan $pengajuan): RedirectResponse
     {
-        $data = $request->validate([
-            'alasan' => ['nullable', 'string', 'max:5000'],
-        ]);
         $admin = $this->authorizeUnitAdmin($pengajuan);
-        $description = $data['alasan'] ?: 'Pengajuan ditolak oleh admin unit.';
 
-        $this->transitionStatus($pengajuan, 'ditolak', $admin, $description);
+        $this->transitionStatus(
+            $pengajuan,
+            'ditolak',
+            $admin,
+            'Pengajuan ditolak oleh admin unit.'
+        );
 
         return redirect()
             ->route('admin.pengajuan.show', $pengajuan)
@@ -271,16 +288,13 @@ class PengajuanController extends Controller
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            if ($locked->status === $newStatus) {
-                return;
-            }
-
             $allowedTransitions = [
                 'didisposisikan' => ['diproses'],
                 'diproses' => ['selesai', 'ditolak'],
             ];
 
-            if (! in_array($newStatus, $allowedTransitions[$locked->status] ?? [], true)) {
+            if ($locked->isTerminal()
+                || ! in_array($newStatus, $allowedTransitions[$locked->status] ?? [], true)) {
                 abort(409, 'Perubahan status pengajuan tidak valid.');
             }
 

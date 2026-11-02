@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Pengajuan extends Model
 {
+    public const TERMINAL_STATUSES = ['selesai', 'ditolak'];
+
     protected $table = 'pengajuan';
 
     const CREATED_AT = 'dibuat_pada';
@@ -73,5 +75,10 @@ class Pengajuan extends Model
             RiwayatPengajuan::class,
             'id_pengajuan'
         );
+    }
+
+    public function isTerminal(): bool
+    {
+        return in_array($this->status, self::TERMINAL_STATUSES, true);
     }
 }
