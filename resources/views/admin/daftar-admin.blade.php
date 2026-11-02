@@ -2,19 +2,15 @@
 
 @section('title', 'Daftar Admin')
 
+@section('content_header')
+    <h3 class="profile-page-title mb-0">Daftar Admin</h3>
+        <p class="text-muted mb-0">
+        Kelola akun dan akses administrator ULT Polinema.
+    </p>
+@stop
+
 @section('content')
 <div class="container-fluid py-4 admin-list-page">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h4 class="admin-page-title mb-1">Daftar Admin</h4>
-            <p class="text-muted mb-0">Kelola akun dan akses administrator ULT Polinema.</p>
-        </div>
-
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                data-bs-target="#addAdminModal" id="openAddAdmin">
-            + Tambah Admin
-        </button>
-    </div>
 
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -33,8 +29,24 @@
 
     <div class="card border-0 shadow-sm">
         <div class="card-body">
-            <h6 class="fw-bold">Administrator terdaftar</h6>
-            <p class="small text-muted">Kelola akun dan hak akses administrator ULT Polinema.</p>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h6 class="fw-bold mb-1">Administrator terdaftar</h6>
+                        <p class="small text-muted mb-0">
+                            Kelola akun dan hak akses administrator ULT Polinema.
+                        </p>
+                    </div>
+
+                    <button type="button"
+                            class="btn btn-primary btn-sm flex-shrink-0 btn-tambah-admin"
+                            data-bs-toggle="modal"
+                            data-bs-target="#addAdminModal"
+                            id="openAddAdmin">
+                        <i class="bi bi-plus-lg me-1"></i>
+                        Tambah Admin
+                    </button>
+                </div>
+
 
             <div class="table-responsive">
                 <table class="table align-middle">
@@ -325,6 +337,13 @@
 
     .admin-delete-modal .modal-body {
         color: #667085;
+    }
+    
+    .btn-tambah-admin {
+        font-size: 11px !important;
+        padding: 4px 9px !important;
+        line-height: 1.2;
+        border-radius: 4px;
     }
 
     @media (max-width: 575.98px) {

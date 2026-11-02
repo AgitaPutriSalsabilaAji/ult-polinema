@@ -2,16 +2,15 @@
 
 @section('title', 'Rating & Ulasan Layanan ULT')
 
+@section('content_header')
+    <h3 class="profile-page-title mb-0">Rating & Ulasan Layanan ULT</h3>
+        <p class="text-muted mb-0">
+        Lihat penilaian dan feedback langsung dari pemohon layanan ULT Polinema.
+    </p>
+@stop
+
 @section('content')
 <div class="container-fluid px-3 py-4 rating-page">
-
-    {{-- Header --}}
-    <div class="mb-4">
-        <h4 class="admin-page-title mb-1">Rating & Ulasan Layanan ULT</h4>
-        <p class="text-muted mb-0">
-            Lihat penilaian dan feedback langsung dari pemohon layanan ULT Polinema.
-        </p>
-    </div>
 
     {{-- Notifikasi --}}
     @if (session('success'))

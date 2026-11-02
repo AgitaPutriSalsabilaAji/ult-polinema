@@ -1,10 +1,12 @@
-```blade
 @extends('adminlte::page')
 
 @section('title', 'Profil & Pengaturan Akun')
 
 @section('content_header')
-    <h4 class="profile-page-title mb-0">Profil & Pengaturan Akun</h4>
+    <h3 class="profile-page-title mb-0">Profil & Pengaturan Akun</h3>
+        <p class="text-muted mb-0">
+        Kelola informasi profil, data pribadi, dan pengaturan akun Anda.
+    </p>
 @stop
 
 @section('content')
@@ -675,4 +677,3 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 @endpush
-```

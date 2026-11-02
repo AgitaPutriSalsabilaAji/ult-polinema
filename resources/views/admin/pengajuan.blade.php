@@ -3,7 +3,10 @@
 @section('title', 'Data Pengajuan')
 
 @section('content_header')
-    <h1 class="admin-page-title">Data Pengajuan Pelayanan</h1>
+    <h3 class="profile-page-title mb-0">Data Pengajuan Pelayanan</h3>
+        <p class="text-muted mb-0">
+        Kelola dan pantau seluruh data pengajuan pelayanan yang masuk ke ULT Polinema.
+    </p>
 @stop
 
 @section('content')
