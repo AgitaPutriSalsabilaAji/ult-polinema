@@ -349,7 +349,6 @@ class LayananController extends Controller
 
         $duplicatePengajuan = Pengajuan::query()
             ->where('id_pengguna', $pengguna->id)
-            ->where('user_id', $user->getKey())
             ->where('id_layanan', $layanan->id)
             ->where('subjek', $data['subjek'])
             ->where('deskripsi', $data['deskripsi'])
@@ -364,7 +363,6 @@ class LayananController extends Controller
 
         $pengajuanData = [
             'id_pengguna' => $pengguna->id,
-            'user_id' => $user->getKey(),
             'id_layanan' => $layanan->id,
             'id_admin_fo' => null,
             'jenis_pemohon' => $data['jenis_pemohon'],
@@ -427,7 +425,10 @@ class LayananController extends Controller
         $user = $request->user();
         abort_unless($user instanceof User, 403);
 
-        $pengajuan = $user->pengajuan()
+        $pemohon = Pengguna::query()->where('email', $user->email)->firstOrFail();
+
+        $pengajuan = Pengajuan::query()
+            ->where('id_pengguna', $pemohon->id)
             ->with(['layanan.unit', 'riwayat'])
             ->where('nomor_tiket', $nomorTiket)
             ->firstOrFail();
@@ -710,7 +711,10 @@ class LayananController extends Controller
         $user = $request->user();
         abort_unless($user instanceof User, 403);
 
-        $pengajuan = $user->pengajuan()
+        $pemohon = Pengguna::query()->where('email', $user->email)->firstOrFail();
+
+        $pengajuan = Pengajuan::query()
+            ->where('id_pengguna', $pemohon->id)
             ->with(['layanan.unit', 'riwayat'])
             ->where('nomor_tiket', $nomorTiket)
             ->firstOrFail();

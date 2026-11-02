@@ -20,7 +20,7 @@ class User extends Authenticatable
 
     public function pengajuan(): HasMany
     {
-        return $this->hasMany(Pengajuan::class);
+        return $this->hasMany(Pengajuan::class, 'id_pengguna');
     }
 
     /**
