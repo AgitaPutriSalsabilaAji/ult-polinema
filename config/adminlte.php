@@ -54,8 +54,8 @@ return [
     |
     */
 
-    'logo' => '<span class="brand-title">ULT POLINEMA</span><span class="brand-subtitle">ADMIN WORKSPACE</span>',
-    'logo_img' => 'images/logo polinema.png',
+    'logo' => '<span class="brand-title">ULT POLINEMA</span><span class="brand-subtitle">ADMIN PORTAL</span>',
+    'logo_img' => 'images/polinema-logo.png',
     'logo_img_class' => 'brand-image',
     'logo_img_alt' => 'Logo Politeknik Negeri Malang',
 

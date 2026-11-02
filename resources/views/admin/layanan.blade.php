@@ -3,8 +3,10 @@
 @section('title', 'Informasi Layanan')
 
 @section('content_header')
-    <h3 class="admin-page-title mb-1">Manajemen Informasi Layanan</h3>
-    <p class="text-muted mb-0">Kelola Informasi Layanan yang ditampilkan kepada pengguna.</p>
+    <h3 class="profile-page-title mb-0">Manajemen Informasi Layanan</h3>
+        <p class="text-muted mb-0">
+        Kelola informasi layanan yang ditampilkan kepada pengguna.
+    </p>
 @stop
 
 @section('content')
@@ -86,7 +88,7 @@
                             <th>Estimasi Waktu</th>
                             <th>Status</th>
                             <th>Diperbarui</th>
-                            <th style="min-width: 240px">Aksi</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
 
@@ -108,16 +110,29 @@
 
                             <td>{{ $layanan->estimasi_waktu }}</td>
 
+                            {{-- Toggle Status --}}
                             <td>
-                                @if($layanan->status === 'aktif')
-                                    <span class="badge text-bg-success">
-                                        AKTIF
-                                    </span>
-                                @else
-                                    <span class="badge text-bg-secondary">
-                                        NONAKTIF
-                                    </span>
-                                @endif
+                                <form method="POST"
+                                      action="{{ route('admin.layanan.status', $layanan) }}"
+                                      class="form-status-toggle">
+                                    @csrf
+                                    @method('PATCH')
+
+                                    <div class="status-control">
+                                        <input
+                                            type="checkbox"
+                                            class="status-toggle"
+                                            role="switch"
+                                            aria-label="Ubah status {{ $layanan->nama_layanan }}"
+                                            {{ $layanan->status === 'aktif' ? 'checked' : '' }}
+                                            onchange="this.form.submit()"
+                                        >
+
+                                        <span class="status-label {{ $layanan->status === 'aktif' ? 'aktif' : 'nonaktif' }}">
+                                            {{ $layanan->status === 'aktif' ? 'Aktif' : 'Nonaktif' }}
+                                        </span>
+                                    </div>
+                                </form>
                             </td>
 
                             <td>
@@ -128,47 +143,26 @@
                                     : '-' }}
                             </td>
 
+                            {{-- Tombol Aksi --}}
                             <td>
-                                <div class="d-flex flex-wrap gap-1">
-                                    <a href="{{ route(
-                                        'admin.layanan.show', $layanan
-                                    ) }}"
+                                <div class="action-buttons">
+                                    <a href="{{ route('admin.layanan.show', $layanan) }}"
                                        class="btn btn-sm btn-outline-secondary">
                                         Lihat
                                     </a>
 
-                                    <a href="{{ route(
-                                        'admin.layanan.edit', $layanan
-                                    ) }}"
+                                    <a href="{{ route('admin.layanan.edit', $layanan) }}"
                                        class="btn btn-sm btn-primary">
                                         Edit
                                     </a>
 
                                     <form method="POST"
-                                          action="{{ route(
-                                              'admin.layanan.status', $layanan
-                                          ) }}">
-                                        @csrf
-                                        @method('PATCH')
-
-                                        <button type="submit"
-                                                class="btn btn-sm {{ $layanan->status === 'aktif' ? 'btn-outline-danger' : 'btn-outline-success' }}">
-                                            {{ $layanan->status === 'aktif'
-                                                ? 'Nonaktifkan'
-                                                : 'Aktifkan' }}
-                                        </button>
-                                    </form>
-
-                                    <form method="POST"
-                                          action="{{ route(
-                                              'admin.layanan.destroy', $layanan
-                                          ) }}"
+                                          action="{{ route('admin.layanan.destroy', $layanan) }}"
                                           onsubmit="return confirm('Hapus layanan ini beserta semua bagian informasinya?')">
                                         @csrf
                                         @method('DELETE')
 
-                                        <button type="submit"
-                                                class="btn btn-sm btn-danger">
+                                        <button type="submit" class="btn btn-sm btn-danger">
                                             Hapus
                                         </button>
                                     </form>
@@ -278,17 +272,101 @@
         margin-top: 3px;
     }
 
-    /* Badge status */
-    .layanan-page .badge {
-        font-size: 9px;
-        font-weight: 600;
-        padding: 4px 6px;
-        border-radius: 4px;
+    /* Toggle Status */
+    .layanan-page .form-status-toggle {
+        display: inline-block;
+        margin: 0;
     }
 
-    /* Jarak tombol aksi */
-    .layanan-page .d-flex.gap-1 {
-        gap: 4px !important;
+    .layanan-page .status-control {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .layanan-page .status-toggle {
+        appearance: none;
+        -webkit-appearance: none;
+        position: relative;
+        width: 34px;
+        height: 18px;
+        margin: 0;
+        border: 1px solid #cbd5e1;
+        border-radius: 20px;
+        background-color: #cbd5e1;
+        cursor: pointer;
+        transition: background-color 0.2s, border-color 0.2s;
+    }
+
+    .layanan-page .status-toggle::before {
+        content: '';
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        top: 2px;
+        left: 2px;
+        border-radius: 50%;
+        background-color: #fff;
+        transition: transform 0.2s;
+    }
+
+    .layanan-page .status-toggle:checked {
+        background-color: #16a34a;
+        border-color: #16a34a;
+    }
+
+    .layanan-page .status-toggle:checked::before {
+        transform: translateX(16px);
+    }
+
+    .layanan-page .status-toggle:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15);
+    }
+
+    .layanan-page .status-label {
+        font-size: 9px;
+        font-weight: 600;
+    }
+
+    .layanan-page .status-label.aktif {
+        color: #16a34a;
+    }
+
+    .layanan-page .status-label.nonaktif {
+        color: #64748b;
+    }
+
+    /* Kolom Status */
+    .layanan-page .table th:nth-child(4),
+    .layanan-page .table td:nth-child(4) {
+        min-width: 85px;
+        text-align: center;
+    }
+
+    /* Kolom Aksi */
+    .layanan-page .table th:last-child {
+        min-width: 180px;
+        width: 180px;
+    }
+
+    .layanan-page .action-buttons {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .layanan-page .action-buttons form {
+        display: inline-flex;
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+    .layanan-page .action-buttons .btn {
+        white-space: nowrap;
+        flex-shrink: 0;
     }
 
     /* Footer dan pagination */
@@ -312,28 +390,5 @@
         font-size: 11px;
         margin-bottom: 12px;
     }
-
-    .layanan-page .table th:last-child {
-        min-width: 280px !important;
-        width: 280px;
-    }
-
-    .layanan-page .table td:last-child .d-flex {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        align-items: center;
-        gap: 4px !important;
-    }
-
-    .layanan-page .table td:last-child form {
-        display: inline-flex;
-        margin: 0;
-        flex-shrink: 0;
-    }
-
-    .layanan-page .table td:last-child .btn {
-        white-space: nowrap;
-        flex-shrink: 0;
-    }
-    </style>
+</style>
 @endpush
