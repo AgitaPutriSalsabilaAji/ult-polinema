@@ -9,10 +9,7 @@ use App\Http\Controllers\Admin\PengajuanController;
 use App\Http\Controllers\Admin\ProfilController;
 use App\Http\Controllers\Admin\RatingLayananController;
 use App\Http\Controllers\Auth\AdminLoginController;
-<<<<<<< HEAD
-=======
 use App\Http\Controllers\Auth\UserAuthController;
->>>>>>> cf76120c7ee175d0dd6c9bba8348e405423973e5
 use App\Http\Controllers\User\CekStatusController;
 use App\Http\Controllers\User\LayananController as UserLayananController;
 use Illuminate\Support\Facades\Route;
@@ -64,26 +61,21 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/e-tiket/{nomorTiket}/berhasil', [UserLayananController::class, 'successPengajuan'])
         ->name('pengajuan.berhasil');
 
-<<<<<<< HEAD
-Route::post('/e-tiket/{nomorTiket}/pesan', [UserLayananController::class, 'storePesan'])
-    ->name('pengajuan.pesan.store');
+    Route::post('/e-tiket/{nomorTiket}/pesan', [UserLayananController::class, 'storePesan'])
+        ->name('pengajuan.pesan.store');
 
-Route::get('/e-tiket/{nomorTiket}/pesan/{pesanId}/lampiran', [UserLayananController::class, 'lihatLampiranPesan'])
-    ->name('pengajuan.pesan.lampiran.view');
+    Route::get('/e-tiket/{nomorTiket}/pesan/{pesanId}/lampiran', [UserLayananController::class, 'lihatLampiranPesan'])
+        ->name('pengajuan.pesan.lampiran.view');
 
-Route::get('/e-tiket/{nomorTiket}/dokumen/{dokumenId}/lihat', [UserLayananController::class, 'lihatDokumen'])
-    ->name('pengajuan.dokumen.view');
+    Route::get('/e-tiket/{nomorTiket}/dokumen/{dokumenId}/lihat', [UserLayananController::class, 'lihatDokumen'])
+        ->name('pengajuan.dokumen.view');
 
-Route::get('/e-tiket/{nomorTiket}/dokumen/{dokumenId}/unduh', [UserLayananController::class, 'unduhDokumen'])
-    ->name('pengajuan.dokumen.download');
+    Route::get('/e-tiket/{nomorTiket}/dokumen/{dokumenId}/unduh', [UserLayananController::class, 'unduhDokumen'])
+        ->name('pengajuan.dokumen.download');
 
-Route::get('/e-tiket/{nomorTiket}', [UserLayananController::class, 'detailPengajuan'])
-    ->name('pengajuan.detail');
-=======
     Route::get('/e-tiket/{nomorTiket}', [UserLayananController::class, 'detailPengajuan'])
         ->name('pengajuan.detail');
 });
->>>>>>> cf76120c7ee175d0dd6c9bba8348e405423973e5
 
 Route::post('/e-tiket/{nomorTiket}/rating', [UserLayananController::class, 'storeRating'])
     ->name('pengajuan.rating.store');
@@ -191,17 +183,11 @@ Route::middleware('auth:admin')
         Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
         Route::put('/profil/password', [ProfilController::class, 'updatePassword'])->name('profil.password');
 
-<<<<<<< HEAD
-        // Daftar Admin
-        Route::resource('daftar-admin', DaftarAdminController::class)
-            ->except(['show']);
-=======
         // Daftar Admin — Khusus Admin ULT
         Route::middleware('can:akses-daftar-admin')->group(function () {
             Route::resource('daftar-admin', DaftarAdminController::class)
                 ->except(['show']);
         });
->>>>>>> cf76120c7ee175d0dd6c9bba8348e405423973e5
         Route::get('/login', [AdminLoginController::class, 'showLoginForm'])
             ->middleware('guest:admin')
             ->name('login');
