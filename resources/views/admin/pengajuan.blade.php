@@ -7,7 +7,7 @@
 @stop
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid pengajuan-page">
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -23,23 +23,27 @@
         </div>
     @endif
 
-    <div class="card">
+    <div class="card border-0 shadow-sm pengajuan-filter">
         <div class="card-body">
-            <form method="GET" action="{{ route('admin.pengajuan.index') }}"
-                  class="row">
-                <div class="col-lg-5 mb-2">
-                    <input type="search" name="q" class="form-control"
-                           value="{{ request('q') }}"
-                           placeholder="Cari ID, nama pemohon, atau subjek...">
+            <form method="GET"
+                action="{{ route('admin.pengajuan.index') }}"
+                class="row g-2 align-items-center">
+
+                <div class="{{ $isAdminUlt ? 'col-lg-5' : 'col-lg-7' }}">
+                    <input type="search"
+                        name="q"
+                        class="form-control"
+                        value="{{ request('q') }}"
+                        placeholder="Cari ID, nama pemohon, atau subjek...">
                 </div>
 
                 @if($isAdminUlt)
-                    <div class="col-lg-3 mb-2">
-                        <select name="unit" class="form-control">
+                    <div class="col-lg-3">
+                        <select name="unit" class="form-select">
                             <option value="">Semua Unit Pelaksana</option>
                             @foreach($units as $unit)
                                 <option value="{{ $unit->id }}"
-                                    @selected((string)request('unit') === (string)$unit->id)>
+                                    @selected((string) request('unit') === (string) $unit->id)>
                                     {{ $unit->nama_unit }}
                                 </option>
                             @endforeach
@@ -47,8 +51,8 @@
                     </div>
                 @endif
 
-                <div class="col-lg-2 mb-2">
-                    <select name="status" class="form-control">
+                <div class="col-lg-2">
+                    <select name="status" class="form-select">
                         <option value="">Semua Status</option>
                         @foreach([
                             'diajukan' => 'Diajukan',
@@ -66,11 +70,12 @@
                     </select>
                 </div>
 
-                <div class="col-lg-2 mb-2">
-                    <button class="btn btn-primary btn-block" type="submit">
-                        <i class="fas fa-search"></i> Cari
+                <div class="col-lg-2 d-grid">
+                    <button class="btn btn-outline-primary" type="submit">
+                        <i class="bi bi-search"></i> Cari
                     </button>
                 </div>
+
             </form>
         </div>
     </div>
@@ -430,6 +435,145 @@
         opacity: 0.58;
         backdrop-filter: blur(3px);
     }
+
+    .pengajuan-page {
+        font-size: 12px;
+    }
+
+    /* Judul halaman */
+    .admin-page-title {
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    /* Jarak antarkartu */
+    .pengajuan-page .card {
+        margin-bottom: 14px;
+        border-radius: 8px;
+    }
+
+    /* Card pencarian */
+    .pengajuan-page .pengajuan-filter .card-body {
+        padding: 14px !important;
+    }
+
+    /* Input dan dropdown */
+    .pengajuan-page .form-control,
+    .pengajuan-page .form-select {
+        min-height: 33px;
+        padding: 6px 10px;
+        font-size: 12px;
+        border-radius: 5px;
+    }
+
+    /* Placeholder pencarian */
+    .pengajuan-page input::placeholder {
+        font-size: 12px;
+    }
+
+    /* Tombol */
+    .pengajuan-page .btn {
+        padding: 5px 10px;
+        font-size: 12px;
+        border-radius: 5px;
+    }
+
+    /* Tabel */
+    .pengajuan-page .table {
+        margin-bottom: 0;
+        font-size: 12px;
+    }
+
+    /* Header tabel */
+    .pengajuan-page .table thead th {
+        padding: 11px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    /* Isi tabel */
+    .pengajuan-page .table tbody td {
+        padding: 10px 12px;
+        font-size: 12px;
+        line-height: 1.5;
+        vertical-align: middle;
+    }
+
+    /* Nomor tiket */
+    .pengajuan-page .table strong {
+        font-weight: 600;
+    }
+
+    /* Informasi tambahan */
+    .pengajuan-page .table .small {
+        font-size: 11px;
+    }
+
+    /* Tombol detail dan disposisi */
+    .pengajuan-page .btn-xs {
+        padding: 4px 8px;
+        font-size: 11px;
+        line-height: 1.4;
+        border-radius: 4px;
+    }
+
+    /* Badge status */
+    .pengajuan-page .ticket-status-badge {
+        padding: 4px 8px;
+        font-size: 10px;
+        border-radius: 5px;
+    }
+
+    /* Footer tabel */
+    .pengajuan-page .card-footer {
+        padding: 10px 14px;
+        font-size: 11px;
+        background: #fff;
+    }
+
+    /* Pagination */
+    .pengajuan-page .pagination {
+        margin-bottom: 0;
+        font-size: 11px;
+    }
+
+    .pengajuan-page .pagination .page-link {
+        padding: 5px 9px;
+    }
+
+    /* Responsif untuk layar kecil */
+    @media (max-width: 767.98px) {
+        .pengajuan-page .pengajuan-filter .card-body {
+            padding: 12px !important;
+        }
+
+        .pengajuan-page .table thead th,
+        .pengajuan-page .table tbody td {
+            padding: 9px 10px;
+        }
+
+        .pengajuan-page .card-footer {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 10px;
+        }
+    }
+
+    .pengajuan-page .table .btn-xs {
+        padding: 2px 6px !important;
+        font-size: 12px !important;
+        line-height: 1.3 !important;
+        border-radius: 4px;
+        min-height: 22px;
+    }
+
+    /* Jarak antar tombol */
+    .pengajuan-page .table td.text-nowrap .btn {
+        margin-right: 2px;
+    }
+
     @media (max-width: 575.98px) {
         .modal-disposisi-dialog {
             margin: 0.75rem;

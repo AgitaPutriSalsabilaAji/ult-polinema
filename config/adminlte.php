@@ -357,6 +357,17 @@ return [
             'enabled' => false,
             'js' => 'vendor/sortablejs/sortablejs.min.js',
         ],
+
+        'FontAwesome' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => true,
+                    'location' => 'vendor/fontawesome-free/css/all.min.css',
+                ],
+            ],
+        ],
     ],
 
 ];

@@ -178,19 +178,164 @@
 
 @push('css')
 <style>
-    .admin-list-page .table thead th { text-transform: none; }
-    .admin-modal .modal-content { border: 0; border-radius: .55rem; box-shadow: 0 1rem 3rem rgba(0,0,0,.2); }
-    .admin-modal .modal-header { padding: 1.25rem 1.5rem .75rem; border-bottom: 0; }
-    .admin-modal .modal-body { padding: .5rem 1.5rem 1rem; }
-    .admin-modal .modal-footer { padding: .75rem 1.5rem 1.25rem; border-top: 0; }
-    .admin-modal .modal-title { font-weight: 700; }
-    .modal-subtitle { color: #8b95a7; }
-    .admin-modal .form-label { font-weight: 600; margin-bottom: .35rem; }
-    .admin-modal .form-control, .admin-modal .form-select { min-height: 34px; border-color: #e4e9f0; border-radius: .3rem; }
-    .admin-modal .form-text { color: #8b95a7; }
-    .admin-modal .btn { border-radius: .3rem; padding: .4rem .8rem; }
-    .admin-delete-modal .modal-body { color: #667085; }
-    @media (max-width: 575.98px) { .admin-modal .modal-dialog { margin: .75rem; } }
+    .admin-list-page {
+        padding-top: 1.25rem !important;
+        font-size: 13px;
+    }
+
+    /* Judul halaman */
+    .admin-list-page .admin-page-title {
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .admin-list-page > .d-flex p {
+        font-size: 12px;
+    }
+
+    /* Tombol Tambah Admin */
+    .admin-list-page > .d-flex .btn {
+        font-size: 12px;
+        padding: 7px 12px;
+        border-radius: 5px;
+    }
+
+    /* Card Administrator Terdaftar */
+    .admin-list-page > .card {
+        border-radius: 9px;
+    }
+
+    .admin-list-page .card-body {
+        padding: 16px;
+    }
+
+    .admin-list-page .card-body h6 {
+        font-size: 15px;
+        margin-bottom: 5px;
+    }
+
+    .admin-list-page .card-body > p {
+        font-size: 11.5px;
+        margin-bottom: 12px;
+    }
+
+    /* Tabel */
+    .admin-list-page .table {
+        margin-bottom: 0;
+        font-size: 12.5px;
+    }
+
+    .admin-list-page .table thead th {
+        text-transform: none;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 9px 8px;
+        white-space: nowrap;
+    }
+
+    .admin-list-page .table tbody td {
+        padding: 8px;
+        vertical-align: middle;
+        line-height: 1.4;
+    }
+
+    .admin-list-page .table tbody td .fw-semibold {
+        font-size: 12.5px;
+        font-weight: 600;
+    }
+
+    .admin-list-page .table tbody td small {
+        font-size: 11px;
+    }
+
+    /* Badge Role */
+    .admin-list-page .badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 5px 8px;
+        border-radius: 5px;
+    }
+
+    /* Tombol Aksi */
+    .admin-list-page .table .btn {
+        font-size: 11px;
+        padding: 5px 9px;
+        line-height: 1.3;
+        border-radius: 4px;
+    }
+
+    /* Pagination */
+    .admin-list-page .pagination {
+        font-size: 11px;
+    }
+
+    .admin-list-page .pagination .page-link {
+        padding: 5px 9px;
+    }
+
+    /* Modal tetap nyaman digunakan */
+    .admin-modal .modal-content {
+        border: 0;
+        border-radius: .55rem;
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.2);
+    }
+
+    .admin-modal .modal-header {
+        padding: 1.25rem 1.5rem .75rem;
+        border-bottom: 0;
+    }
+
+    .admin-modal .modal-body {
+        padding: .5rem 1.5rem 1rem;
+    }
+
+    .admin-modal .modal-footer {
+        padding: .75rem 1.5rem 1.25rem;
+        border-top: 0;
+    }
+
+    .admin-modal .modal-title {
+        font-weight: 700;
+    }
+
+    .modal-subtitle {
+        color: #8b95a7;
+    }
+
+    .admin-modal .form-label {
+        font-weight: 600;
+        margin-bottom: .35rem;
+    }
+
+    .admin-modal .form-control,
+    .admin-modal .form-select {
+        min-height: 34px;
+        border-color: #e4e9f0;
+        border-radius: .3rem;
+    }
+
+    .admin-modal .form-text {
+        color: #8b95a7;
+    }
+
+    .admin-modal .btn {
+        border-radius: .3rem;
+        padding: .4rem .8rem;
+    }
+
+    .admin-delete-modal .modal-body {
+        color: #667085;
+    }
+
+    @media (max-width: 575.98px) {
+        .admin-modal .modal-dialog {
+            margin: .75rem;
+        }
+
+        .admin-list-page .card-body {
+            padding: 12px;
+        }
+    }
 </style>
 @endpush
 

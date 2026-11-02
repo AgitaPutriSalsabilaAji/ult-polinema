@@ -3,7 +3,7 @@
 @section('title', 'Rating & Ulasan Layanan ULT')
 
 @section('content')
-<div class="container-fluid px-4 py-4">
+<div class="container-fluid px-3 py-4 rating-page">
 
     {{-- Header --}}
     <div class="mb-4">
@@ -32,27 +32,29 @@
         </div>
     @endif
 
+
     {{-- Statistik --}}
-    <div class="row g-3 mb-4">
+    <div class="row g-2 mb-3">
 
         <div class="col-12 col-md-6 col-xl-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body p-4">
+            <div class="card border-0 shadow-sm stat-card">
+                <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <p class="text-muted small mb-2">Rata-rata Rating</p>
-                            <h2 class="fw-bold mb-2">
+                            <p class="text-muted mb-1">Rata-rata Rating</p>
+                            <h2 class="fw-bold mb-1">
                                 {{ number_format($rataRataRating ?? 0, 2) }}
-                                <small class="text-muted fs-6">/ 5</small>
+                                <small class="text-muted">/ 5</small>
                             </h2>
-                            <div class="text-warning fs-5">
+                            <div class="text-warning rating-stars">
                                 @for ($i = 1; $i <= 5; $i++)
-                                    <span>{{ $i <= round($rataRataRating ?? 0) ? '★' : '☆' }}</span>
+                                    {{ $i <= round($rataRataRating ?? 0) ? '★' : '☆' }}
                                 @endfor
                             </div>
                         </div>
-                        <div class="rounded-3 bg-warning bg-opacity-10 p-3">
-                            <span class="fs-2 text-warning">★</span>
+
+                        <div class="stat-icon rating-icon">
+                            ★
                         </div>
                     </div>
                 </div>
@@ -60,18 +62,19 @@
         </div>
 
         <div class="col-12 col-md-6 col-xl-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body p-4">
+            <div class="card border-0 shadow-sm stat-card">
+                <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <p class="text-muted small mb-2">Total Rating</p>
-                            <h2 class="fw-bold mb-2">
+                            <p class="text-muted mb-1">Total Rating</p>
+                            <h2 class="fw-bold mb-1">
                                 {{ number_format($totalRating ?? 0) }}
                             </h2>
-                            <p class="text-muted small mb-0">Total ulasan masuk</p>
+                            <p class="text-muted mb-0">Total ulasan masuk</p>
                         </div>
-                        <div class="rounded-3 bg-primary bg-opacity-10 p-3">
-                            <span class="fs-2 text-primary">▤</span>
+
+                        <div class="stat-icon total-icon">
+                            ▤
                         </div>
                     </div>
                 </div>
@@ -80,8 +83,9 @@
 
     </div>
 
+
     {{-- Filter --}}
-    <div class="card border-0 shadow-sm mb-4">
+    <div class="card border-0 shadow-sm mb-4 filter-card">
         <div class="card-body p-4">
             <form action="{{ route('admin.rating-ulasan.index') }}"
                   method="GET">
@@ -117,14 +121,10 @@
                         </select>
                     </div>
 
-                    <div class="col-12 col-md-3 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary flex-grow-1">
+                    <div class="col-12 col-md-3">
+                        <button type="submit" class="btn btn-primary w-100">
                             Terapkan
                         </button>
-                        <a href="{{ route('admin.rating-ulasan.index') }}"
-                           class="btn btn-outline-secondary">
-                            Reset
-                        </a>
                     </div>
 
                 </div>
@@ -135,7 +135,7 @@
     {{-- Tabel Rating & Ulasan --}}
     <div class="card border-0 shadow-sm">
 
-        <div class="card-header bg-white border-0 p-4">
+        <div class="card-header bg-white border-0 rating-card-header">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <div>
                     <h5 class="fw-bold mb-1">Daftar Rating & Ulasan</h5>
@@ -185,7 +185,7 @@
                             </td>
 
                             <td class="py-3">
-                                <div class="text-warning text-nowrap">
+                                <div class="text-warning text-nowrap rating-stars">
                                     @for ($i = 1; $i <= 5; $i++)
                                         {{ $i <= ($item->rating ?? 0) ? '★' : '☆' }}
                                     @endfor
@@ -196,7 +196,7 @@
                             </td>
 
                             <td class="py-3" style="min-width: 250px; max-width: 400px;">
-                                <div class="text-wrap">
+                                <div class="text-wrap comment-text">
                                     {{ $item->komentar ?: 'Tidak ada komentar.' }}
                                 </div>
                             </td>
@@ -225,7 +225,7 @@
 
         {{-- Pagination --}}
         @if ($ulasan->hasPages())
-            <div class="card-footer bg-white border-0 p-4">
+            <div class="card-footer bg-white border-0 rating-card-footer">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
                     <small class="text-muted">
                         Menampilkan {{ $ulasan->firstItem() ?? 0 }}
@@ -241,3 +241,176 @@
     </div>
 </div>
 @endsection
+
+
+@push('css')
+<style>
+    /* ===== HALAMAN RATING & ULASAN ===== */
+
+/* ===== CARD STATISTIK COMPACT ===== */
+
+    .rating-page .stat-card {
+        border-radius: 8px;
+        min-height: 105px;
+    }
+
+    .rating-page .stat-card .card-body {
+        padding: 12px 14px !important;
+    }
+
+    .rating-page .stat-card p {
+        font-size: 11px;
+        margin-bottom: 4px !important;
+    }
+
+    .rating-page .stat-card h2 {
+        font-size: 21px;
+        line-height: 1.2;
+        margin-bottom: 4px !important;
+    }
+
+    .rating-page .stat-card h2 small {
+        font-size: 11px !important;
+    }
+
+    .rating-page .rating-stars {
+        font-size: 13px;
+        letter-spacing: 1px;
+        line-height: 1.2;
+    }
+
+    .rating-page .stat-icon {
+        width: 38px;
+        height: 38px;
+        min-width: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 19px;
+    }
+
+    .rating-page .rating-icon {
+        color: #f5ae00;
+        background: rgba(255, 193, 7, 0.12);
+    }
+
+    .rating-page .total-icon {
+        color: #0d6efd;
+        background: rgba(13, 110, 253, 0.10);
+    }
+
+    @media (max-width: 767.98px) {
+        .rating-page .stat-card {
+            min-height: 95px;
+        }
+    }
+
+
+    /* Tombol */
+    .rating-page .btn {
+        font-size: 11px;
+        padding: 6px 11px;
+        border-radius: 5px;
+    }
+
+    /* Header tabel */
+    .rating-page .rating-card-header {
+        padding: 14px 16px !important;
+    }
+
+    .rating-page .rating-card-header h5 {
+        font-size: 15px;
+    }
+
+    .rating-page .rating-card-header p {
+        font-size: 11px;
+    }
+
+    .rating-page .rating-card-header .badge {
+        font-size: 10px;
+        padding: 5px 9px !important;
+    }
+
+    /* Tabel */
+    .rating-page .table {
+        font-size: 12px;
+        margin-bottom: 0;
+    }
+
+    .rating-page .table thead th {
+        font-size: 11.5px;
+        font-weight: 700;
+        padding: 9px 10px !important;
+        white-space: nowrap;
+    }
+
+    .rating-page .table tbody td {
+        padding: 9px 10px !important;
+        vertical-align: middle;
+        line-height: 1.4;
+    }
+
+    .rating-page .table tbody td .fw-semibold {
+        font-size: 12px;
+    }
+
+    .rating-page .table tbody td small {
+        font-size: 10.5px;
+    }
+
+    .rating-page .table .badge {
+        font-size: 10px;
+        padding: 5px 8px;
+    }
+
+    /* Rating dan komentar */
+    .rating-page .rating-stars {
+        font-size: 13px;
+    }
+
+    .rating-page .comment-text {
+        font-size: 11.5px;
+        line-height: 1.5;
+    }
+
+    /* Pagination */
+    .rating-page .rating-card-footer {
+        padding: 12px 16px !important;
+    }
+
+    .rating-page .pagination {
+        font-size: 11px;
+    }
+
+    .rating-page .pagination .page-link {
+        padding: 5px 9px;
+    }
+
+    @media (max-width: 767.98px) {
+        .rating-page .stat-card .card-body {
+            padding: 12px !important;
+        }
+    }
+
+    /* Ukuran font dropdown filter */
+    .rating-page .filter-card .form-select {
+        font-size: 12px !important;
+        font-weight: 400;
+        min-height: 32px;
+        padding: 5px 10px;
+    }
+
+    /* Ukuran label Unit Layanan dan Rating */
+    .rating-page .filter-card .form-label, fw-bold {
+        font-size: 12px !important;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    /* Ukuran teks pilihan dropdown */
+    .rating-page .filter-card select option {
+        font-size: 11px;
+    }
+</style>
+@endpush
