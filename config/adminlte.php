@@ -254,11 +254,6 @@ return [
         'icon' => 'bi bi-file-earmark-text',
     ],
     [
-        'text' => 'Tracking E-Ticket',
-        'url' => 'admin/tracking',
-        'icon' => 'bi bi-ticket-perforated',
-    ],
-    [
         'text' => 'Informasi Layanan',
         'url' => 'admin/layanan',
         'icon' => 'bi bi-info-circle',

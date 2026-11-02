@@ -122,10 +122,7 @@ Route::middleware('auth:admin')
             PengajuanController::class,
             'tolak',
         ])->name('pengajuan.tolak');
-
-        // Tracking e-ticket
-        Route::view('/tracking', 'admin.tracking')->name('tracking');
-
+      
         // Manajemen layanan admin
         Route::get('/layanan', [AdminLayananController::class, 'index'])
             ->name('layanan.index');
