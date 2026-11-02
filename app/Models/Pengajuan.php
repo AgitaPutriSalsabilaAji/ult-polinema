@@ -33,6 +33,11 @@ class Pengajuan extends Model
         'tanggal_selesai' => 'datetime',
     ];
 
+    public function isFinalized(): bool
+    {
+        return in_array($this->status, ['selesai', 'ditolak'], true);
+    }
+
     public static function generateNomorTiket(int $id): string
     {
         return sprintf('ULT-%s-%06d', date('Y'), $id);

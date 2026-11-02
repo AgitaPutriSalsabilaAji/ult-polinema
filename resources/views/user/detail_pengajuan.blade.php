@@ -36,7 +36,7 @@
                         <span class="eyebrow">Detail Pengajuan</span>
                         <h1>{{ $pengajuan->nomor_tiket }}</h1>
                     </div>
-                    <span class="status-status status-{{ Str::slug($pengajuan->status) }}">{{ ucfirst(str_replace('_', ' ', $pengajuan->status)) }}</span>
+                    <span class="status-status status-{{ $pengajuan->status === 'baru' ? 'diajukan' : Str::slug($pengajuan->status) }}">{{ $pengajuan->status === 'baru' ? 'Diajukan' : ucfirst(str_replace('_', ' ', $pengajuan->status)) }}</span>
                 </div>
             </div>
         </section>
@@ -69,7 +69,7 @@
                         <div class="summary-box">
                             <div class="summary-item">
                                 <span>Status</span>
-                                <strong>{{ ucfirst(str_replace('_', ' ', $pengajuan->status)) }}</strong>
+                                <strong>{{ $pengajuan->status === 'baru' ? 'Diajukan' : ucfirst(str_replace('_', ' ', $pengajuan->status)) }}</strong>
                             </div>
                             <div class="summary-item">
                                 <span>Nomor E-Tiket</span>

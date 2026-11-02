@@ -121,7 +121,7 @@ class PengajuanSubmissionTest extends TestCase
             'user_id' => $user->id,
             'id_layanan' => 1,
             'subjek' => 'Permohonan Surat Keterangan Kuliah',
-            'status' => 'baru',
+            'status' => 'diajukan',
         ]);
         $this->assertDatabaseHas('pengguna', [
             'nama_lengkap' => 'Budi Santoso',
@@ -149,7 +149,7 @@ class PengajuanSubmissionTest extends TestCase
             'id_layanan' => 1,
             'subjek' => 'Permohonan Surat Keterangan Kuliah',
             'deskripsi' => 'Saya membutuhkan surat keterangan kuliah untuk keperluan data beasiswa.',
-            'status' => 'baru',
+            'status' => 'diajukan',
         ]);
 
         $response = $this->actingAs($user, 'web')->post(route('pengajuan.submit'), [

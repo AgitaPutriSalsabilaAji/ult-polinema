@@ -52,7 +52,6 @@
                         <option value="">Semua Status</option>
                         @foreach([
                             'diajukan' => 'Diajukan',
-                            'baru' => 'Baru',
                             'diproses' => 'Diproses',
                             'didisposisikan' => 'Didisposisikan',
                             'selesai' => 'Selesai',
@@ -140,7 +139,7 @@
                                             data-layanan="{{ $item->nama_layanan ?? $item->subjek }}"
                                             data-unit-id="{{ $item->unit_tujuan_id }}"
                                             data-unit-name="{{ $item->nama_unit ?? 'Belum ditentukan' }}"
-                                            data-status="{{ strtoupper($item->status === 'diajukan' ? 'BARU' : $item->status) }}">
+                                            data-status="{{ strtoupper($item->status === 'baru' ? 'DIAJUKAN' : $item->status) }}">
                                         Disposisi
                                     </button>
                                 @endif

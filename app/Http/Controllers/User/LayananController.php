@@ -324,7 +324,7 @@ class LayananController extends Controller
             'id_admin_fo' => null,
             'subjek' => $data['subjek'],
             'deskripsi' => $data['deskripsi'],
-            'status' => 'baru',
+            'status' => 'diajukan',
         ];
 
         if (Schema::hasColumn('pengajuan', 'id_unit') && ! is_null($layanan->id_unit ?? null)) {
@@ -342,7 +342,7 @@ class LayananController extends Controller
             RiwayatPengajuan::create([
                 'id_pengajuan' => $pengajuan->id,
                 'status_sebelumnya' => null,
-                'status_baru' => 'baru',
+                'status_baru' => 'diajukan',
                 'judul_status' => 'Pengajuan diterima',
                 'deskripsi' => 'Pengajuan layanan berhasil dibuat dan menunggu verifikasi admin ULT.',
                 'nama_aktor' => 'Sistem',
