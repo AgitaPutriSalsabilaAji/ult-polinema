@@ -17,7 +17,6 @@ class CekStatusController extends Controller
         $ticket = strtoupper(trim((string) $request->query('ticket', '')));
         $pengajuan = null;
         $riwayat = collect();
-        $pesan = collect();
         $error = null;
 
         if ($ticket !== '') {
@@ -51,13 +50,6 @@ class CekStatusController extends Controller
                     ->where('id_pengajuan', $pengajuan->id)
                     ->orderBy('dibuat_pada')
                     ->get();
-
-                if (Schema::hasTable('pesan_pengajuan')) {
-                    $pesan = DB::table('pesan_pengajuan')
-                        ->where('id_pengajuan', $pengajuan->id)
-                        ->orderBy('dibuat_pada')
-                        ->get();
-                }
             } else {
                 $error = 'Nomor e-ticket tidak ditemukan. Periksa kembali nomor tiket Anda.';
             }
@@ -67,7 +59,6 @@ class CekStatusController extends Controller
             'ticket',
             'pengajuan',
             'riwayat',
-            'pesan',
             'error'
         ));
     }

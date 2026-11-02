@@ -2,6 +2,7 @@
     $theme = $theme ?? 'purple';
     $theme = in_array($theme, ['light', 'purple'], true) ? $theme : 'purple';
     $active = $active ?? '';
+    $showServiceCta = $showServiceCta ?? false;
     $sticky = $sticky ?? false;
     $navId = $active === 'home' ? 'mainNav' : ($active === 'ticket' ? 'statusNav' : 'userNavbarMenu');
 @endphp
@@ -68,6 +69,9 @@
                     </li>
                 @endauth
             </ul>
+            @if ($showServiceCta)
+                <a class="ult-navbar__cta" href="{{ route('layanan.index') }}"><i class="bi bi-search" aria-hidden="true"></i>Cek Layanan</a>
+            @endif
         </div>
     </div>
 </nav>

@@ -234,6 +234,7 @@ img {
 }
 
 .detail-panel {
+    margin-bottom: 14px;
     background: #f3f4f8;
     border: 1px solid #e6e9f1;
     border-radius: 18px;

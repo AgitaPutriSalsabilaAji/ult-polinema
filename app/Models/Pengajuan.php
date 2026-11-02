@@ -21,6 +21,7 @@ class Pengajuan extends Model
         'id_layanan',
         'id_unit',
         'id_admin_fo',
+        'jenis_pemohon',
         'subjek',
         'deskripsi',
         'status',
