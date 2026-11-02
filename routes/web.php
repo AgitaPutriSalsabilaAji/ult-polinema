@@ -1,18 +1,17 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\User\LayananController as UserLayananController;
-use App\Http\Controllers\Admin\LayananController as AdminLayananController;
-use App\Http\Controllers\User\CekStatusController;
-use App\Http\Controllers\Admin\FaqController;
-use App\Http\Controllers\Admin\GlobalSearchController;
-use App\Http\Controllers\Admin\LayananController;
-use App\Http\Controllers\Admin\PengajuanController;
-use App\Http\Controllers\Admin\RatingLayananController;
-use App\Http\Controllers\Auth\AdminLoginController;
-use App\Http\Controllers\Admin\ProfilController;
 use App\Http\Controllers\Admin\DaftarAdminController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\GlobalSearchController;
+use App\Http\Controllers\Admin\LayananController as AdminLayananController;
+use App\Http\Controllers\Admin\PengajuanController;
+use App\Http\Controllers\Admin\ProfilController;
+use App\Http\Controllers\Admin\RatingLayananController;
+use App\Http\Controllers\Auth\AdminLoginController;
+use App\Http\Controllers\User\CekStatusController;
+use App\Http\Controllers\User\LayananController as UserLayananController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,8 +39,23 @@ Route::post('/e-tiket/form', [UserLayananController::class, 'submitPengajuan'])
 Route::get('/e-tiket/{nomorTiket}/berhasil', [UserLayananController::class, 'successPengajuan'])
     ->name('pengajuan.berhasil');
 
+Route::post('/e-tiket/{nomorTiket}/pesan', [UserLayananController::class, 'storePesan'])
+    ->name('pengajuan.pesan.store');
+
+Route::get('/e-tiket/{nomorTiket}/pesan/{pesanId}/lampiran', [UserLayananController::class, 'lihatLampiranPesan'])
+    ->name('pengajuan.pesan.lampiran.view');
+
+Route::get('/e-tiket/{nomorTiket}/dokumen/{dokumenId}/lihat', [UserLayananController::class, 'lihatDokumen'])
+    ->name('pengajuan.dokumen.view');
+
+Route::get('/e-tiket/{nomorTiket}/dokumen/{dokumenId}/unduh', [UserLayananController::class, 'unduhDokumen'])
+    ->name('pengajuan.dokumen.download');
+
 Route::get('/e-tiket/{nomorTiket}', [UserLayananController::class, 'detailPengajuan'])
     ->name('pengajuan.detail');
+
+Route::post('/e-tiket/{nomorTiket}/rating', [UserLayananController::class, 'storeRating'])
+    ->name('pengajuan.rating.store');
 
 /*
 |--------------------------------------------------------------------------
@@ -88,7 +102,7 @@ Route::middleware('auth:admin')
 
         Route::post('/pengajuan/{pengajuan}/disposisi', [
             PengajuanController::class,
-            'disposisi'
+            'disposisi',
         ])->name('pengajuan.disposisi');
 
         // Tracking e-ticket
@@ -112,12 +126,12 @@ Route::middleware('auth:admin')
 
         Route::patch('/layanan/{layanan}/status', [
             AdminLayananController::class,
-            'toggleStatus'
+            'toggleStatus',
         ])->name('layanan.status');
 
         Route::delete('/layanan/{layanan}', [
             AdminLayananController::class,
-            'destroy'
+            'destroy',
         ])->name('layanan.destroy');
 
         Route::get('/layanan/{layanan}', [AdminLayananController::class, 'show'])
@@ -135,22 +149,22 @@ Route::middleware('auth:admin')
             ->name('rating-ulasan.store');
 
         // Profil & Akun Admin
-Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
-Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
-Route::put('/profil/password', [ProfilController::class,'updatePassword',])->name('profil.password');
+        Route::get('/profil', [ProfilController::class, 'index'])->name('profil');
+        Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
+        Route::put('/profil/password', [ProfilController::class, 'updatePassword'])->name('profil.password');
 
         // Daftar Admin
-Route::resource('daftar-admin', DaftarAdminController::class)
-    ->except(['show']);
-    Route::get('/login', [AdminLoginController::class, 'showLoginForm'])
-    ->middleware('guest:admin')
-    ->name('login');
+        Route::resource('daftar-admin', DaftarAdminController::class)
+            ->except(['show']);
+        Route::get('/login', [AdminLoginController::class, 'showLoginForm'])
+            ->middleware('guest:admin')
+            ->name('login');
 
-    Route::post('/login', [AdminLoginController::class, 'login'])
-    ->middleware('guest:admin')
-    ->name('login.submit');
+        Route::post('/login', [AdminLoginController::class, 'login'])
+            ->middleware('guest:admin')
+            ->name('login.submit');
 
-    Route::post('/logout', [AdminLoginController::class, 'logout'])
-    ->middleware('auth:admin')
-    ->name('logout');
-});
+        Route::post('/logout', [AdminLoginController::class, 'logout'])
+            ->middleware('auth:admin')
+            ->name('logout');
+    });
