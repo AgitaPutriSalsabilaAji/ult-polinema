@@ -215,6 +215,30 @@ class AdminPengajuanDispositionTest extends TestCase
         ]);
     }
 
+    public function test_destination_unit_admin_can_reject_without_a_reason_and_terminal_status_cannot_change(): void
+    {
+        $adminUnit = $this->createAdmin('unit@example.com', 'admin_unit', 2);
+        $this->createTestApplication(2, 'diproses');
+
+        $this->actingAs($adminUnit, 'admin')
+            ->post(route('admin.pengajuan.tolak', 1))
+            ->assertRedirect(route('admin.pengajuan.show', 1));
+
+        $this->assertDatabaseHas('pengajuan', [
+            'id' => 1,
+            'status' => 'ditolak',
+        ]);
+
+        $this->actingAs($adminUnit, 'admin')
+            ->post(route('admin.pengajuan.selesai', 1))
+            ->assertStatus(409);
+
+        $this->assertDatabaseHas('pengajuan', [
+            'id' => 1,
+            'status' => 'ditolak',
+        ]);
+    }
+
     private function createAdmin(string $email, string $role, int $unitId): Admin
     {
         return Admin::query()->create([
