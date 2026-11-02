@@ -532,7 +532,6 @@ class LayananController extends Controller
         ]);
     }
 
-<<<<<<< HEAD
     public function storePesan(Request $request, string $nomorTiket): RedirectResponse
     {
         $pengajuan = Pengajuan::query()
@@ -706,10 +705,7 @@ class LayananController extends Controller
             ->with('success', 'Terima kasih atas penilaian Anda.');
     }
 
-    public function successPengajuan(string $nomorTiket): View
-=======
     public function successPengajuan(Request $request, string $nomorTiket): View
->>>>>>> cf76120c7ee175d0dd6c9bba8348e405423973e5
     {
         $user = $request->user();
         abort_unless($user instanceof User, 403);

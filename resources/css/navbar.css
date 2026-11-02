@@ -1,9 +1,5 @@
-<<<<<<< HEAD
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-=======
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import './auth.css';
->>>>>>> cf76120c7ee175d0dd6c9bba8348e405423973e5
 
 .ult-navbar {
     --ult-navbar-height: 72px;
