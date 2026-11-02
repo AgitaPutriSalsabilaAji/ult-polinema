@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Layanan;
 use App\Models\Pengajuan;
 use App\Models\Pengguna;
+use App\Models\RatingLayanan;
 use App\Models\RiwayatPengajuan;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
@@ -91,6 +92,49 @@ class LayananController extends Controller
             'unit' => $layanan->unit?->nama_unit ?? 'Unit Layanan',
             'deskripsi' => $layanan->deskripsi_singkat ?? '',
             'gambar' => $gambar ? Storage::disk('public')->url($gambar) : null,
+        ];
+    }
+
+    private function formatUkuranFile(?string $ukuran): string
+    {
+        if ($ukuran === null || $ukuran === '') {
+            return 'Ukuran tidak tersedia';
+        }
+
+        $bytes = (float) $ukuran;
+        if ($bytes <= 0) {
+            return '0 KB';
+        }
+
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $index = 0;
+
+        while ($bytes >= 1024 && $index < count($units) - 1) {
+            $bytes /= 1024;
+            $index++;
+        }
+
+        return sprintf('%s %s', round($bytes, 2), $units[$index]);
+    }
+
+    private function renderAttachmentError(string $message, int $status = 404)
+    {
+        return response()->view('user.pengajuan_attachment_error', [
+            'message' => $message,
+            'status' => $status,
+        ], $status);
+    }
+
+    private function previewableMimeTypes(): array
+    {
+        return [
+            'application/pdf',
+            'image/jpeg',
+            'image/png',
+            'image/webp',
+            'image/gif',
+            'image/bmp',
+            'image/svg+xml',
         ];
     }
 
@@ -278,6 +322,7 @@ class LayananController extends Controller
             'email' => ['required', 'email', 'max:255'],
             'nomor_telepon' => ['required', 'string', 'max:30'],
             'nim_nip' => ['nullable', 'string', 'max:50'],
+            'jenis_pemohon' => ['required', 'string', 'max:50'],
             'id_layanan' => ['required', 'integer', 'exists:layanan,id'],
             'subjek' => ['required', 'string', 'max:150'],
             'deskripsi' => ['required', 'string', 'max:5000'],
@@ -304,7 +349,6 @@ class LayananController extends Controller
 
         $duplicatePengajuan = Pengajuan::query()
             ->where('id_pengguna', $pengguna->id)
-            ->where('user_id', $user->getKey())
             ->where('id_layanan', $layanan->id)
             ->where('subjek', $data['subjek'])
             ->where('deskripsi', $data['deskripsi'])
@@ -319,9 +363,9 @@ class LayananController extends Controller
 
         $pengajuanData = [
             'id_pengguna' => $pengguna->id,
-            'user_id' => $user->getKey(),
             'id_layanan' => $layanan->id,
             'id_admin_fo' => null,
+            'jenis_pemohon' => $data['jenis_pemohon'],
             'subjek' => $data['subjek'],
             'deskripsi' => $data['deskripsi'],
             'status' => 'baru',
@@ -381,17 +425,285 @@ class LayananController extends Controller
         $user = $request->user();
         abort_unless($user instanceof User, 403);
 
-        $pengajuan = $user->pengajuan()
+        $pemohon = Pengguna::query()->where('email', $user->email)->firstOrFail();
+
+        $pengajuan = Pengajuan::query()
+            ->where('id_pengguna', $pemohon->id)
             ->with(['layanan.unit', 'riwayat'])
             ->where('nomor_tiket', $nomorTiket)
             ->firstOrFail();
 
         $pemohon = Pengguna::find($pengajuan->id_pengguna);
 
+        $dokumen = Schema::hasTable('dokumen_pengajuan')
+            ? DB::table('dokumen_pengajuan')
+                ->where('id_pengajuan', $pengajuan->id)
+                ->orderByDesc('diunggah_pada')
+                ->get()
+                ->map(function ($document) {
+                    $document->ukuran_label = $this->formatUkuranFile($document->ukuran_file ?? null);
+
+                    return $document;
+                })
+            : collect();
+
+        $komunikasi = collect();
+
+        foreach ($pengajuan->riwayat as $history) {
+            $historyDate = $history->dibuat_pada instanceof \Carbon\Carbon
+                ? $history->dibuat_pada
+                : (filled($history->dibuat_pada) ? \Carbon\Carbon::parse($history->dibuat_pada) : null);
+
+            $komunikasi->push((object) [
+                'type' => 'status',
+                'judul' => $history->judul_status,
+                'deskripsi' => $history->deskripsi,
+                'dibuat_pada' => $historyDate,
+            ]);
+        }
+
+        if (Schema::hasTable('pesan_pengajuan')) {
+            $pesan = DB::table('pesan_pengajuan')
+                ->where('id_pengajuan', $pengajuan->id)
+                ->orderBy('dibuat_pada')
+                ->get();
+
+            foreach ($pesan as $item) {
+                $historyDate = $item->dibuat_pada instanceof \Carbon\Carbon
+                    ? $item->dibuat_pada
+                    : (filled($item->dibuat_pada) ? \Carbon\Carbon::parse($item->dibuat_pada) : null);
+
+                $lampiranPath = $item->lampiran ?? null;
+                $lampiranUrl = null;
+                $lampiranType = null;
+
+                if (! empty($lampiranPath) && Storage::disk('public')->exists($lampiranPath)) {
+                    $lampiranUrl = Storage::disk('public')->url($lampiranPath);
+                    $extension = strtolower(pathinfo($lampiranPath, PATHINFO_EXTENSION));
+
+                    if (in_array($extension, ['pdf'], true)) {
+                        $lampiranType = 'pdf';
+                    } elseif (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'], true)) {
+                        $lampiranType = 'image';
+                    } elseif (in_array($extension, ['doc', 'docx'], true)) {
+                        $lampiranType = 'doc';
+                    }
+                }
+
+                $komunikasi->push((object) [
+                    'id' => $item->id,
+                    'type' => 'message',
+                    'pesan' => $item->pesan,
+                    'dibuat_pada' => $historyDate,
+                    'nama_pengirim' => $item->pengirim_tipe === 'admin'
+                        ? 'Petugas ULT'
+                        : ($pemohon?->nama_lengkap ?? 'Pemohon'),
+                    'pengirim_tipe' => $item->pengirim_tipe,
+                    'lampiran_url' => $lampiranUrl,
+                    'lampiran_type' => $lampiranType,
+                    'lampiran_name' => basename((string) $lampiranPath),
+                    'lampiran_route' => ! empty($lampiranPath)
+                        ? route('pengajuan.pesan.lampiran.view', [
+                            'nomorTiket' => $nomorTiket,
+                            'pesanId' => $item->id,
+                        ])
+                        : null,
+                ]);
+            }
+        }
+
+        $komunikasi = $komunikasi
+            ->sortBy(fn ($item) => $item->dibuat_pada instanceof \Carbon\Carbon
+                ? $item->dibuat_pada->getTimestamp()
+                : 0)
+            ->values();
+
+        $jenisPemohon = $pengajuan->jenis_pemohon ?? 'Tidak tersedia';
+        $ratingUlasan = RatingLayanan::query()
+            ->where('id_pengajuan', $pengajuan->id)
+            ->exists();
+
         return view('user.detail_pengajuan', [
             'pengajuan' => $pengajuan,
             'pemohon' => $pemohon,
+            'dokumen' => $dokumen,
+            'komunikasi' => $komunikasi,
+            'jenisPemohon' => $jenisPemohon,
+            'ratingUlasan' => $ratingUlasan,
         ]);
+    }
+
+    public function storePesan(Request $request, string $nomorTiket): RedirectResponse
+    {
+        $pengajuan = Pengajuan::query()
+            ->where('nomor_tiket', $nomorTiket)
+            ->firstOrFail();
+
+        $data = $request->validate([
+            'pesan' => ['required', 'string', 'max:5000'],
+            'lampiran' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:5120'],
+        ]);
+
+        $storedPath = null;
+        if ($request->hasFile('lampiran')) {
+            $lampiran = $request->file('lampiran');
+            $storedPath = $lampiran->storeAs(
+                'pengajuan/pesan',
+                time().'_'.$lampiran->getClientOriginalName(),
+                'public'
+            );
+        }
+
+        if (Schema::hasTable('pesan_pengajuan')) {
+            DB::table('pesan_pengajuan')->insert([
+                'id_pengajuan' => $pengajuan->id,
+                'pengirim_tipe' => 'pemohon',
+                'id_pengirim' => $pengajuan->id_pengguna,
+                'pesan' => trim($data['pesan']),
+                'lampiran' => $storedPath,
+                'dibuat_pada' => now(),
+            ]);
+        }
+
+        return redirect()->route('pengajuan.detail', ['nomorTiket' => $nomorTiket])
+            ->with('success', 'Pesan berhasil dikirim.');
+    }
+
+    public function lihatLampiranPesan(string $nomorTiket, int $pesanId)
+    {
+        $pengajuan = Pengajuan::query()
+            ->where('nomor_tiket', $nomorTiket)
+            ->first();
+
+        if (! $pengajuan) {
+            return $this->renderAttachmentError('Nomor tiket tidak valid.', 404);
+        }
+
+        $pesan = DB::table('pesan_pengajuan')
+            ->where('id', $pesanId)
+            ->where('id_pengajuan', $pengajuan->id)
+            ->first();
+
+        if (! $pesan || empty($pesan->lampiran)) {
+            return $this->renderAttachmentError('Lampiran tidak tersedia untuk pesan ini.', 404);
+        }
+
+        $filePath = $pesan->lampiran;
+        if (! Storage::disk('public')->exists($filePath)) {
+            return $this->renderAttachmentError('Lampiran tidak tersedia atau file sudah dihapus.', 404);
+        }
+
+        $mimeType = Storage::disk('public')->mimeType($filePath);
+        if (! in_array($mimeType, $this->previewableMimeTypes(), true)) {
+            return $this->renderAttachmentError('Dokumen ini tidak dapat ditampilkan di browser. Silakan unduh file untuk membukanya.', 415);
+        }
+
+        try {
+            return Storage::disk('public')->response(
+                $filePath,
+                basename($filePath),
+                ['Content-Disposition' => 'inline; filename="'.basename($filePath).'"']
+            );
+        } catch (\Throwable $exception) {
+            return $this->renderAttachmentError('Dokumen tidak dapat ditampilkan saat ini. Silakan coba lagi nanti.', 500);
+        }
+    }
+
+    public function lihatDokumen(string $nomorTiket, int $dokumenId)
+    {
+        $pengajuan = Pengajuan::query()
+            ->where('nomor_tiket', $nomorTiket)
+            ->first();
+
+        if (! $pengajuan) {
+            return $this->renderAttachmentError('Nomor tiket tidak valid.', 404);
+        }
+
+        $dokumen = DB::table('dokumen_pengajuan')
+            ->where('id', $dokumenId)
+            ->where('id_pengajuan', $pengajuan->id)
+            ->first();
+
+        if (! $dokumen || empty($dokumen->path_file)) {
+            return $this->renderAttachmentError('Dokumen pendukung tidak ditemukan.', 404);
+        }
+
+        $path = $dokumen->path_file;
+        if (! Storage::disk('public')->exists($path)) {
+            return $this->renderAttachmentError('Dokumen pendukung tidak tersedia atau file sudah dihapus.', 404);
+        }
+
+        $mimeType = Storage::disk('public')->mimeType($path);
+        if (! in_array($mimeType, $this->previewableMimeTypes(), true)) {
+            return $this->renderAttachmentError('Dokumen ini tidak dapat ditampilkan di browser. Silakan unduh file untuk membukanya.', 415);
+        }
+
+        try {
+            return Storage::disk('public')->response(
+                $path,
+                $dokumen->nama_file,
+                ['Content-Disposition' => 'inline; filename="'.$dokumen->nama_file.'"']
+            );
+        } catch (\Throwable $exception) {
+            return $this->renderAttachmentError('Dokumen tidak dapat ditampilkan saat ini. Silakan coba lagi nanti.', 500);
+        }
+    }
+
+    public function unduhDokumen(string $nomorTiket, int $dokumenId)
+    {
+        $pengajuan = Pengajuan::query()
+            ->where('nomor_tiket', $nomorTiket)
+            ->first();
+
+        if (! $pengajuan) {
+            return $this->renderAttachmentError('Nomor tiket tidak valid.', 404);
+        }
+
+        $dokumen = DB::table('dokumen_pengajuan')
+            ->where('id', $dokumenId)
+            ->where('id_pengajuan', $pengajuan->id)
+            ->first();
+
+        if (! $dokumen || empty($dokumen->path_file)) {
+            return $this->renderAttachmentError('Dokumen pendukung tidak ditemukan.', 404);
+        }
+
+        if (! Storage::disk('public')->exists($dokumen->path_file)) {
+            return $this->renderAttachmentError('Dokumen pendukung tidak tersedia atau file sudah dihapus.', 404);
+        }
+
+        return Storage::disk('public')->download(
+            $dokumen->path_file,
+            $dokumen->nama_file
+        );
+    }
+
+    public function storeRating(Request $request, string $nomorTiket): RedirectResponse
+    {
+        $pengajuan = Pengajuan::query()
+            ->where('nomor_tiket', $nomorTiket)
+            ->firstOrFail();
+
+        $data = $request->validate([
+            'rating' => ['required', 'integer', 'between:1,5'],
+            'komentar' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        RatingLayanan::query()->updateOrCreate(
+            [
+                'id_pengajuan' => $pengajuan->id,
+                'id_pengguna' => $pengajuan->id_pengguna,
+            ],
+            [
+                'id_layanan' => $pengajuan->id_layanan,
+                'rating' => $data['rating'],
+                'komentar' => $data['komentar'] ?? null,
+                'dibuat_pada' => now(),
+            ]
+        );
+
+        return redirect()->route('pengajuan.detail', ['nomorTiket' => $nomorTiket])
+            ->with('success', 'Terima kasih atas penilaian Anda.');
     }
 
     public function successPengajuan(Request $request, string $nomorTiket): View
@@ -399,7 +711,10 @@ class LayananController extends Controller
         $user = $request->user();
         abort_unless($user instanceof User, 403);
 
-        $pengajuan = $user->pengajuan()
+        $pemohon = Pengguna::query()->where('email', $user->email)->firstOrFail();
+
+        $pengajuan = Pengajuan::query()
+            ->where('id_pengguna', $pemohon->id)
             ->with(['layanan.unit', 'riwayat'])
             ->where('nomor_tiket', $nomorTiket)
             ->firstOrFail();

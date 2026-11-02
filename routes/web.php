@@ -61,9 +61,24 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/e-tiket/{nomorTiket}/berhasil', [UserLayananController::class, 'successPengajuan'])
         ->name('pengajuan.berhasil');
 
+    Route::post('/e-tiket/{nomorTiket}/pesan', [UserLayananController::class, 'storePesan'])
+        ->name('pengajuan.pesan.store');
+
+    Route::get('/e-tiket/{nomorTiket}/pesan/{pesanId}/lampiran', [UserLayananController::class, 'lihatLampiranPesan'])
+        ->name('pengajuan.pesan.lampiran.view');
+
+    Route::get('/e-tiket/{nomorTiket}/dokumen/{dokumenId}/lihat', [UserLayananController::class, 'lihatDokumen'])
+        ->name('pengajuan.dokumen.view');
+
+    Route::get('/e-tiket/{nomorTiket}/dokumen/{dokumenId}/unduh', [UserLayananController::class, 'unduhDokumen'])
+        ->name('pengajuan.dokumen.download');
+
     Route::get('/e-tiket/{nomorTiket}', [UserLayananController::class, 'detailPengajuan'])
         ->name('pengajuan.detail');
 });
+
+Route::post('/e-tiket/{nomorTiket}/rating', [UserLayananController::class, 'storeRating'])
+    ->name('pengajuan.rating.store');
 
 /*
 |--------------------------------------------------------------------------
