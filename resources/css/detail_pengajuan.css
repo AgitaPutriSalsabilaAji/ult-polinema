@@ -620,16 +620,6 @@
 .detail-pengajuan-page .dp-role-badge--officer { background: #ff9b00; color: #fff; }
 .detail-pengajuan-page .dp-message > p { margin: 7px 0 0; color: #4c5060; font-size: 11px; line-height: 1.55; overflow-wrap: anywhere; white-space: pre-line; }
 .detail-pengajuan-page .dp-message__attachment { display: inline-flex; gap: 5px; margin-top: 8px; color: #302474; font-size: 10px; font-weight: 700; text-decoration: none; }
-.detail-pengajuan-page .dp-message-preview { margin-top: 12px; border: 1px solid #e5e9f0; border-radius: 12px; background: #fafaff; overflow: hidden; }
-.detail-pengajuan-page .dp-message-preview[hidden] { display: none; }
-.detail-pengajuan-page .dp-message-preview__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border-bottom: 1px solid #e5e9f0; background: #f5f3ff; }
-.detail-pengajuan-page .dp-message-preview__header strong { color: #302474; font-size: 11px; }
-.detail-pengajuan-page .dp-message-preview__close { border: 0; background: transparent; color: #5a5f73; font-size: 10px; font-weight: 700; cursor: pointer; }
-.detail-pengajuan-page .dp-message-preview__body { display: grid; place-items: center; min-height: 260px; background: #fff; }
-.detail-pengajuan-page .dp-message-preview__body iframe,
-.detail-pengajuan-page .dp-message-preview__body img { display: block; width: 100%; max-height: 420px; border: 0; background: #fff; }
-.detail-pengajuan-page .dp-message-preview__body img { object-fit: contain; max-height: 420px; }
-.detail-pengajuan-page .dp-message-preview__message { padding: 18px 16px; color: #4c5060; font-size: 11px; line-height: 1.6; text-align: center; }
 .detail-pengajuan-page .dp-message-attachment-toggle { margin-top: 10px; }
 .detail-pengajuan-page .dp-status-event { display: flex; align-items: center; gap: 8px; padding: 8px 11px; border-radius: 6px; background: #fff8ed; color: #df8000; font-size: 10px; font-weight: 700; }
 .detail-pengajuan-page .dp-status-event > span { flex: 1 1 auto; }

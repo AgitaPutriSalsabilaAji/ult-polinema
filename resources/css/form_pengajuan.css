@@ -332,6 +332,11 @@ img {
     color: var(--ult-text);
 }
 
+.upload-zone.is-dragging {
+    border-color: var(--ult-purple);
+    background: var(--ult-purple-soft);
+}
+
 .upload-zone__icon {
     width: 42px;
     height: 42px;
@@ -376,7 +381,7 @@ img {
 
 .file-item {
     display: grid;
-    grid-template-columns: 18px minmax(0, 1fr) auto auto;
+    grid-template-columns: 18px minmax(0, 1fr) auto auto auto;
     align-items: center;
     gap: 12px;
     min-height: 48px;
@@ -421,6 +426,22 @@ img {
     padding: 0;
     cursor: pointer;
     text-transform: none;
+}
+
+.file-item__preview {
+    padding: 6px 10px;
+    border: 1px solid #d8c8ed;
+    border-radius: 8px;
+    background: var(--ult-purple-soft);
+    color: var(--ult-purple);
+    font-size: 0.7rem;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.file-item__preview:hover {
+    background: #e8dcfa;
 }
 
 .statement-box {
@@ -536,6 +557,13 @@ img {
 
 .modal-confirm-backdrop.is-visible {
     display: flex;
+}
+
+.upload-error {
+    margin: 8px 0 0;
+    color: var(--ult-danger);
+    font-size: 0.75rem;
+    font-weight: 600;
 }
 
 .modal-confirm {
@@ -661,6 +689,24 @@ img {
 
     .modal-confirm__actions {
         grid-template-columns: 1fr;
+    }
+
+    .file-item {
+        grid-template-columns: 18px minmax(0, 1fr) auto;
+    }
+
+    .file-item__size {
+        grid-column: 2;
+    }
+
+    .file-item__preview {
+        grid-column: 2;
+        justify-self: start;
+    }
+
+    .file-item__remove {
+        grid-column: 3;
+        grid-row: 2 / span 2;
     }
 }
 

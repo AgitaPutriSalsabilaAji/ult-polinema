@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\Layanan;
 use App\Models\Pengajuan;
 use App\Models\Pengguna;
 use App\Models\RatingLayanan;
 use App\Models\RiwayatPengajuan;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response;
 
 class LayananController extends Controller
 {
@@ -125,17 +128,153 @@ class LayananController extends Controller
         ], $status);
     }
 
-    private function previewableMimeTypes(): array
+    private function authorizeDocumentAccess(Pengajuan $pengajuan): void
     {
-        return [
-            'application/pdf',
-            'image/jpeg',
-            'image/png',
-            'image/webp',
-            'image/gif',
-            'image/bmp',
-            'image/svg+xml',
+        if (auth()->getDefaultDriver() === 'admin') {
+            $admin = auth('admin')->user();
+            abort_unless($admin instanceof Admin, 404);
+
+            $isAdminUlt = $admin->peran === 'admin_ult';
+            $pengajuanUnitId = null;
+
+            if (Schema::hasColumn('pengajuan', 'id_unit')) {
+                $pengajuanUnitId = $pengajuan->id_unit;
+            } elseif (Schema::hasColumn('layanan', 'id_unit')) {
+                $pengajuanUnitId = $pengajuan->layanan()->value('id_unit');
+            }
+
+            $isAdminUnit = $admin->peran === 'admin_unit'
+                && $pengajuanUnitId !== null
+                && (int) $pengajuanUnitId === (int) $admin->id_unit;
+
+            abort_unless($isAdminUlt || $isAdminUnit, 404);
+
+            return;
+        }
+
+        $user = auth('web')->user();
+        abort_unless($user instanceof User, 404);
+        $isOwner = (int) $pengajuan->user_id === (int) $user->getKey();
+
+        if (! $isOwner && Schema::hasTable('pengguna')) {
+            $isOwner = $pengajuan->pengguna()
+                ->where('email', $user->email)
+                ->exists();
+        }
+
+        abort_unless($isOwner, 404);
+    }
+
+    private function documentStorageDisk(string $path): ?string
+    {
+        foreach (['local', 'public'] as $disk) {
+            if (Storage::disk($disk)->exists($path)) {
+                return $disk;
+            }
+        }
+
+        return null;
+    }
+
+    private function detectStoredFileMimeType(string $disk, string $path): string
+    {
+        $file = Storage::disk($disk)->readStream($path);
+
+        if (! is_resource($file)) {
+            throw new \RuntimeException('Dokumen tidak dapat dibaca dari storage.');
+        }
+
+        try {
+            $fileContents = fread($file, 8192);
+        } finally {
+            fclose($file);
+        }
+
+        if (! is_string($fileContents)) {
+            throw new \RuntimeException('Tipe MIME dokumen tidak dapat dideteksi.');
+        }
+
+        $mimeType = (new \finfo(FILEINFO_MIME_TYPE))->buffer($fileContents);
+
+        if (! is_string($mimeType)) {
+            throw new \RuntimeException('Tipe MIME dokumen tidak dapat dideteksi.');
+        }
+
+        return $mimeType;
+    }
+
+    private function serveImageDocument(string $disk, string $path, string $fileName): Response
+    {
+        $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $mimeTypes = [
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
         ];
+        $mimeType = $this->detectStoredFileMimeType($disk, $path);
+
+        abort_unless(isset($mimeTypes[$extension]) && $mimeTypes[$extension] === $mimeType, 415);
+
+        return Storage::disk($disk)->response(
+            $path,
+            $fileName,
+            [
+                'Content-Type' => $mimeType,
+                'X-Content-Type-Options' => 'nosniff',
+            ],
+            'inline'
+        );
+    }
+
+    private function renderDocumentResponse(
+        string $disk,
+        string $path,
+        string $fileName,
+        string $downloadUrl,
+        string $imageUrl
+    ): Response {
+        $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $mimeType = $this->detectStoredFileMimeType($disk, $path);
+
+        $supportedMimeTypes = [
+            'pdf' => 'application/pdf',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+        ];
+
+        if (isset($supportedMimeTypes[$extension]) && $mimeType === $supportedMimeTypes[$extension]) {
+            if (str_starts_with($mimeType, 'image/')) {
+                return response()->view('user.pengajuan_image_preview', [
+                    'fileName' => $fileName,
+                    'imageUrl' => $imageUrl,
+                    'downloadUrl' => $downloadUrl,
+                ]);
+            }
+
+            return Storage::disk($disk)->response(
+                $path,
+                $fileName,
+                [
+                    'Content-Type' => $mimeType,
+                    'X-Content-Type-Options' => 'nosniff',
+                ],
+                'inline'
+            );
+        }
+
+        $fileType = $extension !== '' ? strtoupper($extension) : 'FILE';
+        $message = in_array($extension, ['doc', 'docx', 'xls', 'xlsx'], true)
+            ? "Browser belum mendukung preview langsung untuk file {$fileType}. Unduh file untuk membukanya."
+            : "Format {$fileType} belum mendukung preview di browser. Unduh file untuk membukanya.";
+
+        return response()->view('user.pengajuan_document_preview', [
+            'fileName' => $fileName,
+            'fileType' => $fileType,
+            'mimeType' => $mimeType,
+            'message' => $message,
+            'downloadUrl' => $downloadUrl,
+        ]);
     }
 
     public function beranda(Request $request): View
@@ -326,7 +465,11 @@ class LayananController extends Controller
             'id_layanan' => ['required', 'integer', 'exists:layanan,id'],
             'subjek' => ['required', 'string', 'max:150'],
             'deskripsi' => ['required', 'string', 'max:5000'],
-            'dokumen' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:5120'],
+            'dokumen' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'extensions:pdf,jpg,jpeg,png', 'max:5120'],
+        ], [
+            'dokumen.mimes' => 'Format file tidak didukung. Silakan upload PDF, JPG, JPEG, atau PNG.',
+            'dokumen.extensions' => 'Format file tidak didukung. Silakan upload PDF, JPG, JPEG, atau PNG.',
+            'dokumen.max' => 'Ukuran file maksimal 5 MB.',
         ]);
 
         $user = $request->user();
@@ -347,14 +490,15 @@ class LayananController extends Controller
 
         $pengguna->save();
 
-        $duplicatePengajuan = Pengajuan::query()
+        $duplicateQuery = Pengajuan::query()
             ->where('id_pengguna', $pengguna->id)
             ->where('id_layanan', $layanan->id)
             ->where('subjek', $data['subjek'])
             ->where('deskripsi', $data['deskripsi'])
             ->whereIn('status', ['baru', 'diajukan'])
-            ->latest('dibuat_pada')
-            ->first();
+            ->latest('dibuat_pada');
+
+        $duplicatePengajuan = $duplicateQuery->first();
 
         if ($duplicatePengajuan) {
             return redirect()->route('pengajuan.berhasil', ['nomorTiket' => $duplicatePengajuan->nomor_tiket])
@@ -364,12 +508,22 @@ class LayananController extends Controller
         $pengajuanData = [
             'id_pengguna' => $pengguna->id,
             'id_layanan' => $layanan->id,
-            'id_admin_fo' => null,
-            'jenis_pemohon' => $data['jenis_pemohon'],
             'subjek' => $data['subjek'],
             'deskripsi' => $data['deskripsi'],
             'status' => 'baru',
         ];
+
+        if (Schema::hasColumn('pengajuan', 'user_id')) {
+            $pengajuanData['user_id'] = $user->getKey();
+        }
+
+        if (Schema::hasColumn('pengajuan', 'id_admin_fo')) {
+            $pengajuanData['id_admin_fo'] = null;
+        }
+
+        if (Schema::hasColumn('pengajuan', 'jenis_pemohon')) {
+            $pengajuanData['jenis_pemohon'] = $data['jenis_pemohon'];
+        }
 
         if (Schema::hasColumn('pengajuan', 'id_unit') && ! is_null($layanan->id_unit ?? null)) {
             $pengajuanData['id_unit'] = $layanan->id_unit;
@@ -401,11 +555,11 @@ class LayananController extends Controller
 
         if ($request->hasFile('dokumen') && Schema::hasTable('dokumen_pengajuan')) {
             $uploadedFile = $request->file('dokumen');
-            $storedPath = $uploadedFile->storeAs(
-                'pengajuan',
-                time().'_'.$uploadedFile->getClientOriginalName(),
-                'public'
-            );
+            $storedPath = $uploadedFile->store('pengajuan', 'local');
+
+            if ($storedPath === false) {
+                throw new \RuntimeException('Dokumen pengajuan gagal disimpan.');
+            }
 
             DB::table('dokumen_pengajuan')->insert([
                 'id_pengajuan' => $pengajuan->id,
@@ -450,9 +604,9 @@ class LayananController extends Controller
         $komunikasi = collect();
 
         foreach ($pengajuan->riwayat as $history) {
-            $historyDate = $history->dibuat_pada instanceof \Carbon\Carbon
+            $historyDate = $history->dibuat_pada instanceof Carbon
                 ? $history->dibuat_pada
-                : (filled($history->dibuat_pada) ? \Carbon\Carbon::parse($history->dibuat_pada) : null);
+                : (filled($history->dibuat_pada) ? Carbon::parse($history->dibuat_pada) : null);
 
             $komunikasi->push((object) [
                 'type' => 'status',
@@ -469,27 +623,11 @@ class LayananController extends Controller
                 ->get();
 
             foreach ($pesan as $item) {
-                $historyDate = $item->dibuat_pada instanceof \Carbon\Carbon
+                $historyDate = $item->dibuat_pada instanceof Carbon
                     ? $item->dibuat_pada
-                    : (filled($item->dibuat_pada) ? \Carbon\Carbon::parse($item->dibuat_pada) : null);
+                    : (filled($item->dibuat_pada) ? Carbon::parse($item->dibuat_pada) : null);
 
                 $lampiranPath = $item->lampiran ?? null;
-                $lampiranUrl = null;
-                $lampiranType = null;
-
-                if (! empty($lampiranPath) && Storage::disk('public')->exists($lampiranPath)) {
-                    $lampiranUrl = Storage::disk('public')->url($lampiranPath);
-                    $extension = strtolower(pathinfo($lampiranPath, PATHINFO_EXTENSION));
-
-                    if (in_array($extension, ['pdf'], true)) {
-                        $lampiranType = 'pdf';
-                    } elseif (in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'], true)) {
-                        $lampiranType = 'image';
-                    } elseif (in_array($extension, ['doc', 'docx'], true)) {
-                        $lampiranType = 'doc';
-                    }
-                }
-
                 $komunikasi->push((object) [
                     'id' => $item->id,
                     'type' => 'message',
@@ -499,9 +637,6 @@ class LayananController extends Controller
                         ? 'Petugas ULT'
                         : ($pemohon?->nama_lengkap ?? 'Pemohon'),
                     'pengirim_tipe' => $item->pengirim_tipe,
-                    'lampiran_url' => $lampiranUrl,
-                    'lampiran_type' => $lampiranType,
-                    'lampiran_name' => basename((string) $lampiranPath),
                     'lampiran_route' => ! empty($lampiranPath)
                         ? route('pengajuan.pesan.lampiran.view', [
                             'nomorTiket' => $nomorTiket,
@@ -513,12 +648,14 @@ class LayananController extends Controller
         }
 
         $komunikasi = $komunikasi
-            ->sortBy(fn ($item) => $item->dibuat_pada instanceof \Carbon\Carbon
+            ->sortBy(fn ($item) => $item->dibuat_pada instanceof Carbon
                 ? $item->dibuat_pada->getTimestamp()
                 : 0)
             ->values();
 
-        $jenisPemohon = $pengajuan->jenis_pemohon ?? 'Tidak tersedia';
+        $jenisPemohon = Schema::hasColumn('pengajuan', 'jenis_pemohon')
+            ? ($pengajuan->jenis_pemohon ?? 'Tidak tersedia')
+            : 'Tidak tersedia';
         $ratingUlasan = RatingLayanan::query()
             ->where('id_pengajuan', $pengajuan->id)
             ->exists();
@@ -579,34 +716,65 @@ class LayananController extends Controller
             return $this->renderAttachmentError('Nomor tiket tidak valid.', 404);
         }
 
+        $this->authorizeDocumentAccess($pengajuan);
+
+        if (! Schema::hasTable('pesan_pengajuan')) {
+            return $this->renderAttachmentError('Dokumen tidak ditemukan.', 404);
+        }
+
         $pesan = DB::table('pesan_pengajuan')
             ->where('id', $pesanId)
             ->where('id_pengajuan', $pengajuan->id)
             ->first();
 
         if (! $pesan || empty($pesan->lampiran)) {
-            return $this->renderAttachmentError('Lampiran tidak tersedia untuk pesan ini.', 404);
+            return $this->renderAttachmentError('Dokumen tidak ditemukan.', 404);
         }
 
         $filePath = $pesan->lampiran;
         if (! Storage::disk('public')->exists($filePath)) {
-            return $this->renderAttachmentError('Lampiran tidak tersedia atau file sudah dihapus.', 404);
+            return $this->renderAttachmentError('Dokumen tidak ditemukan.', 404);
         }
 
-        $mimeType = Storage::disk('public')->mimeType($filePath);
-        if (! in_array($mimeType, $this->previewableMimeTypes(), true)) {
-            return $this->renderAttachmentError('Dokumen ini tidak dapat ditampilkan di browser. Silakan unduh file untuk membukanya.', 415);
+        return $this->renderDocumentResponse(
+            'public',
+            $filePath,
+            basename($filePath),
+            route('pengajuan.pesan.lampiran.download', [
+                'nomorTiket' => $nomorTiket,
+                'pesanId' => $pesanId,
+            ]),
+            route('pengajuan.pesan.lampiran.image', [
+                'nomorTiket' => $nomorTiket,
+                'pesanId' => $pesanId,
+            ])
+        );
+    }
+
+    public function lihatGambarLampiranPesan(string $nomorTiket, int $pesanId): Response
+    {
+        $pengajuan = Pengajuan::query()
+            ->where('nomor_tiket', $nomorTiket)
+            ->first();
+
+        if (! $pengajuan) {
+            return $this->renderAttachmentError('Nomor tiket tidak valid.', 404);
         }
 
-        try {
-            return Storage::disk('public')->response(
-                $filePath,
-                basename($filePath),
-                ['Content-Disposition' => 'inline; filename="'.basename($filePath).'"']
-            );
-        } catch (\Throwable $exception) {
-            return $this->renderAttachmentError('Dokumen tidak dapat ditampilkan saat ini. Silakan coba lagi nanti.', 500);
+        $this->authorizeDocumentAccess($pengajuan);
+
+        $pesan = Schema::hasTable('pesan_pengajuan')
+            ? DB::table('pesan_pengajuan')
+                ->where('id', $pesanId)
+                ->where('id_pengajuan', $pengajuan->id)
+                ->first()
+            : null;
+
+        if (! $pesan || empty($pesan->lampiran) || ! Storage::disk('public')->exists($pesan->lampiran)) {
+            return $this->renderAttachmentError('Dokumen tidak ditemukan.', 404);
         }
+
+        return $this->serveImageDocument('public', $pesan->lampiran, basename($pesan->lampiran));
     }
 
     public function lihatDokumen(string $nomorTiket, int $dokumenId)
@@ -619,34 +787,104 @@ class LayananController extends Controller
             return $this->renderAttachmentError('Nomor tiket tidak valid.', 404);
         }
 
+        $this->authorizeDocumentAccess($pengajuan);
+
+        if (! Schema::hasTable('dokumen_pengajuan')) {
+            return $this->renderAttachmentError('Dokumen tidak ditemukan.', 404);
+        }
+
         $dokumen = DB::table('dokumen_pengajuan')
             ->where('id', $dokumenId)
             ->where('id_pengajuan', $pengajuan->id)
             ->first();
 
         if (! $dokumen || empty($dokumen->path_file)) {
-            return $this->renderAttachmentError('Dokumen pendukung tidak ditemukan.', 404);
+            return $this->renderAttachmentError('Dokumen tidak ditemukan.', 404);
         }
 
         $path = $dokumen->path_file;
-        if (! Storage::disk('public')->exists($path)) {
-            return $this->renderAttachmentError('Dokumen pendukung tidak tersedia atau file sudah dihapus.', 404);
+        $disk = $this->documentStorageDisk($path);
+
+        if ($disk === null) {
+            return $this->renderAttachmentError('Dokumen tidak ditemukan.', 404);
         }
 
-        $mimeType = Storage::disk('public')->mimeType($path);
-        if (! in_array($mimeType, $this->previewableMimeTypes(), true)) {
-            return $this->renderAttachmentError('Dokumen ini tidak dapat ditampilkan di browser. Silakan unduh file untuk membukanya.', 415);
+        return $this->renderDocumentResponse(
+            $disk,
+            $path,
+            $dokumen->nama_file,
+            route('pengajuan.dokumen.download', [
+                'nomorTiket' => $nomorTiket,
+                'dokumenId' => $dokumenId,
+            ]),
+            route('pengajuan.dokumen.image', [
+                'nomorTiket' => $nomorTiket,
+                'dokumenId' => $dokumenId,
+            ])
+        );
+    }
+
+    public function lihatGambarDokumen(string $nomorTiket, int $dokumenId): Response
+    {
+        $pengajuan = Pengajuan::query()
+            ->where('nomor_tiket', $nomorTiket)
+            ->first();
+
+        if (! $pengajuan) {
+            return $this->renderAttachmentError('Nomor tiket tidak valid.', 404);
         }
 
-        try {
-            return Storage::disk('public')->response(
-                $path,
-                $dokumen->nama_file,
-                ['Content-Disposition' => 'inline; filename="'.$dokumen->nama_file.'"']
-            );
-        } catch (\Throwable $exception) {
-            return $this->renderAttachmentError('Dokumen tidak dapat ditampilkan saat ini. Silakan coba lagi nanti.', 500);
+        $this->authorizeDocumentAccess($pengajuan);
+
+        $dokumen = Schema::hasTable('dokumen_pengajuan')
+            ? DB::table('dokumen_pengajuan')
+                ->where('id', $dokumenId)
+                ->where('id_pengajuan', $pengajuan->id)
+                ->first()
+            : null;
+
+        if (! $dokumen || empty($dokumen->path_file)) {
+            return $this->renderAttachmentError('Dokumen tidak ditemukan.', 404);
         }
+
+        $disk = $this->documentStorageDisk($dokumen->path_file);
+
+        if ($disk === null) {
+            return $this->renderAttachmentError('Dokumen tidak ditemukan.', 404);
+        }
+
+        return $this->serveImageDocument($disk, $dokumen->path_file, $dokumen->nama_file);
+    }
+
+    public function unduhLampiranPesan(string $nomorTiket, int $pesanId)
+    {
+        $pengajuan = Pengajuan::query()
+            ->where('nomor_tiket', $nomorTiket)
+            ->first();
+
+        if (! $pengajuan) {
+            return $this->renderAttachmentError('Nomor tiket tidak valid.', 404);
+        }
+
+        $this->authorizeDocumentAccess($pengajuan);
+
+        if (! Schema::hasTable('pesan_pengajuan')) {
+            return $this->renderAttachmentError('Dokumen tidak ditemukan.', 404);
+        }
+
+        $pesan = DB::table('pesan_pengajuan')
+            ->where('id', $pesanId)
+            ->where('id_pengajuan', $pengajuan->id)
+            ->first();
+
+        if (! $pesan || empty($pesan->lampiran) || ! Storage::disk('public')->exists($pesan->lampiran)) {
+            return $this->renderAttachmentError('Dokumen tidak ditemukan.', 404);
+        }
+
+        return Storage::disk('public')->download(
+            $pesan->lampiran,
+            basename($pesan->lampiran)
+        );
     }
 
     public function unduhDokumen(string $nomorTiket, int $dokumenId)
@@ -659,6 +897,12 @@ class LayananController extends Controller
             return $this->renderAttachmentError('Nomor tiket tidak valid.', 404);
         }
 
+        $this->authorizeDocumentAccess($pengajuan);
+
+        if (! Schema::hasTable('dokumen_pengajuan')) {
+            return $this->renderAttachmentError('Dokumen pendukung tidak ditemukan.', 404);
+        }
+
         $dokumen = DB::table('dokumen_pengajuan')
             ->where('id', $dokumenId)
             ->where('id_pengajuan', $pengajuan->id)
@@ -668,11 +912,13 @@ class LayananController extends Controller
             return $this->renderAttachmentError('Dokumen pendukung tidak ditemukan.', 404);
         }
 
-        if (! Storage::disk('public')->exists($dokumen->path_file)) {
+        $disk = $this->documentStorageDisk($dokumen->path_file);
+
+        if ($disk === null) {
             return $this->renderAttachmentError('Dokumen pendukung tidak tersedia atau file sudah dihapus.', 404);
         }
 
-        return Storage::disk('public')->download(
+        return Storage::disk($disk)->download(
             $dokumen->path_file,
             $dokumen->nama_file
         );

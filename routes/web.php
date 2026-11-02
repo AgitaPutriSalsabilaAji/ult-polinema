@@ -64,17 +64,28 @@ Route::middleware('auth:web')->group(function () {
     Route::post('/e-tiket/{nomorTiket}/pesan', [UserLayananController::class, 'storePesan'])
         ->name('pengajuan.pesan.store');
 
+    Route::get('/e-tiket/{nomorTiket}', [UserLayananController::class, 'detailPengajuan'])
+        ->name('pengajuan.detail');
+});
+
+Route::middleware('auth:admin,web')->group(function () {
     Route::get('/e-tiket/{nomorTiket}/pesan/{pesanId}/lampiran', [UserLayananController::class, 'lihatLampiranPesan'])
         ->name('pengajuan.pesan.lampiran.view');
+
+    Route::get('/e-tiket/{nomorTiket}/pesan/{pesanId}/lampiran/unduh', [UserLayananController::class, 'unduhLampiranPesan'])
+        ->name('pengajuan.pesan.lampiran.download');
+
+    Route::get('/e-tiket/{nomorTiket}/pesan/{pesanId}/lampiran/gambar', [UserLayananController::class, 'lihatGambarLampiranPesan'])
+        ->name('pengajuan.pesan.lampiran.image');
 
     Route::get('/e-tiket/{nomorTiket}/dokumen/{dokumenId}/lihat', [UserLayananController::class, 'lihatDokumen'])
         ->name('pengajuan.dokumen.view');
 
+    Route::get('/e-tiket/{nomorTiket}/dokumen/{dokumenId}/gambar', [UserLayananController::class, 'lihatGambarDokumen'])
+        ->name('pengajuan.dokumen.image');
+
     Route::get('/e-tiket/{nomorTiket}/dokumen/{dokumenId}/unduh', [UserLayananController::class, 'unduhDokumen'])
         ->name('pengajuan.dokumen.download');
-
-    Route::get('/e-tiket/{nomorTiket}', [UserLayananController::class, 'detailPengajuan'])
-        ->name('pengajuan.detail');
 });
 
 Route::post('/e-tiket/{nomorTiket}/rating', [UserLayananController::class, 'storeRating'])
@@ -137,7 +148,7 @@ Route::middleware('auth:admin')
             PengajuanController::class,
             'tolak',
         ])->name('pengajuan.tolak');
-      
+
         // Manajemen layanan admin
         Route::get('/layanan', [AdminLayananController::class, 'index'])
             ->name('layanan.index');

@@ -28,7 +28,7 @@ class CekStatusController extends Controller
             $user = Auth::guard('web')->user();
             $pemohon = $user ? Pengguna::query()->where('email', $user->email)->first() : null;
 
-            $pengajuan = DB::table('pengajuan as p')
+            $query = DB::table('pengajuan as p')
                 ->leftJoin('layanan as l', 'l.id', '=', 'p.id_layanan')
                 ->leftJoin('unit as un', 'un.id', '=', 'l.id_unit')
                 ->leftJoin('pengguna as u', 'u.id', '=', 'p.id_pengguna')
@@ -42,12 +42,31 @@ class CekStatusController extends Controller
                     'p.status',
                     'p.dibuat_pada',
                     'p.diperbarui_pada',
-                    'p.tanggal_selesai',
                     'l.nama_layanan',
                     'un.nama_unit',
                     'u.nama_lengkap as nama_pemohon',
-                ])
-                ->first();
+                ]);
+
+            if (Schema::hasColumn('pengajuan', 'tanggal_selesai')) {
+                $query->addSelect('p.tanggal_selesai');
+            } elseif (
+                Schema::hasTable('riwayat_pengajuan')
+                && Schema::hasColumn('riwayat_pengajuan', 'judul_status')
+                && Schema::hasColumn('riwayat_pengajuan', 'dibuat_pada')
+            ) {
+                $query->addSelect([
+                    'tanggal_selesai' => DB::table('riwayat_pengajuan as rp')
+                        ->select('rp.dibuat_pada')
+                        ->whereColumn('rp.id_pengajuan', 'p.id')
+                        ->where('rp.judul_status', 'Pengajuan selesai')
+                        ->orderByDesc('rp.dibuat_pada')
+                        ->limit(1),
+                ]);
+            } else {
+                $query->addSelect(DB::raw('NULL as tanggal_selesai'));
+            }
+
+            $pengajuan = $query->first();
 
             if ($pengajuan) {
                 $riwayat = DB::table('riwayat_pengajuan')
