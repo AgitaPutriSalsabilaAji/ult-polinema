@@ -19,7 +19,6 @@
             $namaUnit = $pengajuan->layanan?->unit?->nama_unit ?? 'Unit Layanan';
             $statusLabel = [
                 'diajukan' => 'Diajukan',
-                'baru' => 'Diajukan',
                 'diverifikasi' => 'Diverifikasi',
                 'diproses' => 'Diproses',
                 'didisposisikan' => 'Didisposisikan',

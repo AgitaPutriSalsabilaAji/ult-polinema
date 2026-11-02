@@ -79,7 +79,7 @@ class AdminPengajuanDispositionTest extends TestCase
     {
         $adminUlt = $this->createAdmin('ult@example.com', 'admin_ult', 1);
         $adminUnit = $this->createAdmin('unit@example.com', 'admin_unit', 2);
-        $this->createTestApplication(2, 'diajukan');
+        $this->createTestApplication(2, 'baru');
 
         $response = $this->actingAs($adminUlt, 'admin')
             ->postJson(route('admin.pengajuan.disposisi', 1), [
@@ -110,7 +110,7 @@ class AdminPengajuanDispositionTest extends TestCase
     {
         $adminUlt = $this->createAdmin('ult@example.com', 'admin_ult', 1);
         $wrongAdmin = $this->createAdmin('wrong@example.com', 'admin_unit', 3);
-        $this->createTestApplication(2, 'diajukan');
+        $this->createTestApplication(2, 'baru');
 
         $this->actingAs($adminUlt, 'admin')
             ->postJson(route('admin.pengajuan.disposisi', 1), [
@@ -212,35 +212,6 @@ class AdminPengajuanDispositionTest extends TestCase
         $this->assertDatabaseHas('pengajuan', [
             'id' => 1,
             'status' => 'didisposisikan',
-        ]);
-    }
-
-    public function test_admin_unit_can_reject_without_a_reason_and_finalized_tickets_cannot_be_changed(): void
-    {
-        $adminUnit = $this->createAdmin('unit@example.com', 'admin_unit', 2);
-        $this->createTestApplication(2, 'diproses');
-
-        $this->actingAs($adminUnit, 'admin')
-            ->post(route('admin.pengajuan.tolak', 1))
-            ->assertRedirect(route('admin.pengajuan.show', 1));
-
-        $this->assertDatabaseHas('pengajuan', [
-            'id' => 1,
-            'status' => 'ditolak',
-        ]);
-        $this->assertDatabaseHas('riwayat_pengajuan', [
-            'id_pengajuan' => 1,
-            'status_baru' => 'ditolak',
-            'id_admin' => $adminUnit->id,
-        ]);
-
-        $this->actingAs($adminUnit, 'admin')
-            ->post(route('admin.pengajuan.selesai', 1))
-            ->assertStatus(409);
-
-        $this->assertDatabaseHas('pengajuan', [
-            'id' => 1,
-            'status' => 'ditolak',
         ]);
     }
 

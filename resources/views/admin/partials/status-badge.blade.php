@@ -1,8 +1,8 @@
 @php
     $status = strtolower((string) $status);
     $statusMap = [
-        'diajukan' => ['DIAJUKAN', 'baru'],
-        'baru' => ['DIAJUKAN', 'baru'],
+        'diajukan' => ['BARU', 'baru'],
+        'baru' => ['BARU', 'baru'],
         'didisposisikan' => ['DIDISPOSISIKAN', 'didisposisikan'],
         'diproses' => ['DIPROSES', 'diproses'],
         'selesai' => ['SELESAI', 'selesai'],

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('id_admin_fo')->nullable()->index('fk_pengajuan_admin_fo');
             $table->string('subjek');
             $table->text('deskripsi');
-            $table->string('status', 30)->default('diajukan');
+            $table->string('status', 30)->default('baru');
             $table->timestamp('dibuat_pada')->nullable()->useCurrent();
             $table->timestamp('diperbarui_pada')->useCurrentOnUpdate()->nullable()->useCurrent();
             $table->timestamp('tanggal_selesai')->nullable();

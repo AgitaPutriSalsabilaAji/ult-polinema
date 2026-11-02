@@ -76,8 +76,7 @@ class PengajuanController extends Controller
 
         // Hak akses berdasarkan role admin
         if ($adminLogin->peran === 'admin_unit') {
-            $query->where('p.id_unit', $adminLogin->id_unit)
-                ->whereNotIn('p.status', ['baru', 'diajukan']);
+            $query->where('p.id_unit', $adminLogin->id_unit);
         }
 
         if ($request->filled('q')) {
@@ -175,10 +174,7 @@ class PengajuanController extends Controller
         ]);
 
         if ($adminLogin->peran === 'admin_unit'
-            && (
-                (int) $pengajuan->id_unit !== (int) $adminLogin->id_unit
-                || in_array($pengajuan->status, ['baru', 'diajukan'], true)
-            )) {
+            && (int) $pengajuan->id_unit !== (int) $adminLogin->id_unit) {
             abort(403, 'Anda tidak memiliki akses ke pengajuan ini.');
         }
 
@@ -207,17 +203,9 @@ class PengajuanController extends Controller
                 ->first();
         }
 
-        $dokumen = Schema::hasTable('dokumen_pengajuan')
-            ? DB::table('dokumen_pengajuan')
-                ->where('id_pengajuan', $pengajuan->id)
-                ->orderBy('id')
-                ->get()
-            : collect();
-
         return view('admin.detail-pengajuan', compact(
             'pengajuan',
-            'pemohon',
-            'dokumen'
+            'pemohon'
         ));
     }
 
@@ -237,16 +225,15 @@ class PengajuanController extends Controller
             ->with('success', 'Pengajuan berhasil diselesaikan.');
     }
 
-    public function tolak(Pengajuan $pengajuan): RedirectResponse
+    public function tolak(Request $request, Pengajuan $pengajuan): RedirectResponse
     {
+        $data = $request->validate([
+            'alasan' => ['nullable', 'string', 'max:5000'],
+        ]);
         $admin = $this->authorizeUnitAdmin($pengajuan);
+        $description = $data['alasan'] ?: 'Pengajuan ditolak oleh admin unit.';
 
-        $this->transitionStatus(
-            $pengajuan,
-            'ditolak',
-            $admin,
-            'Pengajuan ditolak oleh admin unit.'
-        );
+        $this->transitionStatus($pengajuan, 'ditolak', $admin, $description);
 
         return redirect()
             ->route('admin.pengajuan.show', $pengajuan)

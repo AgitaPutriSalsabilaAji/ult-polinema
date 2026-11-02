@@ -32,7 +32,6 @@
         @php
             $statusLabels = [
                 'diajukan' => 'Pengajuan Diterima',
-                'baru' => 'Pengajuan Diterima',
                 'diverifikasi' => 'Verifikasi Data',
                 'diproses' => 'Sedang Diproses',
                 'didisposisikan' => 'Diteruskan ke Unit Tujuan',
