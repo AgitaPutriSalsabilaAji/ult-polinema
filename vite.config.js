@@ -10,6 +10,7 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
                 'resources/css/beranda.css',
+                'resources/css/faq.css',
                 'resources/js/beranda.js',
                 'resources/css/cek-status.css',
                 'resources/js/cek-status.js',

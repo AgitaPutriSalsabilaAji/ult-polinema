@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\RatingLayananController;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\User\CekStatusController;
+use App\Http\Controllers\User\FaqController as UserFaqController;
 use App\Http\Controllers\User\LayananController as UserLayananController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,9 @@ Route::get('/', [UserLayananController::class, 'beranda'])->name('beranda');
 
 Route::get('/layanan', [UserLayananController::class, 'index'])
     ->name('layanan.index');
+
+Route::get('/faq', [UserFaqController::class, 'index'])
+    ->name('faq.index');
 
 Route::get('/layanan/{slug}', [UserLayananController::class, 'detail'])
     ->name('layanan.detail');
