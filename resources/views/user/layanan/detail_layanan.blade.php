@@ -49,7 +49,7 @@
             @endif
         </div>
         <aside class="detail-right">
-            <div class="information-card"><div class="information-label">Unit Pengampu</div><strong>{{ $layanan['unit'] }}</strong><h2>▣ &nbsp; INFORMASI LAYANAN</h2>
+            <div class="information-card"><h2><i class="bi bi-info-circle" aria-hidden="true"></i> INFORMASI LAYANAN</h2><div class="information-label">Unit Pengampu</div><strong>{{ $layanan['unit'] }}</strong>
                 <div class="information-row"><span>Jenis Layanan</span><strong>{{ $layanan['nama'] }}</strong></div>
                 @if (!empty($layanan['estimasi']))
                     <div class="information-row"><span>Estimasi Waktu</span><strong class="time-value">{{ $layanan['estimasi'] }}</strong></div>
