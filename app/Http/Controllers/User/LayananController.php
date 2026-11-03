@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
+use App\Models\Faq;
 use App\Models\Layanan;
 use App\Models\Pengajuan;
 use App\Models\Pengguna;
@@ -301,12 +302,17 @@ class LayananController extends Controller
         $services = $searchServices
             ->where('kategori', $kategori)
             ->values();
+        $faqs = Faq::query()
+            ->where('status', 'aktif')
+            ->orderBy('id')
+            ->get();
 
         return view('user.beranda', compact(
             'services',
             'searchServices',
             'kategori',
-            'jumlahKategori'
+            'jumlahKategori',
+            'faqs'
         ));
     }
 
