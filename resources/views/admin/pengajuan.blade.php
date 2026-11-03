@@ -552,7 +552,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 throw new Error(result.message || 'Disposisi gagal dikirim.');
             }
 
-            bootstrap.Modal.getOrCreateInstance(modal).hide();
+            window.bootstrap.Modal.getOrCreateInstance(modal).hide();
             window.location.reload();
         } catch (error) {
             errorBox.textContent = error.message || 'Disposisi gagal dikirim.';
