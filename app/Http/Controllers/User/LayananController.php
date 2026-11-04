@@ -15,14 +15,13 @@ use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class LayananController extends Controller
 {
@@ -591,12 +590,6 @@ class LayananController extends Controller
             ->firstOrFail();
 
         $pemohon = Pengguna::find($pengajuan->id_pengguna);
-        $pesanPengajuan = Schema::hasTable('pesan_pengajuan')
-            ? DB::table('pesan_pengajuan')
-                ->where('id_pengajuan', $pengajuan->id)
-                ->orderBy('dibuat_pada')
-                ->get()
-            : collect();
 
         $dokumen = Schema::hasTable('dokumen_pengajuan')
             ? DB::table('dokumen_pengajuan')
@@ -672,7 +665,6 @@ class LayananController extends Controller
         return view('user.detail_pengajuan', [
             'pengajuan' => $pengajuan,
             'pemohon' => $pemohon,
-            'pesanPengajuan' => $pesanPengajuan,
             'dokumen' => $dokumen,
             'komunikasi' => $komunikasi,
             'jenisPemohon' => $jenisPemohon,
@@ -960,107 +952,6 @@ class LayananController extends Controller
 
         return redirect()->route('pengajuan.detail', ['nomorTiket' => $nomorTiket])
             ->with('success', 'Terima kasih atas penilaian Anda.');
-    }
-
-    public function kirimPesan(Request $request, string $nomorTiket): RedirectResponse|JsonResponse
-    {
-        $user = $request->user();
-        abort_unless($user instanceof User, 403);
-
-        $pengajuan = $user->pengajuan()
-            ->where('nomor_tiket', $nomorTiket)
-            ->firstOrFail();
-
-        abort_if($pengajuan->isTerminal(), 409, 'Percakapan untuk tiket ini sudah ditutup.');
-
-        $data = $request->validate([
-            'pesan' => ['nullable', 'string', 'max:5000', 'required_without:lampiran'],
-            'lampiran' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:5120'],
-        ]);
-
-        abort_unless(Schema::hasTable('pesan_pengajuan'), 503, 'Fitur komunikasi belum tersedia.');
-
-        $path = null;
-        $originalFilename = null;
-        if ($request->hasFile('lampiran')) {
-            $file = $request->file('lampiran');
-            $path = $file->store('pesan-pengajuan', 'public');
-            $originalFilename = $file->getClientOriginalName();
-        }
-
-        $messageId = DB::table('pesan_pengajuan')->insertGetId([
-            'id_pengajuan' => $pengajuan->id,
-            'pengirim_tipe' => 'pemohon',
-            'id_pengirim' => $user->getKey(),
-            'pesan' => $data['pesan'] ?? '',
-            'lampiran' => $path,
-            'nama_lampiran' => $originalFilename,
-            'dibuat_pada' => now(),
-        ]);
-
-        if ($request->expectsJson()) {
-            return response()->json([
-                'message' => [
-                    'id' => $messageId,
-                    'text' => $data['pesan'] ?? '',
-                    'sender' => 'Anda',
-                    'timestamp' => now()->translatedFormat('d M Y, H:i'),
-                    'filename' => $originalFilename,
-                    'download_url' => $originalFilename
-                        ? route('pengajuan.pesan.lampiran', ['nomorTiket' => $nomorTiket, 'pesan' => $messageId])
-                        : null,
-                ],
-            ]);
-        }
-
-        return redirect()
-            ->route('pengajuan.detail', $pengajuan->nomor_tiket)
-            ->with('success', 'Pesan berhasil dikirim.');
-    }
-
-    public function unduhLampiranPesan(Request $request, string $nomorTiket, int $pesan): StreamedResponse
-    {
-        $user = $request->user();
-        abort_unless($user instanceof User, 403);
-
-        $pengajuan = $user->pengajuan()
-            ->where('nomor_tiket', $nomorTiket)
-            ->firstOrFail();
-        $message = DB::table('pesan_pengajuan')
-            ->where('id', $pesan)
-            ->where('id_pengajuan', $pengajuan->id)
-            ->firstOrFail();
-
-        abort_unless($message->lampiran, 404);
-        abort_unless(Storage::disk('public')->exists($message->lampiran), 404);
-
-        return $this->serveAttachment($message->lampiran, $message->nama_lampiran);
-    }
-
-    public function unduhDokumenPengajuan(Request $request, string $nomorTiket, int $dokumen): StreamedResponse
-    {
-        $user = $request->user();
-        abort_unless($user instanceof User, 403);
-
-        $pengajuan = $user->pengajuan()
-            ->where('nomor_tiket', $nomorTiket)
-            ->firstOrFail();
-        $document = DB::table('dokumen_pengajuan')
-            ->where('id', $dokumen)
-            ->where('id_pengajuan', $pengajuan->id)
-            ->firstOrFail();
-
-        abort_unless(Storage::disk('public')->exists($document->path_file), 404);
-
-        return $this->serveAttachment($document->path_file, $document->nama_file);
-    }
-
-    private function serveAttachment(string $path, ?string $filename): StreamedResponse
-    {
-        $filename = basename($filename ?? basename($path));
-        $filename = preg_replace('/[\r\n"]+/', '', $filename) ?: 'lampiran';
-
-        return Storage::disk('public')->download($path, $filename);
     }
 
     public function successPengajuan(Request $request, string $nomorTiket): View
