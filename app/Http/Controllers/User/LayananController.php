@@ -155,7 +155,7 @@ class LayananController extends Controller
 
         $user = auth('web')->user();
         abort_unless($user instanceof User, 404);
-        $isOwner = (int) $pengajuan->user_id === (int) $user->getKey();
+        $isOwner = (int) $pengajuan->id_pengguna === (int) $user->getKey();
 
         if (! $isOwner && Schema::hasTable('pengguna')) {
             $isOwner = $pengajuan->pengguna()
@@ -519,10 +519,6 @@ class LayananController extends Controller
             'status' => 'baru',
         ];
 
-        if (Schema::hasColumn('pengajuan', 'user_id')) {
-            $pengajuanData['user_id'] = $user->getKey();
-        }
-
         if (Schema::hasColumn('pengajuan', 'id_admin_fo')) {
             $pengajuanData['id_admin_fo'] = null;
         }
@@ -708,7 +704,7 @@ class LayananController extends Controller
             ]);
         }
 
-        return redirect()->route('pengajuan.detail', ['nomorTiket' => $nomorTiket])
+        return redirect()->to(route('pengajuan.detail', ['nomorTiket' => $nomorTiket]) . '#komunikasi')
             ->with('success', 'Pesan berhasil dikirim.');
     }
 
