@@ -2,6 +2,7 @@
     $theme = $theme ?? 'purple';
     $theme = in_array($theme, ['light', 'purple'], true) ? $theme : 'purple';
     $active = $active ?? '';
+    $showServiceCta = $showServiceCta ?? false;
     $sticky = $sticky ?? false;
     $navId = $active === 'home' ? 'mainNav' : ($active === 'ticket' ? 'statusNav' : 'userNavbarMenu');
 @endphp
@@ -35,7 +36,9 @@
                        @if ($active === 'services') aria-current="page" @endif>Layanan</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('beranda') }}#faq">FAQ</a>
+                    <a class="nav-link {{ $active === 'faq' ? 'active' : '' }}"
+                       href="{{ route('faq.index') }}"
+                       @if ($active === 'faq') aria-current="page" @endif>FAQ</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ $active === 'ticket' ? 'active' : '' }}"

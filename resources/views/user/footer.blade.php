@@ -17,7 +17,7 @@
                 <ul class="ult-footer__links">
                     <li><a href="{{ route('beranda') }}">Beranda</a></li>
                     <li><a href="{{ route('layanan.index') }}">Informasi Layanan</a></li>
-                    <li><a href="{{ route('beranda') }}#faq">FAQ</a></li>
+                    <li><a href="{{ route('faq.index') }}">FAQ</a></li>
                 </ul>
             </div>
 

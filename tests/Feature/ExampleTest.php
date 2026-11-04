@@ -30,6 +30,14 @@ class ExampleTest extends TestCase
             $table->integer('urutan_bagian')->nullable();
         });
 
+        Schema::create('faq', function (Blueprint $table): void {
+            $table->increments('id');
+            $table->text('pertanyaan');
+            $table->text('jawaban');
+            $table->integer('id_unit')->nullable();
+            $table->string('status', 20)->default('aktif');
+        });
+
         $response = $this->get('/');
 
         $response->assertStatus(200);

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 @import './auth.css';
 
 .ult-navbar {
@@ -94,6 +94,28 @@
     content: '';
 }
 
+.ult-navbar__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-left: 24px;
+    padding: 10px 16px;
+    border-radius: 7px;
+    background: #f69200;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.ult-navbar__cta:hover,
+.ult-navbar__cta:focus-visible {
+    background: #df8100;
+    color: #fff;
+}
+
 .ult-navbar .navbar-toggler {
     padding: 6px 9px;
 }
@@ -187,6 +209,11 @@
 @media (max-width: 991.98px) {
     .ult-navbar .navbar-collapse {
         padding: 8px 0 12px;
+    }
+
+    .ult-navbar__cta {
+        width: fit-content;
+        margin: 12px 0 2px;
     }
 
     .ult-navbar .navbar-nav {

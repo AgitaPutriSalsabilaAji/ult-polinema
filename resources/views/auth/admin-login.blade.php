@@ -74,16 +74,18 @@
         }
 
         .logo-mark {
-            width: 42px;
-            height: 46px;
-            border: 1px solid #f4d16b;
-            border-radius: 45% 45% 40% 40%;
-            color: #ffdb74;
+            width: 45px;
+            height: 45px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 25px;
             flex-shrink: 0;
+        }
+
+        .logo-mark img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .brand-small {
@@ -390,7 +392,10 @@
 
         <section class="brand-panel">
             <div class="brand-logo">
-                <div class="logo-mark" aria-hidden="true">✥</div>
+                <div class="logo-mark">
+                    <img src="{{ asset('images/polinema-logo.png') }}"
+                        alt="Logo Politeknik Negeri Malang">
+                </div>
 
                 <div>
                     <div class="brand-small">Politeknik Negeri Malang</div>
@@ -418,7 +423,7 @@
             <div class="form-content">
 
                 <div class="form-heading">
-                    <h2>Admin Service Management</h2>
+                    <h2>ULT Admin Portal</h2>
                     <p>
                         Masuk dengan kredensial akun Unit Layanan Terpadu
                     </p>

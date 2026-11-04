@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('id_layanan')->index('fk_pengajuan_layanan');
             $table->integer('id_unit')->index('fk_pengajuan_unit');
             $table->integer('id_admin_fo')->nullable()->index('fk_pengajuan_admin_fo');
+            $table->string('jenis_pemohon', 50)->nullable();
             $table->string('subjek');
             $table->text('deskripsi');
             $table->string('status', 30)->default('baru');

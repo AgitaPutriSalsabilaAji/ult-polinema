@@ -84,18 +84,6 @@
             </article>
         </section>
 
-        @if ($pesan->isNotEmpty())
-            <section class="messages-card container-xl">
-                <h2><i class="bi bi-chat-left-text"></i> Pesan dan Tanggapan</h2>
-                <p class="messages-help">Tanggapan petugas terkait pengajuan ini ditampilkan di sini.</p>
-                @foreach ($pesan as $item)
-                    <div class="message-item">
-                        <div class="message-meta"><strong>{{ strtolower($item->pengirim_tipe ?? '') === 'admin' ? 'Petugas ULT' : 'Pemohon' }}</strong><small>{{ $item->dibuat_pada ? \Carbon\Carbon::parse($item->dibuat_pada)->translatedFormat('d M Y, H:i') . ' WIB' : '' }}</small></div>
-                        <p>{{ $item->pesan }}</p>
-                    </div>
-                @endforeach
-            </section>
-        @endif
     @elseif (!$ticket)
         <section class="status-empty container-xl"><i class="bi bi-ticket-perforated"></i><h2>Periksa perkembangan pengajuan Anda</h2><p>Masukkan nomor e-ticket yang Anda terima setelah mengajukan layanan. Informasi status dan riwayat proses akan muncul di halaman ini.</p></section>
     @endif

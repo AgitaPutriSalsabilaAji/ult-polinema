@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\RatingLayananController;
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\User\CekStatusController;
+use App\Http\Controllers\User\FaqController as UserFaqController;
 use App\Http\Controllers\User\LayananController as UserLayananController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,9 @@ Route::get('/', [UserLayananController::class, 'beranda'])->name('beranda');
 
 Route::get('/layanan', [UserLayananController::class, 'index'])
     ->name('layanan.index');
+
+Route::get('/faq', [UserFaqController::class, 'index'])
+    ->name('faq.index');
 
 Route::get('/layanan/{slug}', [UserLayananController::class, 'detail'])
     ->name('layanan.detail');
@@ -61,6 +65,9 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/e-tiket/{nomorTiket}/berhasil', [UserLayananController::class, 'successPengajuan'])
         ->name('pengajuan.berhasil');
 
+    Route::post('/e-tiket/{nomorTiket}/pesan', [UserLayananController::class, 'storePesan'])
+        ->name('pengajuan.pesan.store');
+
     Route::get('/e-tiket/{nomorTiket}', [UserLayananController::class, 'detailPengajuan'])
         ->name('pengajuan.detail');
 
@@ -73,6 +80,29 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/e-tiket/{nomorTiket}/dokumen/{dokumen}', [UserLayananController::class, 'unduhDokumenPengajuan'])
         ->name('pengajuan.dokumen');
 });
+
+Route::middleware('auth:admin,web')->group(function () {
+    Route::get('/e-tiket/{nomorTiket}/pesan/{pesanId}/lampiran', [UserLayananController::class, 'lihatLampiranPesan'])
+        ->name('pengajuan.pesan.lampiran.view');
+
+    Route::get('/e-tiket/{nomorTiket}/pesan/{pesanId}/lampiran/unduh', [UserLayananController::class, 'unduhLampiranPesan'])
+        ->name('pengajuan.pesan.lampiran.download');
+
+    Route::get('/e-tiket/{nomorTiket}/pesan/{pesanId}/lampiran/gambar', [UserLayananController::class, 'lihatGambarLampiranPesan'])
+        ->name('pengajuan.pesan.lampiran.image');
+
+    Route::get('/e-tiket/{nomorTiket}/dokumen/{dokumenId}/lihat', [UserLayananController::class, 'lihatDokumen'])
+        ->name('pengajuan.dokumen.view');
+
+    Route::get('/e-tiket/{nomorTiket}/dokumen/{dokumenId}/gambar', [UserLayananController::class, 'lihatGambarDokumen'])
+        ->name('pengajuan.dokumen.image');
+
+    Route::get('/e-tiket/{nomorTiket}/dokumen/{dokumenId}/unduh', [UserLayananController::class, 'unduhDokumen'])
+        ->name('pengajuan.dokumen.download');
+});
+
+Route::post('/e-tiket/{nomorTiket}/rating', [UserLayananController::class, 'storeRating'])
+    ->name('pengajuan.rating.store');
 
 /*
 |--------------------------------------------------------------------------

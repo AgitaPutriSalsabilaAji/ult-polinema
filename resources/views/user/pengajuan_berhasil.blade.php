@@ -102,7 +102,7 @@
                     </footer>
 
                     <div class="ticket-card__actions">
-                        <a href="{{ route('cek-status', ['ticket' => $pengajuan->nomor_tiket]) }}" class="btn btn-primary">Pantau Status</a>
+                        <a href="{{ route('pengajuan.detail', ['nomorTiket' => $pengajuan->nomor_tiket]) }}" class="btn btn-primary">Detail Pengajuan</a>
                         <a href="{{ route('beranda') }}" class="btn btn-secondary">Kembali ke Beranda</a>
                     </div>
                 </article>

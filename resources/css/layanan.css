@@ -1,6 +1,12 @@
+
 /* resources/css/layanan.css */
+
 @import './navbar-purple.css';
 @import './footer.css';
+
+/* ========================================
+   VARIABLES
+======================================== */
 
 :root {
     --layanan-purple: #29216f;
@@ -12,16 +18,22 @@
     --layanan-bg: #f5f6fa;
     --layanan-line: #edeef2;
     --layanan-card-shadow: 0 14px 30px rgba(41, 33, 111, 0.08);
+
     --layanan-font-body: 13px;
     --layanan-font-heading: 20px;
     --layanan-font-subtitle: 10px;
 }
 
-html, body {
-    margin: 0;
-    padding: 0;
+/* ========================================
+   GLOBAL
+======================================== */
+
+html,
+body {
     width: 100%;
     min-height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 body {
@@ -40,8 +52,23 @@ body {
     background: #fff;
 }
 
-.layanan-page * { box-sizing: border-box; }
-.layanan-page a { text-decoration: none; }
+.layanan-page * {
+    box-sizing: border-box;
+}
+
+.layanan-page a {
+    text-decoration: none;
+}
+
+/* ========================================
+   INTRO
+======================================== */
+
+.layanan-page .intro {
+    padding: 100px 0 28px;
+    background: var(--layanan-bg);
+}
+
 .layanan-page:not(.detail-page) .intro {
     padding: 36px 0 14px;
 }
@@ -50,17 +77,12 @@ body {
     text-align: left;
 }
 
-.layanan-page .intro {
-    background: var(--layanan-bg);
-    padding: 42px 0 28px;
-}
-
 .layanan-page h1 {
     margin: 0 0 10px;
     color: var(--layanan-purple);
     font-size: var(--layanan-font-heading);
-    line-height: 1.2;
     font-weight: 800;
+    line-height: 1.2;
     letter-spacing: -0.4px;
 }
 
@@ -69,22 +91,26 @@ body {
     margin: 0;
     color: var(--layanan-muted);
     font-size: var(--layanan-font-subtitle);
-    line-height: 1.65;
     font-weight: 400;
+    line-height: 1.65;
 }
 
+/* ========================================
+   FILTERS & SEARCH
+======================================== */
+
 .layanan-page .filters {
-    background: #fff;
     padding: 8px 0 12px;
+    background: #fff;
 }
 
 .layanan-page .search-form {
     position: relative;
     z-index: 5;
-    width: min(100%, 680px);
     display: flex;
     align-items: center;
     gap: 10px;
+    width: min(100%, 680px);
     margin: 0 auto 18px;
     padding: 8px;
     background: #f5f6f9;
@@ -99,35 +125,32 @@ body {
 }
 
 .layanan-page .search-form input {
-    border: 0;
-    outline: 0;
-    background: transparent;
     flex: 1;
     min-width: 0;
+    padding: 9px 0;
     color: var(--layanan-ink);
     font-size: 11px;
-    padding: 9px 0;
+    background: transparent;
+    border: 0;
+    outline: 0;
 }
 
 .layanan-page .search-form input::placeholder {
     color: #8b8ea2;
 }
 
-.layanan-page .search-form button {
+.layanan-page .search-form button,
+.layanan-page .search-form .btn {
     min-width: 116px;
     padding: 10px 14px;
     color: #fff;
+    font-size: 10.5px;
+    font-weight: 700;
     background: #ff9700;
     border: 1px solid #ff9700;
     border-radius: 7px;
-    box-shadow: 0 4px 12px rgba(255, 151, 0, .12);
-    font-size: 10.5px;
-    font-weight: 700;
-    transition: .2s ease;
-}
-
-.layanan-page .search-form .btn {
-    min-width: 116px;
+    box-shadow: 0 4px 12px rgba(255, 151, 0, 0.12);
+    transition: 0.2s ease;
 }
 
 .layanan-page .search-form button:hover {
@@ -137,6 +160,8 @@ body {
     transform: translateY(-1px);
 }
 
+/* Search Dropdown */
+
 .layanan-page .service-search-dropdown {
     position: absolute;
     top: calc(100% + 6px);
@@ -144,24 +169,24 @@ body {
     z-index: 10;
     width: 100%;
     max-height: min(320px, 55vh);
-    overflow-y: auto;
     padding: 6px;
+    overflow-y: auto;
+    text-align: left;
+    background: #fff;
     border: 1px solid #e8e7f0;
     border-radius: 10px;
-    background: #fff;
-    box-shadow: 0 12px 30px rgba(30, 25, 79, .16);
-    text-align: left;
+    box-shadow: 0 12px 30px rgba(30, 25, 79, 0.16);
 }
 
 .layanan-page .service-search-option {
     display: block;
     padding: 11px 13px;
-    border-radius: 7px;
     color: var(--layanan-ink);
     font-size: 12px;
     line-height: 1.4;
     text-decoration: none;
-    transition: background-color .15s ease, color .15s ease;
+    border-radius: 7px;
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .layanan-page .service-search-option[hidden],
@@ -170,10 +195,14 @@ body {
 }
 
 .layanan-page .service-search-option:hover,
+.layanan-page .service-search-option:focus-visible,
+.layanan-page .service-search-option[aria-selected="true"] {
+    color: var(--layanan-purple);
+    background: #f3f1fa;
+}
+
 .layanan-page .service-search-option:focus-visible {
     outline: none;
-    background: #f3f1fa;
-    color: var(--layanan-purple);
 }
 
 .layanan-page .service-search-empty {
@@ -184,10 +213,9 @@ body {
     text-align: left;
 }
 
-.layanan-page .service-search-option[aria-selected="true"] {
-    background: #f3f1fa;
-    color: var(--layanan-purple);
-}
+/* ========================================
+   CATEGORY TABS
+======================================== */
 
 .layanan-page .category-tabs {
     display: flex;
@@ -197,40 +225,50 @@ body {
 }
 
 .layanan-page .category-tabs a {
+    padding: 9px 14px;
     color: var(--layanan-dark);
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
     background: #f4f6fb;
     border: 1px solid transparent;
     border-radius: 10px;
-    padding: 9px 14px;
-    font-size: 10px;
-    line-height: 1.4;
-    font-weight: 800;
-    letter-spacing: 0.02em;
     transition: all 0.2s ease;
 }
 
 .layanan-page .category-tabs a.active,
 .layanan-page .category-tabs a:hover {
-    background: var(--layanan-purple);
     color: #fff;
+    background: var(--layanan-purple);
     box-shadow: 0 8px 18px rgba(41, 33, 111, 0.16);
 }
+
+/* ========================================
+   RESULT INFORMATION
+======================================== */
 
 .layanan-page .result-line {
     display: flex;
     justify-content: space-between;
     gap: 12px;
-    font-size: var(--layanan-font-subtitle);
-    line-height: 1.5;
     color: var(--layanan-muted);
+    font-size: var(--layanan-font-subtitle);
     font-weight: 500;
+    line-height: 1.5;
 }
 
-.layanan-page .muted { color: var(--layanan-muted); }
+.layanan-page .muted {
+    color: var(--layanan-muted);
+}
+
+/* ========================================
+   SERVICE LISTING
+======================================== */
 
 .layanan-page .listing {
-    background: var(--layanan-bg);
     padding: 30px 0 40px;
+    background: var(--layanan-bg);
 }
 
 .layanan-page .service-grid {
@@ -268,37 +306,37 @@ body {
     flex: 0 0 72px;
     width: 72px;
     height: 54px;
-    border-radius: 8px;
     object-fit: cover;
+    border-radius: 8px;
 }
 
 .layanan-page .service-number {
     display: grid;
-    place-items: center;
     flex: 0 0 38px;
+    place-items: center;
     width: 38px;
     height: 38px;
-    border-radius: 10px;
-    background: #fff3e2;
     color: #f18b00;
     font-size: 11px;
     font-weight: 800;
+    background: #fff3e2;
+    border-radius: 10px;
 }
 
 .layanan-page .service-card h2 {
     margin: 0 0 8px;
     color: var(--layanan-dark);
     font-size: 12px;
-    line-height: 1.45;
     font-weight: 800;
+    line-height: 1.45;
 }
 
 .layanan-page .service-card p {
     margin: 0;
     color: var(--layanan-muted);
     font-size: var(--layanan-font-subtitle);
-    line-height: 1.55;
     font-weight: 400;
+    line-height: 1.55;
 }
 
 .layanan-page .service-bottom {
@@ -313,12 +351,12 @@ body {
     display: inline-flex;
     align-items: center;
     padding: 6px 9px;
-    background: #f6f6fa;
-    border-radius: 999px;
     color: var(--layanan-purple);
     font-size: 9px;
-    line-height: 1.2;
     font-weight: 600;
+    line-height: 1.2;
+    background: #f6f6fa;
+    border-radius: 999px;
 }
 
 .layanan-page .detail-link {
@@ -328,20 +366,31 @@ body {
     white-space: nowrap;
 }
 
+.layanan-page .detail-link.detail-disabled {
+    color: #9ca3af;
+    cursor: not-allowed;
+    pointer-events: none;
+    text-decoration: none;
+}
+
 .layanan-page .empty-state {
     grid-column: 1 / -1;
-    background: #fff;
-    border-radius: 14px;
     padding: 32px;
-    text-align: center;
     color: var(--layanan-muted);
     font-weight: 600;
+    text-align: center;
+    background: #fff;
+    border-radius: 14px;
 }
+
+/* ========================================
+   PAGINATION
+======================================== */
 
 .layanan-page .pagination {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     gap: 12px;
     margin-top: 32px;
 }
@@ -351,20 +400,8 @@ body {
     padding: 9px 0;
     color: var(--layanan-dark);
     font-size: 12.5px;
-    line-height: 1.3;
     font-weight: 600;
-}
-
-.layanan-page .page-numbers a {
-    display: inline-block;
-    padding: 9px 12px;
-    background: #fff;
-    border: 1px solid var(--layanan-line);
-    border-radius: 10px;
-    color: var(--layanan-dark);
-    font-size: 12.5px;
     line-height: 1.3;
-    font-weight: 600;
 }
 
 .layanan-page .page-button.disabled {
@@ -374,15 +411,27 @@ body {
 
 .layanan-page .page-numbers {
     display: flex;
-    gap: 6px;
     flex-wrap: wrap;
     justify-content: center;
+    gap: 6px;
+}
+
+.layanan-page .page-numbers a {
+    display: inline-block;
+    padding: 9px 12px;
+    color: var(--layanan-dark);
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1.3;
+    background: #fff;
+    border: 1px solid var(--layanan-line);
+    border-radius: 10px;
 }
 
 .layanan-page .page-numbers a.active {
+    color: #fff;
     background: var(--layanan-purple);
     border-color: var(--layanan-purple);
-    color: #fff;
 }
 
 .layanan-page .copyright {
@@ -391,6 +440,10 @@ body {
     color: #a6a4c3;
     font-size: 11px;
 }
+
+/* ========================================
+   FOOTER
+======================================== */
 
 .ult-footer {
     padding: 52px 0 22px;
@@ -446,98 +499,401 @@ body {
     font-size: 11.5px;
 }
 
-.detail-page .detail-content { display:grid; grid-template-columns:minmax(0,2.1fr) minmax(260px,.95fr); gap:28px; padding:28px 24px 50px; align-items:start; }
-.detail-page .detail-left { min-width:0; }
-.detail-page .service-information-accordion { margin-bottom:30px; }
-.detail-page .service-information-accordion .accordion-item { margin-bottom:12px; overflow:hidden; border:1px solid #e8e8ed; border-radius:12px; transition:border-color .2s ease, box-shadow .2s ease; }
-.detail-page .service-information-accordion .accordion-item:hover { border-color:rgba(41,33,111,.3); box-shadow:0 5px 16px rgba(32,25,81,.07); }
-.detail-page .service-information-accordion .accordion-button { padding:18px; color:var(--layanan-dark); font-size:14px; font-weight:700; background:#fff; box-shadow:none; transition:color .2s ease, background-color .2s ease; }
-.detail-page .service-information-accordion .accordion-button:hover { color:var(--layanan-purple); background:#faf9ff; }
-.detail-page .service-information-accordion .accordion-button:focus { border-color:transparent; box-shadow:inset 3px 0 0 var(--layanan-orange); }
-.detail-page .service-information-accordion .accordion-button::after { transition:transform .2s ease-in-out; }
-.detail-page .service-information-accordion .accordion-button:not(.collapsed) { color:var(--layanan-purple); background:var(--layanan-bg); }
-.detail-page .service-information-accordion .accordion-body { padding:18px; color:var(--layanan-muted); font-size:13px; line-height:1.75; }
-.detail-page .service-section-content { white-space:pre-line; overflow-wrap:anywhere; }
-.detail-page .service-section-image { display:block; max-width:100%; height:auto; object-fit:contain; }
-.detail-page .detail-section { margin-bottom:30px; }
-.detail-page .detail-section h2 { font-size:14px; margin:0 0 20px; color:var(--layanan-dark); }
-.detail-page .section-icon { color:#f18b00; margin-right:8px; }
-.detail-page .detail-section>p { color:var(--layanan-muted); font-size:12px; line-height:1.7; }
-.detail-page .requirement-list { display:grid; gap:9px; }
-.detail-page .requirement-item { display:flex; gap:10px; padding:14px; border-radius:8px; background:var(--layanan-bg); }
-.detail-page .requirement-check { color:#07976d; font-size:12px; }
-.detail-page .requirement-item strong { font-size:12px; }
-.detail-page .requirement-item p { margin:5px 0 0; font-size:11px; line-height:1.5; color:var(--layanan-muted); }
-.detail-page .procedure-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px 14px; }
-.detail-page .procedure-item { display:flex; align-items:flex-start; gap:10px; }
-.detail-page .procedure-number { flex:0 0 25px; height:25px; display:grid; place-items:center; border-radius:4px; color:#fff; background:var(--layanan-purple); font-size:11px; font-weight:700; }
-.detail-page .procedure-item p { margin:2px 0 0; color:var(--layanan-muted); font-size:11px; line-height:1.5; }
-.detail-page .document-table-wrap { overflow-x:auto; }
-.detail-page .document-table { width:100%; border-collapse:collapse; font-size:11px; }
-.detail-page .document-table th { text-align:left; padding:12px 10px; background:var(--layanan-bg); }
-.detail-page .document-table th:first-child { border-radius:7px 0 0 0; }
-.detail-page .document-table th:last-child { border-radius:0 7px 0 0; }
-.detail-page .document-table td { padding:13px 10px; border-bottom:1px solid #f0f1f5; }
-.detail-page .document-status { display:inline-block; padding:4px 7px; background:#f2f2f4; color:#666; border-radius:4px; white-space:nowrap; }
-.detail-page .document-status.required { color:#dc3545; background:#fff0f0; }
-.detail-page .information-card { padding:20px; border-radius:13px; background:var(--layanan-bg); }
-.detail-page .information-label, .detail-page .information-row span { display:block; color:var(--layanan-muted); font-size:11px; margin-bottom:5px; }
-.detail-page .information-card>strong { display:block; font-size:12px; line-height:1.5; }
-.detail-page .information-card h2 { margin:22px 0 18px; font-size:13px; }
-.detail-page .information-row { margin-bottom:14px; }
-.detail-page .information-row strong { display:block; font-size:11px; line-height:1.5; }
-.detail-page .information-row .time-value { color:#07976d; }
-.detail-page .apply-button, .detail-page .back-button, .detail-page .whatsapp-button { display:block; text-align:center; padding:12px; border-radius:9px; font-size:11px; font-weight:700; }
-.detail-page .apply-button { margin-top:20px; background:var(--layanan-orange); color:#fff; }
-.detail-page button.apply-button { width:100%; border:0; font-family:inherit; cursor:pointer; }
-.detail-page .back-button { margin-top:8px; background:#fff; color:var(--layanan-dark); }
-.detail-page .help-card { margin-top:18px; padding:0 12px; }
-.detail-page .help-card strong { font-size:12px; }
-.detail-page .help-card p { color:var(--layanan-muted); font-size:11px; line-height:1.6; }
-.detail-page .whatsapp-button { display:inline-block; background:#16c765; color:#fff; }
+/* ========================================
+   DETAIL PAGE
+======================================== */
 
-@media(max-width:760px) {
- .detail-page .detail-content { grid-template-columns:1fr; padding:24px 18px 36px; }
- .detail-page .detail-right { order:-1; }
- .detail-page .procedure-grid { grid-template-columns:1fr; }
+.detail-page .detail-content {
+    display: grid;
+    grid-template-columns: minmax(0, 2.1fr) minmax(260px, 0.95fr);
+    gap: 28px;
+    align-items: start;
+    padding: 28px 24px 50px;
 }
 
-@media(max-width:600px) {
- .detail-page .service-information-accordion .accordion-button { padding:15px; font-size:13px; }
- .detail-page .service-information-accordion .accordion-body { padding:15px; }
+.detail-page .detail-left {
+    min-width: 0;
 }
 
-@media(max-width:600px) {
- .layanan-page { font-size:12px; }
- .layanan-page:not(.detail-page) .intro { padding:24px 0 10px; }
- .layanan-page.detail-page .intro { padding:28px 0 22px; }
- .layanan-page h1 { font-size:18px; }
- .layanan-page .search-form {
-    flex-wrap:wrap;
- }
- .layanan-page .search-form input {
-    flex-basis:calc(100% - 60px);
- }
- .layanan-page .search-form button {
-    width:100%;
- }
- .layanan-page .filters,
- .layanan-page .listing {
-    padding-top: 18px;
- }
- .layanan-page:not(.detail-page) .filters {
-    padding-top: 6px;
- }
- .layanan-page .service-grid { grid-template-columns:1fr; }
- .layanan-page .result-line { flex-direction:column; }
- .layanan-page .pagination { flex-wrap:wrap; justify-content:center; }
- .detail-page .detail-content { padding-left:18px; padding-right:18px; }
+/* Accordion */
+
+.detail-page .service-information-accordion {
+    margin-bottom: 30px;
 }
 
-/* Detail untuk unit selain Humas belum tersedia. */
-.layanan-page .detail-link.detail-disabled {
-    color: #9ca3af;
-    cursor: not-allowed;
-    pointer-events: none;
-    text-decoration: none;
+.detail-page .service-information-accordion .accordion-item {
+    margin-bottom: 12px;
+    overflow: hidden;
+    border: 1px solid #e8e8ed;
+    border-radius: 12px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.detail-page .service-information-accordion .accordion-item:hover {
+    border-color: rgba(41, 33, 111, 0.3);
+    box-shadow: 0 5px 16px rgba(32, 25, 81, 0.07);
+}
+
+.detail-page .service-information-accordion .accordion-button {
+    padding: 18px;
+    color: var(--layanan-dark);
+    font-size: 14px;
+    font-weight: 700;
+    background: #fff;
+    box-shadow: none;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.detail-page .service-information-accordion .accordion-button:hover {
+    color: var(--layanan-purple);
+    background: #faf9ff;
+}
+
+.detail-page .service-information-accordion .accordion-button:focus {
+    border-color: transparent;
+    box-shadow: inset 3px 0 0 var(--layanan-orange);
+}
+
+.detail-page .service-information-accordion .accordion-button::after {
+    transition: transform 0.2s ease-in-out;
+}
+
+.detail-page .service-information-accordion .accordion-button:not(.collapsed) {
+    color: var(--layanan-purple);
+    background: var(--layanan-bg);
+}
+
+.detail-page .service-information-accordion .accordion-body {
+    padding: 18px;
+    color: var(--layanan-muted);
+    font-size: 13px;
+    line-height: 1.75;
+}
+
+.detail-page .service-section-content {
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+}
+
+.detail-page .service-section-image {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Detail Sections */
+
+.detail-page .detail-section {
+    margin-bottom: 30px;
+}
+
+.detail-page .detail-section h2 {
+    margin: 0 0 20px;
+    font-size: 14px;
+    color: var(--layanan-dark);
+}
+
+.detail-page .section-icon {
+    margin-right: 8px;
+    color: #f18b00;
+}
+
+.detail-page .detail-section > p {
+    color: var(--layanan-muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+/* Requirements */
+
+.detail-page .requirement-list {
+    display: grid;
+    gap: 9px;
+}
+
+.detail-page .requirement-item {
+    display: flex;
+    gap: 10px;
+    padding: 14px;
+    background: var(--layanan-bg);
+    border-radius: 8px;
+}
+
+.detail-page .requirement-check {
+    color: #07976d;
+    font-size: 12px;
+}
+
+.detail-page .requirement-item strong {
+    font-size: 12px;
+}
+
+.detail-page .requirement-item p {
+    margin: 5px 0 0;
+    color: var(--layanan-muted);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* Procedure */
+
+.detail-page .procedure-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 14px;
+}
+
+.detail-page .procedure-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.detail-page .procedure-number {
+    display: grid;
+    flex: 0 0 25px;
+    place-items: center;
+    height: 25px;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--layanan-purple);
+    border-radius: 4px;
+}
+
+.detail-page .procedure-item p {
+    margin: 2px 0 0;
+    color: var(--layanan-muted);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* Document Table */
+
+.detail-page .document-table-wrap {
+    overflow-x: auto;
+}
+
+.detail-page .document-table {
+    width: 100%;
+    font-size: 11px;
+    border-collapse: collapse;
+}
+
+.detail-page .document-table th {
+    padding: 12px 10px;
+    text-align: left;
+    background: var(--layanan-bg);
+}
+
+.detail-page .document-table th:first-child {
+    border-radius: 7px 0 0 0;
+}
+
+.detail-page .document-table th:last-child {
+    border-radius: 0 7px 0 0;
+}
+
+.detail-page .document-table td {
+    padding: 13px 10px;
+    border-bottom: 1px solid #f0f1f5;
+}
+
+.detail-page .document-status {
+    display: inline-block;
+    padding: 4px 7px;
+    color: #666;
+    white-space: nowrap;
+    background: #f2f2f4;
+    border-radius: 4px;
+}
+
+.detail-page .document-status.required {
+    color: #dc3545;
+    background: #fff0f0;
+}
+
+/* Information Card */
+
+.detail-page .information-card {
+    padding: 20px;
+    background: var(--layanan-bg);
+    border-radius: 13px;
+}
+
+.detail-page .information-label,
+.detail-page .information-row span {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--layanan-muted);
+    font-size: 11px;
+}
+
+.detail-page .information-card > strong {
+    display: block;
+    margin-bottom: 14px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.detail-page .information-card h2 {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 22px 0 18px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.detail-page .information-row {
+    margin-bottom: 14px;
+}
+
+.detail-page .information-row strong {
+    display: block;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.detail-page .information-row .time-value {
+    color: #07976d;
+}
+
+/* Buttons */
+
+.detail-page .apply-button,
+.detail-page .back-button,
+.detail-page .whatsapp-button {
+    display: block;
+    padding: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    border-radius: 9px;
+}
+
+.detail-page .apply-button {
+    margin-top: 20px;
+    color: #fff;
+    background: var(--layanan-orange);
+}
+
+.detail-page button.apply-button {
+    width: 100%;
+    font-family: inherit;
+    border: 0;
+    cursor: pointer;
+}
+
+.detail-page .back-button {
+    margin-top: 8px;
+    color: var(--layanan-dark);
+    background: #fff;
+}
+
+.detail-page .help-card {
+    margin-top: 18px;
+    padding: 0 12px;
+}
+
+.detail-page .help-card strong {
+    font-size: 12px;
+}
+
+.detail-page .help-card p {
+    color: var(--layanan-muted);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.detail-page .whatsapp-button {
+    display: inline-block;
+    color: #fff;
+    background: #16c765;
+}
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 760px) {
+    .detail-page .detail-content {
+        grid-template-columns: 1fr;
+        padding: 24px 18px 36px;
+    }
+
+    .detail-page .detail-right {
+        order: -1;
+    }
+
+    .detail-page .procedure-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .detail-page .service-information-accordion .accordion-button {
+        padding: 15px;
+        font-size: 13px;
+    }
+
+    .detail-page .service-information-accordion .accordion-body {
+        padding: 15px;
+    }
+
+    .layanan-page {
+        font-size: 12px;
+    }
+
+    .layanan-page:not(.detail-page) .intro {
+        padding: 24px 0 10px;
+    }
+
+    .layanan-page.detail-page .intro {
+        padding: 28px 0 22px;
+    }
+
+    .layanan-page h1 {
+        font-size: 18px;
+    }
+
+    .layanan-page .search-form {
+        flex-wrap: wrap;
+    }
+
+    .layanan-page .search-form input {
+        flex-basis: calc(100% - 60px);
+    }
+
+    .layanan-page .search-form button {
+        width: 100%;
+    }
+
+    .layanan-page .filters,
+    .layanan-page .listing {
+        padding-top: 18px;
+    }
+
+    .layanan-page:not(.detail-page) .filters {
+        padding-top: 6px;
+    }
+
+    .layanan-page .service-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .layanan-page .result-line {
+        flex-direction: column;
+    }
+
+    .layanan-page .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .detail-page .detail-content {
+        padding-right: 18px;
+        padding-left: 18px;
+    }
 }

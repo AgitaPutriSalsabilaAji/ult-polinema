@@ -224,50 +224,28 @@
             </div>
 
             <div class="accordion faq-accordion" id="faqAccordion">
-                <div class="accordion-item">
-                    <h3 class="accordion-header">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqOne" aria-expanded="true" aria-controls="faqOne">
-                            Apakah saya harus login untuk mengajukan layanan?
-                        </button>
-                    </h3>
-                    <div id="faqOne" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">Tidak. Portal ULT Polinema dirancang sebagai portal publik yang dapat diakses tanpa membuat akun.</div>
+                @forelse ($faqs as $faq)
+                    <div class="accordion-item">
+                        <h3 class="accordion-header">
+                            <button class="accordion-button {{ $loop->first ? '' : 'collapsed' }}" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#faq-{{ $faq->id }}"
+                                    aria-expanded="{{ $loop->first ? 'true' : 'false' }}"
+                                    aria-controls="faq-{{ $faq->id }}">
+                                {{ $faq->pertanyaan }}
+                            </button>
+                        </h3>
+                        <div id="faq-{{ $faq->id }}" class="accordion-collapse collapse {{ $loop->first ? 'show' : '' }}"
+                             data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">{{ $faq->jawaban }}</div>
+                        </div>
                     </div>
-                </div>
-                <div class="accordion-item">
-                    <h3 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqTwo" aria-expanded="false" aria-controls="faqTwo">
-                            Bagaimana cara mendapatkan e-ticket?
-                        </button>
-                    </h3>
-                    <div id="faqTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">Setelah formulir pengajuan diisi dan dikonfirmasi, sistem akan menerbitkan nomor e-ticket apabila fitur pengajuan sudah terhubung ke backend.</div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h3 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqThree" aria-expanded="false" aria-controls="faqThree">
-                            Bagaimana cara mengecek status pengajuan?
-                        </button>
-                    </h3>
-                    <div id="faqThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">Masukkan nomor e-ticket pada kolom Cek Status. Status ditampilkan setelah fitur terhubung dengan database Laravel.</div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h3 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqFour" aria-expanded="false" aria-controls="faqFour">
-                            Bagaimana jika saya tidak tahu harus memilih layanan apa?
-                        </button>
-                    </h3>
-                    <div id="faqFour" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">Gunakan kolom pencarian atau pilih kategori layanan yang sesuai, lalu hubungi unit terkait jika membutuhkan informasi tambahan.</div>
-                    </div>
-                </div>
+                @empty
+                    <p class="section-subtitle text-center mb-0">Belum ada pertanyaan yang tersedia.</p>
+                @endforelse
             </div>
 
             <div class="text-center mt-4">
-                <a class="btn btn-light btn-sm all-faq" href="#faqAccordion">LIHAT SEMUA FAQ</a>
+                <a class="btn btn-light btn-sm all-faq" href="{{ route('faq.index') }}">LIHAT SEMUA FAQ</a>
             </div>
         </div>
     </section>

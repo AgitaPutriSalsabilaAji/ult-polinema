@@ -40,6 +40,14 @@ class HomepageServicesTest extends TestCase
             $table->string('gambar_pendukung')->nullable();
             $table->integer('urutan_bagian')->nullable();
         });
+
+        Schema::create('faq', function (Blueprint $table) {
+            $table->increments('id');
+            $table->text('pertanyaan');
+            $table->text('jawaban');
+            $table->integer('id_unit')->nullable();
+            $table->string('status', 20)->default('aktif');
+        });
     }
 
     public function test_user_navbar_supports_both_themes_without_check_services_menu(): void
@@ -167,6 +175,67 @@ class HomepageServicesTest extends TestCase
                 false
             );
         }
+    }
+
+    public function test_homepage_and_faq_page_render_active_faqs_from_database_in_id_order(): void
+    {
+        DB::table('faq')->insert([
+            [
+                'id' => 2,
+                'pertanyaan' => 'Pertanyaan kedua dari database?',
+                'jawaban' => 'Jawaban kedua dari database.',
+                'status' => 'aktif',
+            ],
+            [
+                'id' => 1,
+                'pertanyaan' => 'Pertanyaan pertama dari database?',
+                'jawaban' => 'Jawaban pertama dari database.',
+                'status' => 'aktif',
+            ],
+            [
+                'id' => 3,
+                'pertanyaan' => 'Pertanyaan nonaktif?',
+                'jawaban' => 'Jawaban nonaktif.',
+                'status' => 'nonaktif',
+            ],
+        ]);
+
+        $homepage = $this->withoutVite()->get(route('beranda'));
+        $faqPage = $this->get(route('faq.index'));
+
+        foreach ([$homepage, $faqPage] as $response) {
+            $response->assertOk()
+                ->assertSeeText('Pertanyaan pertama dari database?')
+                ->assertSeeText('Jawaban pertama dari database.')
+                ->assertSeeText('Pertanyaan kedua dari database?')
+                ->assertSeeText('Jawaban kedua dari database.')
+                ->assertDontSee('Pertanyaan nonaktif?')
+                ->assertDontSee('Jawaban nonaktif.');
+
+            $this->assertLessThan(
+                strpos($response->getContent(), 'Pertanyaan kedua dari database?'),
+                strpos($response->getContent(), 'Pertanyaan pertama dari database?')
+            );
+        }
+
+        $homepage->assertSee('href="'.route('faq.index').'"', false);
+        $faqPage->assertSee('data-bs-toggle="collapse"', false)
+            ->assertSee('<footer class="ult-footer">', false);
+    }
+
+    public function test_faq_page_shows_an_empty_state_when_no_active_faqs_exist(): void
+    {
+        DB::table('faq')->insert([
+            'pertanyaan' => 'Pertanyaan nonaktif?',
+            'jawaban' => 'Jawaban nonaktif.',
+            'status' => 'nonaktif',
+        ]);
+
+        $this->withoutVite()
+            ->get(route('faq.index'))
+            ->assertOk()
+            ->assertSeeText('Belum ada pertanyaan yang tersedia.')
+            ->assertDontSee('Pertanyaan nonaktif?');
     }
 
     #[DataProvider('homepageCategories')]
