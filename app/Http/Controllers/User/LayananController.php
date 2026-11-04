@@ -656,8 +656,8 @@ class LayananController extends Controller
             ->values();
 
         $jenisPemohon = Schema::hasColumn('pengajuan', 'jenis_pemohon')
-            ? ($pengajuan->jenis_pemohon ?? 'Tidak tersedia')
-            : 'Tidak tersedia';
+            ? ($pengajuan->jenis_pemohon ?? 'Belum tercatat')
+            : 'Belum tercatat';
         $ratingUlasan = RatingLayanan::query()
             ->where('id_pengajuan', $pengajuan->id)
             ->exists();

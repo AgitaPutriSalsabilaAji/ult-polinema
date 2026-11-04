@@ -114,7 +114,7 @@
                     <p class="dp-ticket-summary__hint"><i class="bi bi-info-circle"></i>Gunakan nomor E-Ticket ini untuk memantau status pengajuan Anda tanpa perlu melakukan proses login.</p>
                 </section>
                 <section class="dp-card" aria-labelledby="dp-applicant-title"><header class="dp-card__header"><h2 id="dp-applicant-title">01. DATA PEMOHON</h2><p>Informasi data pemohon yang digunakan pada pengajuan ini.</p></header><div class="dp-field-grid">
-                    <div class="dp-field"><span>Nama Lengkap</span><div>{{ $pemohon?->nama_lengkap ?? '-' }}</div></div><div class="dp-field"><span>Jenis Pemohon</span><div>{{ $jenisPemohon ?? 'Tidak tersedia' }}</div></div>
+                    <div class="dp-field"><span>Nama Lengkap</span><div>{{ $pemohon?->nama_lengkap ?? '-' }}</div></div><div class="dp-field"><span>Jenis Pemohon</span><div>{{ $jenisPemohon ?? 'Belum tercatat' }}</div></div>
                     <div class="dp-field"><span>NIM / NIP</span><div>{{ $pemohon?->nim_nip ?? '-' }}</div></div><div class="dp-field"><span>Email Aktif</span><div>{{ $pemohon?->email ?? '-' }}</div></div>
                     <div class="dp-field dp-field--full"><span>Nomor WhatsApp</span><div>{{ $pemohon?->nomor_telepon ?? '-' }}</div></div>
                 </div></section>
