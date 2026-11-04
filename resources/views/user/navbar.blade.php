@@ -71,9 +71,6 @@
                     </li>
                 @endauth
             </ul>
-            @if ($showServiceCta)
-                <a class="ult-navbar__cta" href="{{ route('layanan.index') }}"><i class="bi bi-search" aria-hidden="true"></i>Cek Layanan</a>
-            @endif
         </div>
     </div>
 </nav>
