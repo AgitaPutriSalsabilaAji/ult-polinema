@@ -13,10 +13,14 @@ class RatingLayananController extends Controller
     /**
      * Menampilkan halaman Rating & Ulasan Layanan ULT.
      */
-    public function index(Request $request)
-{
-    $units = \App\Models\Unit::orderBy('nama_unit')->get();
     
+
+public function index(Request $request)
+{
+    // Ambil semua unit untuk dropdown
+    $units = Unit::orderBy('nama_unit')->get();
+
+    // Query utama
     $query = RatingLayanan::with([
         'pengguna',
         'layanan.unit',
@@ -31,12 +35,13 @@ class RatingLayananController extends Controller
 
     // Filter berdasarkan jumlah bintang
     if ($request->filled('rating')) {
-        $query->where('rating', $request->rating);
+        $query->where('rating', $request->input('rating'));
     }
 
-    // Statistik mengikuti filter unit
+    // Query statistik
     $statistikQuery = RatingLayanan::query();
 
+    // Statistik mengikuti filter unit
     if ($request->filled('id_unit')) {
         $statistikQuery->whereHas('layanan', function ($q) use ($request) {
             $q->where('id_unit', $request->id_unit);
@@ -47,10 +52,7 @@ class RatingLayananController extends Controller
 
     $rataRataRating = (clone $statistikQuery)->avg('rating') ?? 0;
 
-    // Data untuk dropdown unit
-    $units = Unit::orderBy('nama_unit')->get();
-
-    // Data tabel rating dan ulasan
+    // Ambil data rating dan ulasan
     $ulasan = $query
         ->orderByDesc('dibuat_pada')
         ->paginate(10)

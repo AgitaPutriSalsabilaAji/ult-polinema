@@ -86,48 +86,56 @@
     {{-- Filter --}}
     <div class="card border-0 shadow-sm mb-4 filter-card">
         <div class="card-body p-4">
-            <form action="{{ route('admin.rating-ulasan.index') }}"
-                  method="GET">
-                <div class="row g-3 align-items-end">
+            
+<form action="{{ route('admin.rating-ulasan.index') }}" method="GET">
+    <div class="row g-3 align-items-end">
 
-                    <div class="col-12 col-md-5">
-                        <label for="id_unit" class="form-label fw-semibold">
-                            Unit Layanan
-                        </label>
-                        <select name="id_unit" id="id_unit" class="form-select">
-                            <option value="">Semua Unit</option>
-                            @foreach ($units as $unit)
-                                <option value="{{ $unit->id_unit }}"
-                                    @selected((string) request('id_unit') === (string) $unit->id_unit)>
-                                    {{ $unit->nama_unit }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+        {{-- Filter Unit --}}
+        <div class="col-12 col-md-5">
+            <label for="id_unit" class="form-label fw-semibold">
+                Unit Layanan
+            </label>
 
-                    <div class="col-12 col-md-4">
-                        <label for="rating" class="form-label fw-semibold">
-                            Rating
-                        </label>
-                        <select name="rating" id="rating" class="form-select">
-                            <option value="">Semua Rating</option>
-                            @for ($i = 5; $i >= 1; $i--)
-                                <option value="{{ $i }}"
-                                    @selected((string) request('rating') === (string) $i)>
-                                    {{ $i }} Bintang
-                                </option>
-                            @endfor
-                        </select>
-                    </div>
+            <select name="id_unit" id="id_unit" class="form-select">
+                <option value="">Semua Unit</option>
+                @foreach ($units as $unit)
+                    <option value="{{ $unit->id }}"
+                        {{ request('id_unit') == $unit->id ? 'selected' : '' }}>
+                        {{ $unit->nama_unit }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-                    <div class="col-12 col-md-3">
-                        <button type="submit" class="btn btn-primary w-100">
-                            Terapkan
-                        </button>
-                    </div>
+        {{-- Filter Rating --}}
+        <div class="col-12 col-md-4">
+            <label for="rating" class="form-label fw-semibold">
+                Rating
+            </label>
 
-                </div>
-            </form>
+            <select name="rating" id="rating" class="form-select">
+                <option value="">Semua Rating</option>
+
+                @for ($i = 5; $i >= 1; $i--)
+                    <option value="{{ $i }}"
+                        {{ request('rating') == $i ? 'selected' : '' }}>
+                        {{ $i }} Bintang
+                    </option>
+                @endfor
+            </select>
+        </div>
+
+        {{-- Tombol --}}
+        <div class="col-12 col-md-3">
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary flex-fill">
+                    Terapkan
+                </button>
+            </div>
+        </div>
+
+    </div>
+</form>
         </div>
     </div>
 
