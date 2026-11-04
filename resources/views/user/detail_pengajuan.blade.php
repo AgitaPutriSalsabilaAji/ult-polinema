@@ -88,6 +88,53 @@
                     </aside>
                 </div>
 
+                <section class="detail-card conversation-card">
+                    <h2>Komunikasi Pengajuan</h2>
+                    <p class="conversation-help">Kirim pertanyaan atau dokumen tambahan kepada admin unit yang menangani pengajuan Anda.</p>
+                    @if ($pesanPengajuan->isEmpty())
+                        <div class="conversation-empty">
+                            <i class="bi bi-chat-dots" aria-hidden="true"></i>
+                            <strong>Belum ada percakapan</strong>
+                            <span>Pesan dari Anda dan petugas akan tampil di sini.</span>
+                        </div>
+                    @else
+                        <div class="conversation-history">
+                            @foreach ($pesanPengajuan as $pesan)
+                                <div class="conversation-message {{ $pesan->pengirim_tipe === 'pemohon' ? 'conversation-message--outgoing' : 'conversation-message--incoming' }}">
+                                    <div class="conversation-message-meta">
+                                        <strong>{{ $pesan->pengirim_tipe === 'pemohon' ? 'Anda' : 'Admin Unit' }}</strong>
+                                        <small>{{ $pesan->dibuat_pada ? \Carbon\Carbon::parse($pesan->dibuat_pada)->translatedFormat('d M Y, H:i') . ' WIB' : '-' }}</small>
+                                    </div>
+                                    @if ($pesan->pesan !== '')
+                                        <p>{{ $pesan->pesan }}</p>
+                                    @endif
+                                    @if ($pesan->lampiran)
+                                        @php($filename = $pesan->nama_lampiran ?: basename($pesan->lampiran))
+                                        <div>
+                                            <strong><i class="bi bi-paperclip" aria-hidden="true"></i> {{ $filename }}</strong>
+                                            <a href="{{ route('pengajuan.pesan.lampiran', ['nomorTiket' => $pengajuan->nomor_tiket, 'pesan' => $pesan->id]) }}">Unduh</a>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                    @if (! $pengajuan->isTerminal())
+                        <form class="conversation-compose" method="POST" enctype="multipart/form-data" action="{{ route('pengajuan.pesan', $pengajuan->nomor_tiket) }}">
+                            @csrf
+                            <label class="visually-hidden" for="pesan">Pesan</label>
+                            <input id="pesan" name="pesan" type="text" maxlength="5000" placeholder="Tulis pesan..." class="form-control">
+                            <label class="conversation-upload btn btn-secondary" title="Lampirkan dokumen">
+                                <i class="bi bi-paperclip" aria-hidden="true"></i>
+                                <input type="file" name="lampiran" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                            </label>
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-send" aria-hidden="true"></i> Kirim</button>
+                        </form>
+                    @else
+                        <p class="conversation-note">Tiket ini sudah selesai atau ditolak. Riwayat komunikasi tetap dapat dibaca.</p>
+                    @endif
+                </section>
+
                 @if ($pengajuan->riwayat->isNotEmpty())
                     <div class="timeline-card detail-card">
                         <h2>Riwayat Status</h2>

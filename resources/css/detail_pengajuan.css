@@ -309,6 +309,115 @@ body {
     line-height: 1.6;
 }
 
+.conversation-card {
+    margin-top: 24px;
+    padding: 24px 22px;
+}
+
+.conversation-card h2 {
+    margin: 0 0 8px;
+    color: var(--ult-purple-dark);
+    font-size: 1.45rem;
+    font-weight: 700;
+}
+
+.conversation-help,
+.conversation-note {
+    color: var(--ult-muted);
+    font-size: 0.88rem;
+}
+
+.conversation-history {
+    display: flex;
+    max-height: 360px;
+    overflow-y: auto;
+    flex-direction: column;
+    gap: 12px;
+    margin: 18px 0;
+}
+
+.conversation-message {
+    max-width: 80%;
+    padding: 12px 14px;
+    border-radius: 14px;
+}
+
+.conversation-message--incoming {
+    align-self: flex-start;
+    background: #f3effb;
+}
+
+.conversation-message--outgoing {
+    align-self: flex-end;
+    background: #e8f4ff;
+}
+
+.conversation-message-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 5px;
+    color: var(--ult-muted);
+    font-size: 0.75rem;
+}
+
+.conversation-message p {
+    margin: 0;
+    color: var(--ult-text);
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.conversation-message a {
+    display: inline-block;
+    margin-top: 6px;
+    color: var(--ult-purple);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.conversation-empty {
+    display: flex;
+    min-height: 120px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 5px;
+    color: var(--ult-muted);
+    text-align: center;
+}
+
+.conversation-empty i {
+    color: #b6a4d5;
+    font-size: 1.7rem;
+}
+
+.conversation-compose {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.conversation-compose .form-control {
+    min-height: 42px;
+    border-color: var(--ult-border);
+}
+
+.conversation-compose .btn {
+    padding: 0.65rem 1rem;
+}
+
+.conversation-upload {
+    display: inline-flex;
+    min-width: 44px;
+    align-items: center;
+    justify-content: center;
+}
+
+.conversation-upload input {
+    display: none;
+}
+
 @media (max-width: 991px) {
     .detail-grid {
         grid-template-columns: 1fr;
@@ -316,6 +425,10 @@ body {
 
     .side-card {
         position: static;
+    }
+
+    .conversation-message {
+        max-width: 92%;
     }
 }
 
@@ -332,5 +445,13 @@ body {
 
     .header-row {
         align-items: flex-start;
+    }
+
+    .conversation-compose {
+        flex-direction: column;
+    }
+
+    .conversation-compose .btn {
+        width: 100%;
     }
 }

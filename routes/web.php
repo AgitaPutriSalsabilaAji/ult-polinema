@@ -63,6 +63,15 @@ Route::middleware('auth:web')->group(function () {
 
     Route::get('/e-tiket/{nomorTiket}', [UserLayananController::class, 'detailPengajuan'])
         ->name('pengajuan.detail');
+
+    Route::post('/e-tiket/{nomorTiket}/pesan', [UserLayananController::class, 'kirimPesan'])
+        ->name('pengajuan.pesan');
+
+    Route::get('/e-tiket/{nomorTiket}/pesan/{pesan}/lampiran', [UserLayananController::class, 'unduhLampiranPesan'])
+        ->name('pengajuan.pesan.lampiran');
+
+    Route::get('/e-tiket/{nomorTiket}/dokumen/{dokumen}', [UserLayananController::class, 'unduhDokumenPengajuan'])
+        ->name('pengajuan.dokumen');
 });
 
 /*
@@ -122,7 +131,22 @@ Route::middleware('auth:admin')
             PengajuanController::class,
             'tolak',
         ])->name('pengajuan.tolak');
-      
+
+        Route::post('/pengajuan/{pengajuan}/pesan', [
+            PengajuanController::class,
+            'kirimPesan',
+        ])->name('pengajuan.pesan');
+
+        Route::get('/pengajuan/{pengajuan}/pesan/{pesan}/lampiran', [
+            PengajuanController::class,
+            'unduhLampiranPesan',
+        ])->name('pengajuan.pesan.lampiran');
+
+        Route::get('/pengajuan/{pengajuan}/dokumen/{dokumen}', [
+            PengajuanController::class,
+            'unduhDokumenPengajuan',
+        ])->name('pengajuan.dokumen');
+
         // Manajemen layanan admin
         Route::get('/layanan', [AdminLayananController::class, 'index'])
             ->name('layanan.index');

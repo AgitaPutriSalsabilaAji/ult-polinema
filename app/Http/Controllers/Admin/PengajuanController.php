@@ -8,10 +8,13 @@ use App\Models\DisposisiPengajuan;
 use App\Models\Pengajuan;
 use App\Models\RiwayatPengajuan;
 use App\Models\Unit;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PengajuanController extends Controller
 {
@@ -255,6 +258,107 @@ class PengajuanController extends Controller
         return redirect()
             ->route('admin.pengajuan.show', $pengajuan)
             ->with('success', 'Pengajuan berhasil ditolak.');
+    }
+
+    public function kirimPesan(Request $request, Pengajuan $pengajuan): RedirectResponse|JsonResponse
+    {
+        $admin = $this->authorizeUnitAdmin($pengajuan);
+
+        $data = $request->validate([
+            'pesan' => ['nullable', 'string', 'max:5000', 'required_without:lampiran'],
+            'lampiran' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:5120'],
+        ]);
+
+        abort_unless(Schema::hasTable('pesan_pengajuan'), 503, 'Fitur komunikasi belum tersedia.');
+
+        $path = null;
+        $originalFilename = null;
+        if ($request->hasFile('lampiran')) {
+            $file = $request->file('lampiran');
+            $path = $file->store('pesan-pengajuan', 'public');
+            $originalFilename = $file->getClientOriginalName();
+        }
+
+        $messageId = DB::transaction(function () use ($data, $admin, $pengajuan, $path, $originalFilename): int {
+            return (int) DB::table('pesan_pengajuan')->insertGetId([
+                'id_pengajuan' => $pengajuan->id,
+                'pengirim_tipe' => 'admin',
+                'id_pengirim' => $admin->id,
+                'pesan' => $data['pesan'] ?? '',
+                'lampiran' => $path,
+                'nama_lampiran' => $originalFilename,
+                'dibuat_pada' => now(),
+            ]);
+        });
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => [
+                    'id' => $messageId,
+                    'text' => $data['pesan'] ?? '',
+                    'sender' => 'Admin Unit',
+                    'timestamp' => now()->format('d M Y, H:i'),
+                    'filename' => $originalFilename,
+                    'download_url' => $originalFilename
+                        ? route('admin.pengajuan.pesan.lampiran', ['pengajuan' => $pengajuan, 'pesan' => $messageId])
+                        : null,
+                ],
+            ]);
+        }
+
+        return redirect()
+            ->route('admin.pengajuan.show', $pengajuan)
+            ->with('success', 'Pesan berhasil dikirim.');
+    }
+
+    public function unduhLampiranPesan(Pengajuan $pengajuan, int $pesan): StreamedResponse
+    {
+        $this->authorizeAdminTicket($pengajuan);
+
+        $message = DB::table('pesan_pengajuan')
+            ->where('id', $pesan)
+            ->where('id_pengajuan', $pengajuan->id)
+            ->firstOrFail();
+
+        abort_unless($message->lampiran, 404);
+        abort_unless(Storage::disk('public')->exists($message->lampiran), 404);
+
+        return $this->serveAttachment($message->lampiran, $message->nama_lampiran);
+    }
+
+    public function unduhDokumenPengajuan(Pengajuan $pengajuan, int $dokumen): StreamedResponse
+    {
+        $this->authorizeAdminTicket($pengajuan);
+
+        $document = DB::table('dokumen_pengajuan')
+            ->where('id', $dokumen)
+            ->where('id_pengajuan', $pengajuan->id)
+            ->firstOrFail();
+
+        abort_unless(Storage::disk('public')->exists($document->path_file), 404);
+
+        return $this->serveAttachment($document->path_file, $document->nama_file);
+    }
+
+    private function authorizeAdminTicket(Pengajuan $pengajuan): void
+    {
+        $admin = auth('admin')->user();
+
+        if (! $admin || ! in_array($admin->peran, ['admin_ult', 'admin_unit'], true)) {
+            abort(403);
+        }
+
+        if ($admin->peran === 'admin_unit' && (int) $pengajuan->id_unit !== (int) $admin->id_unit) {
+            abort(403);
+        }
+    }
+
+    private function serveAttachment(string $path, ?string $filename): StreamedResponse
+    {
+        $filename = basename($filename ?? basename($path));
+        $filename = preg_replace('/[\r\n"]+/', '', $filename) ?: 'lampiran';
+
+        return Storage::disk('public')->download($path, $filename);
     }
 
     private function authorizeUnitAdmin(Pengajuan $pengajuan): Admin
