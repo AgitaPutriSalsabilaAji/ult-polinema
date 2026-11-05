@@ -125,24 +125,20 @@
                         </div>
                     @endif
                     @if (auth('admin')->user()?->peran === 'admin_unit' && ! $pengajuan->isTerminal())
-                        <form id="admin-message-form" class="detail-chat-compose" method="POST" enctype="multipart/form-data" action="{{ route('admin.pengajuan.pesan', $pengajuan) }}" data-history="#admin-chat-history">
+                        <form id="admin-message-form" class="detail-chat-compose" method="POST" enctype="multipart/form-data" action="{{ route('admin.pengajuan.pesan', $pengajuan) }}" data-history="#admin-chat-history" onsubmit="return false;">
                             @csrf
-                            <input type="text" name="pesan" class="form-control" placeholder="Tulis pesan kepada pemohon..." maxlength="5000">
+                            <input type="text" name="pesan" class="form-control" placeholder="Tulis pesan kepada pemohon..." maxlength="5000" readonly aria-disabled="true">
                             <label class="detail-chat-upload btn btn-light" title="Lampirkan dokumen">
                                 <i class="bi bi-paperclip" aria-hidden="true"></i>
-                                <input id="admin-message-file" type="file" name="lampiran" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                                <input id="admin-message-file" type="file" name="lampiran" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" disabled aria-disabled="true">
                             </label>
-                            <button type="submit" class="btn btn-primary">
+                            <button type="button" class="btn btn-primary" aria-disabled="true">
                                 <i class="bi bi-send" aria-hidden="true"></i> Kirim
                             </button>
                         </form>
-                        <div id="admin-attachment-preview" class="detail-attachment-pending" hidden>
-                            <span></span><button type="button" class="btn btn-sm btn-link">Hapus</button>
-                        </div>
-                        <div id="admin-message-error" class="detail-chat-error" role="alert" hidden></div>
                     @endif
                     <small class="detail-chat-note">
-                        {{ $pengajuan->isTerminal() || auth('admin')->user()?->peran === 'admin_ult' ? 'Riwayat komunikasi hanya dapat dibaca.' : 'Anda dapat mengirim pesan dan dokumen pendukung.' }}
+                        Riwayat komunikasi hanya dapat dibaca.
                     </small>
                 </section>
             </div>
@@ -304,114 +300,4 @@
 @stop
 
 @section('js')
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('admin-message-form');
-    if (!form) {
-        return;
-    }
-
-    const fileInput = document.getElementById('admin-message-file');
-    const pending = document.getElementById('admin-attachment-preview');
-    const error = document.getElementById('admin-message-error');
-    const historySelector = form.dataset.history;
-
-    const appendMessage = (message) => {
-        let history = document.querySelector(historySelector);
-        if (!history) {
-            history = document.createElement('div');
-            history.id = 'admin-chat-history';
-            history.className = 'detail-chat-history';
-            form.closest('.detail-conversation-card').querySelector('.detail-chat-empty')?.remove();
-            form.parentNode.insertBefore(history, form);
-        }
-
-        const item = document.createElement('div');
-        item.className = 'detail-chat-message detail-chat-message--outgoing';
-        const meta = document.createElement('div');
-        meta.className = 'detail-chat-message-meta';
-        const sender = document.createElement('strong');
-        sender.textContent = message.sender;
-        const timestamp = document.createElement('span');
-        timestamp.textContent = message.timestamp;
-        meta.append(sender, timestamp);
-        item.appendChild(meta);
-
-        if (message.text) {
-            const text = document.createElement('p');
-            text.textContent = message.text;
-            item.appendChild(text);
-        }
-
-        if (message.filename) {
-            const attachment = document.createElement('div');
-            attachment.className = 'detail-chat-attachment';
-            const filename = document.createElement('strong');
-            filename.textContent = message.filename;
-            attachment.appendChild(filename);
-            const download = document.createElement('a');
-            download.href = message.download_url;
-            download.textContent = 'Unduh';
-            attachment.appendChild(download);
-            item.appendChild(attachment);
-        }
-
-        history.appendChild(item);
-        history.scrollTop = history.scrollHeight;
-    };
-
-    fileInput.addEventListener('change', () => {
-        if (!fileInput.files.length) {
-            pending.hidden = true;
-            pending.querySelector('span').textContent = '';
-            return;
-        }
-        pending.querySelector('span').textContent = fileInput.files[0].name;
-        pending.hidden = false;
-    });
-
-    pending.querySelector('button').addEventListener('click', () => {
-        fileInput.value = '';
-        pending.hidden = true;
-        pending.querySelector('span').textContent = '';
-    });
-
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        error.hidden = true;
-        const history = document.querySelector(historySelector);
-        const scrollTop = history?.scrollTop ?? 0;
-        const submitButton = form.querySelector('button[type="submit"]');
-        submitButton.disabled = true;
-
-        try {
-            const response = await fetch(form.action, {
-                method: 'POST',
-                body: new FormData(form),
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            });
-            const payload = await response.json();
-            if (!response.ok) {
-                throw new Error(payload.message || Object.values(payload.errors || {}).flat().join(' ') || 'Pesan gagal dikirim.');
-            }
-
-            appendMessage(payload.message);
-            form.reset();
-            pending.hidden = true;
-            pending.querySelector('span').textContent = '';
-            if (history) {
-                history.scrollTop = scrollTop;
-            }
-        } catch (submissionError) {
-            error.textContent = submissionError.message;
-            error.hidden = false;
-        } finally {
-            submitButton.disabled = false;
-        }
-    });
-});
-</script>
 @stop
