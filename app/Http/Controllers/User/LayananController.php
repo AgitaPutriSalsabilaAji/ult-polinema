@@ -858,6 +858,37 @@ class LayananController extends Controller
         return $this->serveImageDocument($disk, $dokumen->path_file, $dokumen->nama_file);
     }
 
+    public function unduhLampiranPesan(string $nomorTiket, int $pesanId)
+    {
+        $pengajuan = Pengajuan::query()
+            ->where('nomor_tiket', $nomorTiket)
+            ->first();
+
+        if (! $pengajuan) {
+            return $this->renderAttachmentError('Nomor tiket tidak valid.', 404);
+        }
+
+        $this->authorizeDocumentAccess($pengajuan);
+
+        if (! Schema::hasTable('pesan_pengajuan')) {
+            return $this->renderAttachmentError('Dokumen tidak ditemukan.', 404);
+        }
+
+        $pesan = DB::table('pesan_pengajuan')
+            ->where('id', $pesanId)
+            ->where('id_pengajuan', $pengajuan->id)
+            ->first();
+
+        if (! $pesan || empty($pesan->lampiran) || ! Storage::disk('public')->exists($pesan->lampiran)) {
+            return $this->renderAttachmentError('Dokumen tidak ditemukan.', 404);
+        }
+
+        return Storage::disk('public')->download(
+            $pesan->lampiran,
+            basename($pesan->lampiran)
+        );
+    }
+
     public function unduhDokumen(string $nomorTiket, int $dokumenId)
     {
         $pengajuan = Pengajuan::query()
