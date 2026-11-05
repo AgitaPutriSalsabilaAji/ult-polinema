@@ -139,14 +139,21 @@
                             @endforeach
                         </div>
                     @endif
-                    <div class="detail-chat-compose" aria-label="Placeholder penulisan pesan">
-                        <input type="text" class="form-control" placeholder="Tulis pesan kepada pemohon..." disabled>
-                        <button type="button" class="btn btn-primary" disabled>
-                            <i class="bi bi-send" aria-hidden="true"></i> Kirim Pesan
-                        </button>
-                    </div>
+                    @if (auth('admin')->user()?->peran === 'admin_unit' && ! $pengajuan->isTerminal())
+                        <form id="admin-message-form" class="detail-chat-compose" method="POST" enctype="multipart/form-data" action="{{ route('admin.pengajuan.pesan', $pengajuan) }}" data-history="#admin-chat-history" onsubmit="return false;">
+                            @csrf
+                            <input type="text" name="pesan" class="form-control" placeholder="Tulis pesan kepada pemohon..." maxlength="5000" readonly aria-disabled="true">
+                            <label class="detail-chat-upload btn btn-light" title="Lampirkan dokumen">
+                                <i class="bi bi-paperclip" aria-hidden="true"></i>
+                                <input id="admin-message-file" type="file" name="lampiran" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" disabled aria-disabled="true">
+                            </label>
+                            <button type="button" class="btn btn-primary" aria-disabled="true">
+                                <i class="bi bi-send" aria-hidden="true"></i> Kirim
+                            </button>
+                        </form>
+                    @endif
                     <small class="detail-chat-note">
-                        {{ $pengajuan->isTerminal() ? 'Tiket terminal. Riwayat komunikasi hanya dapat dibaca.' : 'Fitur komunikasi akan tersedia setelah integrasi percakapan selesai.' }}
+                        Riwayat komunikasi hanya dapat dibaca.
                     </small>
                 </section>
             </div>
@@ -300,4 +307,7 @@
         .detail-conversation-meta .ticket-status-badge { margin-left: 0; }
     }
 </style>
+@stop
+
+@section('js')
 @stop
