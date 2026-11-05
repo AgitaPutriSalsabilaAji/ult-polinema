@@ -239,6 +239,25 @@ class AdminPengajuanDispositionTest extends TestCase
         ]);
     }
 
+    public function test_admin_ult_cannot_complete_or_reject_a_ticket_directly(): void
+    {
+        $adminUlt = $this->createAdmin('ult@example.com', 'admin_ult', 1);
+        $this->createTestApplication(2, 'diproses');
+
+        $this->actingAs($adminUlt, 'admin')
+            ->post(route('admin.pengajuan.tolak', 1))
+            ->assertForbidden();
+
+        $this->actingAs($adminUlt, 'admin')
+            ->post(route('admin.pengajuan.selesai', 1))
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('pengajuan', [
+            'id' => 1,
+            'status' => 'diproses',
+        ]);
+    }
+
     private function createAdmin(string $email, string $role, int $unitId): Admin
     {
         return Admin::query()->create([

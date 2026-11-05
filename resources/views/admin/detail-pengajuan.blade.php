@@ -24,7 +24,7 @@
             </div>
         @endif
 
-        <div class="detail-status-bar">
+        <section class="detail-status-bar" aria-label="Status dan tindakan pengajuan">
             @include('admin.partials.status-badge', ['status' => $pengajuan->status])
             <div class="detail-status-actions">
                 @if (auth('admin')->user()?->peran === 'admin_unit' && $pengajuan->status === 'diproses')
@@ -44,28 +44,15 @@
                     </form>
                 @endif
             </div>
-        </div>
+        </section>
 
-        <div class="row g-3">
-            <div class="col-xl-8">
+        <div class="row g-3 detail-main-layout">
+            <div class="col-xl-8 detail-main-content">
                 <section class="detail-card detail-request-card">
                     <div class="detail-card-heading">
-                        <span class="detail-section-number">3.</span>
                         <h2>Detail Permohonan Layanan</h2>
                     </div>
                     <div class="detail-request-grid">
-                        <div class="detail-field">
-                            <span>Kategori / Jenis Layanan</span>
-                            <strong>{{ $pengajuan->layanan?->nama_layanan ?? '-' }}</strong>
-                        </div>
-                        <div class="detail-field">
-                            <span>Layanan Tujuan</span>
-                            <strong>{{ $pengajuan->layanan?->nama_layanan ?? '-' }}</strong>
-                        </div>
-                        <div class="detail-field">
-                            <span>Unit Layanan</span>
-                            <strong>{{ $pengajuan->layanan?->unit?->nama_unit ?? $pengajuan->unit?->nama_unit ?? '-' }}</strong>
-                        </div>
                         <div class="detail-field">
                             <span>Nomor E-Tiket</span>
                             <strong class="text-primary">{{ $pengajuan->nomor_tiket }}</strong>
@@ -79,47 +66,36 @@
                         <span>Deskripsi Permohonan</span>
                         <p>{{ $pengajuan->deskripsi ?: '-' }}</p>
                     </div>
-                </section>
-
-                <section class="detail-card detail-documents-card">
-                    <div class="detail-card-heading">
-                        <span class="detail-section-number">4.</span>
-                        <h2>Berkas Lampiran Pendukung</h2>
-                    </div>
-                    @forelse ($dokumenPengajuan as $dokumen)
-                        <div class="detail-document">
-                            <i class="bi bi-file-earmark-text detail-document-icon" aria-hidden="true"></i>
-                            <div class="detail-document-info">
-                                <strong>{{ $dokumen->nama_file }}</strong>
-                                <span>PDF Document · {{ number_format(((int) $dokumen->ukuran_file) / 1024 / 1024, 2) }} MB</span>
+                    <div class="detail-attachments">
+                        <span>Berkas Lampiran Pendukung</span>
+                        @forelse ($dokumenPengajuan as $dokumen)
+                            <div class="detail-document">
+                                <i class="bi bi-file-earmark-text detail-document-icon" aria-hidden="true"></i>
+                                <div class="detail-document-info">
+                                    <strong>{{ $dokumen->nama_file }}</strong>
+                                    <span>PDF Document · {{ number_format(((int) $dokumen->ukuran_file) / 1024 / 1024, 2) }} MB</span>
+                                </div>
+                                <a class="btn btn-sm btn-outline-primary" href="{{ asset('storage/' . ltrim($dokumen->path_file, '/')) }}" target="_blank" rel="noopener">
+                                    <i class="bi bi-download" aria-hidden="true"></i> Unduh
+                                </a>
                             </div>
-                            <a class="btn btn-sm btn-outline-primary" href="{{ asset('storage/' . ltrim($dokumen->path_file, '/')) }}" target="_blank" rel="noopener">
-                                <i class="bi bi-download" aria-hidden="true"></i> Unduh
-                            </a>
-                        </div>
-                    @empty
-                        <div class="detail-empty-document">
-                            <i class="bi bi-paperclip" aria-hidden="true"></i>
-                            <span>Tidak ada dokumen pendukung yang dilampirkan.</span>
-                        </div>
-                    @endforelse
+                        @empty
+                            <div class="detail-empty-document">
+                                <i class="bi bi-paperclip" aria-hidden="true"></i>
+                                <span>Tidak ada dokumen pendukung yang dilampirkan.</span>
+                            </div>
+                        @endforelse
+                    </div>
                 </section>
 
                 <section class="detail-card detail-conversation-card">
                     <div class="detail-card-heading detail-conversation-heading">
                         <div>
-                            <span class="detail-section-number">5.</span>
                             <h2>Komunikasi Pengajuan</h2>
                         </div>
                         <span class="detail-muted-label">Ruang komunikasi</span>
                     </div>
                     <p class="detail-helper-text">Komunikasi langsung dengan pemohon terkait pengajuan layanan ini.</p>
-                    <div class="detail-conversation-meta">
-                        <span>E-Ticket: <strong>{{ $pengajuan->nomor_tiket }}</strong></span>
-                        <span>Pemohon: <strong>{{ $pemohon->nama_lengkap ?? 'Pemohon #' . $pengajuan->id_pengguna }}</strong></span>
-                        <span>Unit Penanggung Jawab: <strong>{{ $pengajuan->unit?->nama_unit ?? '-' }}</strong></span>
-                        @include('admin.partials.status-badge', ['status' => $pengajuan->status])
-                    </div>
                     @if ($pesanPengajuan->isEmpty())
                         <div class="detail-chat-empty">
                             <i class="bi bi-chat-dots" aria-hidden="true"></i>
@@ -151,10 +127,9 @@
                 </section>
             </div>
 
-            <div class="col-xl-4">
+            <div class="col-xl-4 detail-sidebar-column">
                 <section class="detail-card detail-applicant-card">
                     <div class="detail-card-heading">
-                        <span class="detail-section-number">1.</span>
                         <h2>Informasi Pemohon</h2>
                     </div>
                     <div class="detail-applicant-summary">
@@ -174,7 +149,6 @@
 
                 <section class="detail-card detail-service-card">
                     <div class="detail-card-heading">
-                        <span class="detail-section-number">2.</span>
                         <h2>Informasi Layanan</h2>
                     </div>
                     <dl class="detail-definition-list">
@@ -215,7 +189,7 @@
     .detail-pengajuan-page { --detail-border: #e2e8f0; --detail-muted: #64748b; color: #172033; font-family: var(--admin-font-family); font-size: var(--admin-font-size-primary); }
     .detail-page-heading { display: flex; align-items: center; min-height: 31px; }
     .detail-alert { border-radius: 8px; }
-    .detail-status-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 42px; margin-bottom: 8px; padding: 6px 9px; border: 1px solid #e5e9ef; border-radius: 8px; background: #fff; box-shadow: 0 2px 6px rgba(15, 23, 42, .025); }
+    .detail-status-bar { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 1rem; min-height: 42px; margin-bottom: 8px; padding: 6px 9px; border: 1px solid #e5e9ef; border-radius: 8px; background: #fff; box-shadow: 0 2px 6px rgba(15, 23, 42, .025); }
     .detail-status-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
     .detail-status-actions form { margin: 0; }
     .detail-action-button { min-width: 77px; height: 24px; padding: 3px 9px; border: 1px solid transparent; border-radius: 5px; font-family: inherit; font-size: var(--admin-font-size-primary); font-weight: 600; line-height: 1; white-space: nowrap; }
@@ -223,10 +197,11 @@
     .detail-action-button--reject:hover { background: #ffe4e6; }
     .detail-action-button--complete { border-color: #92d3c4; background: #e9f8f3; color: #087c68; }
     .detail-action-button--complete:hover { background: #d3f1e7; }
+    .detail-main-layout { align-items: flex-start; }
+    .detail-main-content, .detail-sidebar-column { min-width: 0; }
     .detail-card { margin-bottom: 14px; padding: 14px; border: 1px solid var(--detail-border); border-radius: 8px; background: #fff; box-shadow: 0 2px 6px rgba(15, 23, 42, .025); }
     .detail-card-heading { display: flex; align-items: center; gap: 5px; margin-bottom: 13px; }
     .detail-card-heading h2 { margin: 0; color: #172033; font-size: var(--admin-font-size-primary); font-weight: 600; }
-    .detail-section-number { color: #172033; font-size: var(--admin-font-size-primary); font-weight: 600; }
     .detail-request-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px 25px; }
     .detail-field { min-width: 0; }
     .detail-field-wide { grid-column: 1 / -1; }
@@ -234,6 +209,8 @@
     .detail-field strong, .detail-definition-list dd { color: #27344a; font-size: var(--admin-font-size-primary); font-weight: 400; }
     .detail-description { margin-top: 14px; }
     .detail-description p { min-height: 54px; margin: 0; padding: 9px 10px; border: 1px solid var(--detail-border); border-radius: 6px; background: #f8fafc; color: #475569; font-size: var(--admin-font-size-secondary); font-weight: 400; line-height: 1.45; white-space: pre-wrap; }
+    .detail-attachments { margin-top: 14px; }
+    .detail-attachments > span { display: block; margin-bottom: 4px; color: #94a3b8; font-size: var(--admin-font-size-primary); font-weight: 600; }
     .detail-document { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 9px 10px; border: 1px solid var(--detail-border); border-radius: 7px; background: #f8fafc; }
     .detail-document-icon { color: #d65b77; font-size: 1.05rem; }
     .detail-document-info { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 2px; }
@@ -257,9 +234,6 @@
     .detail-conversation-heading > div { display: flex; align-items: center; gap: 6px; }
     .detail-muted-label { color: #94a3b8; font-size: var(--admin-font-size-secondary); font-weight: 400; }
     .detail-helper-text { margin: -7px 0 13px; color: #94a3b8; font-size: var(--admin-font-size-secondary); font-weight: 400; }
-    .detail-conversation-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 7px 17px; padding: 9px 10px; border-bottom: 1px solid #edf1f5; color: #64748b; font-size: var(--admin-font-size-secondary); font-weight: 400; }
-    .detail-conversation-meta strong { color: #475569; font-weight: 600; }
-    .detail-conversation-meta .ticket-status-badge { margin-left: auto; }
     .detail-chat-empty { display: flex; min-height: 115px; align-items: center; justify-content: center; flex-direction: column; gap: 5px; color: #94a3b8; text-align: center; }
     .detail-chat-empty i { color: #cbd5e1; font-size: 1.7rem; }
     .detail-chat-empty strong { color: #64748b; font-size: var(--admin-font-size-secondary); font-weight: 400; }
@@ -275,13 +249,17 @@
     .detail-chat-compose .form-control { height: 34px; background: #f8fafc; font-size: var(--admin-font-size-primary); font-weight: 400; }
     .detail-chat-compose .btn { min-width: 92px; font-size: var(--admin-font-size-primary); font-weight: 600; }
     .detail-chat-note { display: block; margin-top: 8px; color: #a0aec0; font-size: var(--admin-font-size-secondary); font-weight: 400; }
-    .detail-history-card { padding: 0; overflow: hidden; }
+    .detail-history-card { width: 100%; padding: 0; overflow: hidden; }
     .detail-history-card .detail-card-heading { margin: 0; padding: 15px 17px; border-bottom: 1px solid var(--detail-border); }
     .detail-history-table { font-size: var(--admin-font-size-primary); }
     .detail-history-table th { padding: 10px 15px; color: #94a3b8; background: #f8fafc; font-size: var(--admin-font-size-primary); font-weight: 600; white-space: nowrap; }
     .detail-history-table td { padding: 11px 15px; color: #475569; font-size: var(--admin-font-size-primary); font-weight: 400; }
     .detail-history-table td strong, .detail-history-table td small { display: block; }
     .detail-history-table td small { margin-top: 3px; color: #94a3b8; font-size: var(--admin-font-size-secondary); font-weight: 400; }
+    @media (min-width: 1200px) {
+        .detail-main-layout > .detail-main-content { flex: 0 0 68%; max-width: 68%; }
+        .detail-main-layout > .detail-sidebar-column { position: sticky; top: 16px; flex: 0 0 32%; max-width: 32%; align-self: flex-start; min-width: 0; }
+    }
     .ticket-status-badge { display: inline-flex; align-items: center; justify-content: center; padding: 4px 8px; border-radius: 5px; font-size: 12px; font-weight: 700; line-height: 1.2; text-transform: uppercase; white-space: nowrap; }
     .ticket-status-badge--baru { color: #1d4ed8; background: #dbeafe; }
     .ticket-status-badge--didisposisikan { color: #7e22ce; background: #f3e8ff; }
@@ -297,7 +275,7 @@
         .detail-field-wide { grid-column: auto; }
         .detail-chat-compose { flex-direction: column; }
         .detail-chat-compose .btn { width: 100%; }
-        .detail-conversation-meta .ticket-status-badge { margin-left: 0; }
+        .detail-sidebar-column { position: static; }
     }
 </style>
 @stop
