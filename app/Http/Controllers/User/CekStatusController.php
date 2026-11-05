@@ -22,7 +22,7 @@ class CekStatusController extends Controller
 
         if ($ticket !== '') {
             if (! Auth::guard('web')->check()) {
-                return redirect()->guest(route('user.login'));
+                return redirect()->guest(route('user.login', ['auth' => 'login']));
             }
 
             $user = Auth::guard('web')->user();

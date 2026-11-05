@@ -14,8 +14,12 @@ use Illuminate\Validation\Rule;
 
 class UserAuthController extends Controller
 {
-    public function showLoginForm(): RedirectResponse
+    public function showLoginForm(Request $request): RedirectResponse
     {
+        if ($request->query('auth') === 'login') {
+            $request->session()->flash('auth_modal', 'login');
+        }
+
         return redirect()->route('beranda');
     }
 
