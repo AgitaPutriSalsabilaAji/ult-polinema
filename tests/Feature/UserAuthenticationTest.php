@@ -75,6 +75,47 @@ class UserAuthenticationTest extends TestCase
             ->assertSessionHas('url.intended', route('pengajuan.form', ['layanan' => 42]));
     }
 
+    public function test_guest_is_redirected_to_login_with_the_ticket_status_preserved(): void
+    {
+        $ticketUrl = route('cek-status', ['ticket' => 'ULT-2026-000123']);
+        $loginUrl = route('user.login', ['auth' => 'login']);
+
+        $this->get($ticketUrl)
+            ->assertRedirect($loginUrl)
+            ->assertSessionHas('url.intended', $ticketUrl);
+
+        $this->get($loginUrl)
+            ->assertRedirect(route('beranda'))
+            ->assertSessionHas('auth_modal', 'login')
+            ->assertSessionHas('url.intended', $ticketUrl);
+    }
+
+    public function test_login_route_opens_the_modal_when_requested_by_ticket_status(): void
+    {
+        $this->withoutVite()
+            ->get(route('user.login', ['auth' => 'login']))
+            ->assertRedirect(route('beranda'))
+            ->assertSessionHas('auth_modal', 'login');
+    }
+
+    public function test_user_can_login_and_return_to_the_ticket_status_page(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'user@example.com',
+            'password' => Hash::make('correct-password'),
+        ]);
+        $intendedUrl = route('cek-status', ['ticket' => 'ULT-2026-000123']);
+
+        $response = $this->withSession(['url.intended' => $intendedUrl])
+            ->post(route('user.login.submit'), [
+                'email' => 'user@example.com',
+                'password' => 'correct-password',
+            ]);
+
+        $response->assertRedirect($intendedUrl);
+        $this->assertAuthenticatedAs($user, 'web');
+    }
+
     public function test_user_can_login_and_return_to_the_selected_service_form(): void
     {
         $user = User::factory()->create([
