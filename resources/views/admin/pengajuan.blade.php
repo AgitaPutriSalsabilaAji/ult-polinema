@@ -166,12 +166,45 @@
             </div>
         </div>
 
-        <div class="card-footer d-flex justify-content-between align-items-center">
-            <small>
+        <div class="card-footer pengajuan-footer">
+            <small class="pengajuan-footer__info">
                 Menampilkan {{ $pengajuans->firstItem() ?? 0 }}–{{ $pengajuans->lastItem() ?? 0 }}
                 dari {{ $pengajuans->total() }} pengajuan
             </small>
-            {{ $pengajuans->links() }}
+
+            @if ($pengajuans->hasPages())
+                <nav aria-label="Navigasi halaman pengajuan">
+                    <ul class="pagination pengajuan-pagination mb-0">
+                        {{-- Previous --}}
+                        <li class="page-item {{ $pengajuans->onFirstPage() ? 'disabled' : '' }}">
+                            <a class="page-link"
+                            href="{{ $pengajuans->previousPageUrl() ?? '#' }}"
+                            aria-label="Previous">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        {{-- Nomor halaman --}}
+                        @foreach ($pengajuans->getUrlRange(1, $pengajuans->lastPage()) as $page => $url)
+                            <li class="page-item {{ $pengajuans->currentPage() == $page ? 'active' : '' }}">
+                                <a class="page-link"
+                                href="{{ $pengajuans->appends(request()->query())->url($page) }}">
+                                    {{ $page }}
+                                </a>
+                            </li>
+                        @endforeach
+
+                        {{-- Next --}}
+                        <li class="page-item {{ $pengajuans->hasMorePages() ? '' : 'disabled' }}">
+                            <a class="page-link"
+                            href="{{ $pengajuans->nextPageUrl() ?? '#' }}"
+                            aria-label="Next">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            @endif
         </div>
     </div>
 </div>
@@ -577,20 +610,92 @@
         margin-right: 2px;
     }
 
+    /* Responsive modal */
     @media (max-width: 575.98px) {
         .modal-disposisi-dialog {
             margin: 0.75rem;
         }
+
         .modal-disposisi__header,
         .modal-disposisi .modal-body {
             padding-left: 15px;
             padding-right: 15px;
         }
+
         .modal-disposisi__footer {
             padding-left: 15px;
             padding-right: 15px;
         }
     }
+
+    /* Footer tabel */
+    .pengajuan-page .pengajuan-footer {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        min-height: 40px !important;
+        padding: 6px 12px !important;
+        gap: 8px;
+    }
+
+    /* Informasi jumlah data */
+    .pengajuan-page .pengajuan-footer__info {
+        font-size: 11px !important;
+        margin: 0;
+    }
+
+    /* Posisi pagination paling kanan */
+    .pengajuan-page .pengajuan-footer nav {
+        margin-left: auto !important;
+    }
+
+    /* Ukuran tombol pagination */
+    .pengajuan-page .pengajuan-footer .pagination .page-link {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 28px !important;
+        min-width: 28px !important;
+        max-width: 28px !important;
+        height: 28px !important;
+        min-height: 28px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 12px !important;
+        line-height: 1 !important;
+        border-radius: 3px !important;
+        box-shadow: none !important;
+    }
+
+    /* Ikon panah */
+    .pengajuan-page .pengajuan-footer .pagination .page-link i {
+        font-size: 11px !important;
+    }
+
+    /* Jarak tombol */
+    .pengajuan-page .pengajuan-footer .pagination {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Halaman aktif */
+    .pengajuan-page .pengajuan-footer .pagination .page-item.active .page-link {
+        background: #24449a !important;
+        border-color: #24449a !important;
+        color: #fff !important;
+    }
+
+    /* Mobile */
+    @media (max-width: 575.98px) {
+        .pengajuan-page .pengajuan-footer {
+            flex-direction: row !important;
+        }
+    }
+
+
+
 </style>
 @stop
 
