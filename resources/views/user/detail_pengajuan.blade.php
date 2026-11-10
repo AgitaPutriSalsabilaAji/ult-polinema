@@ -140,11 +140,79 @@
                 </section>
                 <section class="dp-ticket-actions" aria-label="Aksi E-Ticket"><div class="dp-ticket-actions__top"><div><span>Nomor E-Ticket Anda</span><strong>{{ $pengajuan->nomor_tiket }}</strong></div><button class="dp-button dp-button--outline" type="button" data-copy-ticket="{{ $pengajuan->nomor_tiket }}"><i class="bi bi-copy"></i>Salin E-Ticket</button></div><div class="dp-ticket-actions__bottom"><a href="{{ route('cek-status') }}"><i class="bi bi-arrow-left"></i>Kembali ke Cek Status</a><a class="dp-button dp-button--purple" href="{{ route('cek-status', ['ticket' => $pengajuan->nomor_tiket]) }}"><i class="bi bi-arrow-repeat"></i>Pantau Status Terbaru</a></div><span class="dp-copy-feedback" role="status" aria-live="polite" data-copy-feedback></span></section>
                     </div>
+
                     @if (! $ratingUlasan)
                         <aside class="dp-sidebar-column">
-                            @include('user.partials.rating_layanan')
+                            <div class="dp-rating-panel" aria-label="Rating dan ulasan layanan">
+                                <div class="dp-rating-panel__header">
+                                    <h3>Berikan penilaian untuk kami</h3>
+                                    <p>Bantu kami untuk meningkatkan kualitas layanan</p>
+                                </div>
+
+                                <form
+                                    class="dp-rating-form"
+                                    action="{{ route('pengajuan.rating.store', ['nomorTiket' => $pengajuan->nomor_tiket]) }}"
+                                    method="POST"
+                                >
+                                    @csrf
+
+                                    <div class="dp-rating-stars" role="radiogroup" aria-label="Pilih rating layanan">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <label
+                                                class="dp-star-option"
+                                                data-value="{{ $i }}"
+                                                data-tooltip="{{ $i }} Bintang"
+                                                title="{{ $i }} Bintang"
+                                                aria-label="{{ $i }} Bintang"
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    name="rating"
+                                                    value="{{ $i }}"
+                                                    required
+                                                    {{ old('rating') == (string) $i ? 'checked' : '' }}
+                                                >
+                                                <span aria-hidden="true">
+                                                    <i class="bi bi-star-fill"></i>
+                                                </span>
+                                            </label>
+                                        @endfor
+                                    </div>
+
+                                    @error('rating')
+                                        <small class="dp-form-error">{{ $message }}</small>
+                                    @enderror
+
+                                    <label class="dp-rating-label" for="rating-komentar">
+                                        Saran dan Pendapat <span class="text-danger">*</span>
+                                    </label>
+
+                                    <textarea
+                                        id="rating-komentar"
+                                        name="komentar"
+                                        rows="4"
+                                        maxlength="500"
+                                        required
+                                        placeholder="Tuliskan komentar atau saran Anda..."
+                                    >{{ old('komentar') }}</textarea>
+
+                                    <div class="dp-rating-counter">
+                                        <small>Wajib diisi. Maksimal 500 karakter.</small>
+                                        <small id="rating-character-count">0/500</small>
+                                    </div>
+
+                                    @error('komentar')
+                                        <small class="dp-form-error">{{ $message }}</small>
+                                    @enderror
+
+                                    <button class="dp-button dp-button--purple" type="submit">
+                                        Submit
+                                    </button>
+                                </form>
+                            </div>
                         </aside>
                     @endif
+
                 </div>
             </div>
         </div>
