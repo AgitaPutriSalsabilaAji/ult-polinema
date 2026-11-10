@@ -95,4 +95,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    
+    const ratingKomentar = document.getElementById('rating-komentar');
+    const ratingCounter = document.getElementById('rating-character-count');
+
+    if (ratingKomentar && ratingCounter) {
+        const updateRatingCounter = () => {
+            ratingCounter.textContent = `${ratingKomentar.value.length}/500`;
+        };
+
+        ratingKomentar.addEventListener('input', updateRatingCounter);
+
+        updateRatingCounter();
+    }
+
 });

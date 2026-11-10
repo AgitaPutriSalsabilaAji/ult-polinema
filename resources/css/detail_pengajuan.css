@@ -705,3 +705,19 @@
         align-items: flex-start;
     }
 }
+
+    .dp-rating-counter {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        margin-top: 6px;
+        margin-bottom: 14px;
+        color: #85899c;
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .dp-rating-counter small {
+        font-size: inherit;
+    }
