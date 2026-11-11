@@ -105,6 +105,19 @@ class HomepageServicesTest extends TestCase
         }
     }
 
+    public function test_homepage_hides_status_section_and_keeps_ticket_access_in_the_navbar(): void
+    {
+        $response = $this->withoutVite()
+            ->get(route('beranda'));
+
+        $response->assertOk()
+            ->assertDontSee('id="cek-status"', false)
+            ->assertDontSee('Cek Status Pengajuan')
+            ->assertDontSee('Lihat E-Tiket Saya')
+            ->assertSee('href="'.route('cek-status').'"', false)
+            ->assertSee('>E-Tiket</a>', false);
+    }
+
     public function test_service_list_autocomplete_uses_current_category_services_and_their_detail_routes(): void
     {
         $serviceId = $this->createService('Kunjungan Sekolah', 'Unit Humas dan Kerjasama');

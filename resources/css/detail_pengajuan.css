@@ -2,14 +2,13 @@
 @import './footer.css';
 
 .detail-pengajuan-page {
-    --ult-purple: #4a1d7a;
-    --ult-purple-dark: #2f0f53;
-    --ult-purple-soft: #f3ecff;
+    --ult-purple: #29216f;
+    --ult-purple-dark: #201951;
+    --ult-purple-soft: #f5f6fa;
     --ult-text: #1f1d2b;
-    --ult-muted: #67657a;
-    --ult-border: #e6e1f2;
+    --ult-muted: #85899c;
+    --ult-border: #e5e7eb;
     --ult-white: #ffffff;
-    --ult-shadow: 0 18px 40px rgba(51, 22, 99, 0.08);
 }
 
 .detail-pengajuan-page,
@@ -18,7 +17,7 @@
 }
 
 .detail-pengajuan-page {
-    background: #f5f6f8;
+    background: #f5f6fa;
     color: var(--ult-text);
 }
 
@@ -27,9 +26,8 @@
 }
 
 .detail-pengajuan-header {
-    padding: 36px 0 14px;
-    border-bottom: 1px solid var(--ult-border);
-    background: #fff;
+    padding: 36px 0 16px;
+    background: #f5f6fa;
 }
 
 .header-row {
@@ -107,8 +105,7 @@
 .detail-card {
     background: var(--ult-white);
     border-radius: 24px;
-    box-shadow: var(--ult-shadow);
-    border: 1px solid var(--ult-border);
+    border: 1px solid #e5e7eb;
 }
 
 .main-card {
@@ -240,62 +237,186 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding-left: 10px;
+    gap: 14px;
+    padding-left: 34px;
 }
 
 .timeline::before {
     content: '';
     position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 9px;
+    top: 18px;
+    bottom: 18px;
+    left: 13px;
     width: 2px;
-    background: var(--ult-border);
+    border-radius: 2px;
+    background: linear-gradient(180deg, #cdd9d0 0%, #e4e6ed 100%);
 }
 
 .timeline-item {
     position: relative;
-    display: flex;
-    gap: 16px;
-    padding-left: 18px;
+    min-width: 0;
 }
 
-.timeline-dot {
+.timeline-marker {
     position: absolute;
-    left: -1px;
-    top: 8px;
-    width: 12px;
-    height: 12px;
+    z-index: 1;
+    top: 15px;
+    left: -34px;
+    display: grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    border: 1px solid #dcd9f0;
     border-radius: 50%;
-    background: var(--ult-purple);
-    border: 3px solid #fff;
-    box-shadow: 0 0 0 2px rgba(74, 29, 122, 0.18);
+    background: #fff;
+    color: #29216f;
+    font-size: 13px;
 }
+
+.timeline-marker__check {
+    position: absolute;
+    right: -3px;
+    bottom: -3px;
+    display: grid;
+    width: 13px;
+    height: 13px;
+    place-items: center;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    background: #16834d;
+    color: #fff;
+    font-size: 8px;
+}
+
+.timeline-item--baru.is-latest .timeline-marker,
+.timeline-item--diajukan.is-latest .timeline-marker,
+.timeline-item--perlu-perbaikan.is-latest .timeline-marker,
+.timeline-item--perlu-diperbaiki.is-latest .timeline-marker,
+.timeline-item--diproses.is-latest .timeline-marker { border-color: #f5d9ae; background: #fff8ed; color: #d77b00; }
+.timeline-item--diverifikasi.is-latest .timeline-marker,
+.timeline-item--disetujui.is-latest .timeline-marker,
+.timeline-item--acc.is-latest .timeline-marker { border-color: #d6def5; background: #f1f4fc; color: #3c63b8; }
+.timeline-item--didisposisikan.is-latest .timeline-marker { border-color: #e2d7f0; background: #f7f2fc; color: #7037b0; }
+.timeline-item--selesai.is-latest .timeline-marker { border-color: #cce8d7; background: #eff8f2; color: #16834d; }
+.timeline-item--ditolak.is-latest .timeline-marker { border-color: #f0d1d1; background: #fff4f3; color: #bb3737; }
 
 .timeline-content {
-    background: #faf8ff;
-    border: 1px solid var(--ult-border);
-    border-radius: 16px;
+    min-width: 0;
     padding: 14px 16px;
-    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #f5f6f9;
+    transition: border-color .2s ease, background-color .2s ease;
+}
+
+.timeline-item.is-complete .timeline-content {
+    border-color: #e5e7eb;
+    background: #f8fbf8;
+}
+
+.timeline-item.is-latest .timeline-content {
+    border-color: #e5e7eb;
+    background: #fff;
+}
+
+.timeline-content__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 8px;
+}
+
+.timeline-step,
+.timeline-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.timeline-step {
+    color: #7c879f;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+
+.timeline-state {
+    padding: 4px 8px;
+    border-radius: 999px;
+}
+
+.timeline-state--complete {
+    background: #eaf5ed;
+    color: #16834d;
+}
+
+.timeline-state--latest {
+    background: #fff3e2;
+    color: #b96c00;
 }
 
 .timeline-content strong {
     display: block;
-    margin-bottom: 4px;
-    color: var(--ult-purple-dark);
+    margin-bottom: 5px;
+    color: #29216f;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
 }
 
-.timeline-content small {
+.timeline-content time {
     display: block;
-    color: var(--ult-muted);
-    margin-bottom: 6px;
+    margin-bottom: 7px;
+    color: #7c879f;
+    font-size: 10px;
+    font-weight: 600;
 }
 
 .timeline-content p {
     margin: 0;
+    color: #67657a;
+    font-size: 11px;
     line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 575.98px) {
+    .timeline {
+        gap: 11px;
+        padding-left: 30px;
+    }
+
+    .timeline::before {
+        left: 11px;
+    }
+
+    .timeline-marker {
+        left: -30px;
+        width: 24px;
+        height: 24px;
+        font-size: 11px;
+    }
+
+    .timeline-content {
+        padding: 12px;
+    }
+
+    .timeline-content__meta {
+        align-items: flex-start;
+    }
+
+    .timeline-content strong {
+        font-size: 12px;
+    }
+
+    .timeline-content time,
+    .timeline-content p {
+        font-size: 10px;
+    }
 }
 
 .detail-pengajuan-page .detail-pengajuan-shell {
@@ -304,15 +425,20 @@
 
 .detail-pengajuan-page .detail-pengajuan-header h1 {
     margin: 0 0 10px;
-    font-size: 24px;
-    letter-spacing: -.035em;
+    color: #29216f;
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -.4px;
 }
 
 .detail-pengajuan-page .detail-pengajuan-header p {
     max-width: 760px;
     margin: 0;
-    color: #818ba0;
-    font-size: 12px;
+    color: #85899c;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1.65;
 }
 
 .detail-pengajuan-page .detail-pengajuan-header .container-xl {
@@ -320,7 +446,7 @@
 }
 
 .detail-pengajuan-page .detail-pengajuan-content {
-    padding: 40px 0 78px;
+    padding: 24px 0 78px;
 }
 
 .detail-pengajuan-page .dp-content-container {
@@ -359,27 +485,23 @@
 
 .detail-pengajuan-page .dp-ticket-summary,
 .detail-pengajuan-page .dp-card,
-.detail-pengajuan-page .dp-ticket-actions,
 .detail-pengajuan-page .dp-rating-panel {
     min-width: 0;
     padding: 22px 24px;
-    border: 1px solid #e5e9f0;
-    border-radius: 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 13px;
     background: #fff;
 }
 
 .detail-pengajuan-page .dp-ticket-summary {
     padding-bottom: 18px;
-    border: 2px solid #473b94;
+    border: 1px solid #e5e7eb;
     border-radius: 16px;
-    box-shadow: 0 2px 6px rgba(38, 33, 96, .04);
 }
 
 .detail-pengajuan-page .dp-ticket-summary__top,
 .detail-pengajuan-page .dp-ticket-summary__number,
 .detail-pengajuan-page .dp-ticket-summary__hint,
-.detail-pengajuan-page .dp-ticket-actions__top,
-.detail-pengajuan-page .dp-ticket-actions__bottom,
 .detail-pengajuan-page .dp-document,
 .detail-pengajuan-page .dp-document__actions,
 .detail-pengajuan-page .dp-message__meta,
@@ -395,10 +517,9 @@
     gap: 16px;
     min-width: 0;
     padding: 20px 18px;
-    border: 1px solid #e5e9f0;
+    border: 1px solid #e5e7eb;
     border-radius: 16px;
     background: #fff;
-    box-shadow: 0 12px 30px rgba(51, 22, 99, 0.06);
 }
 
 .detail-pengajuan-page .dp-rating-panel__header {
@@ -557,22 +678,18 @@
     }
 }
 
-.detail-pengajuan-page .dp-ticket-summary__top,
-.detail-pengajuan-page .dp-ticket-actions__top,
-.detail-pengajuan-page .dp-ticket-actions__bottom,
-.detail-pengajuan-page .dp-message__meta {
+.detail-pengajuan-page .dp-ticket-summary__top {
     justify-content: space-between;
     gap: 16px;
 }
+.detail-pengajuan-page .dp-message__meta { justify-content: space-between; gap: 16px; }
 
 .detail-pengajuan-page .dp-ticket-summary__number { gap: 12px; min-width: 0; }
 .detail-pengajuan-page .dp-ticket-summary__icon { display: grid; flex: 0 0 34px; width: 34px; height: 34px; place-items: center; border-radius: 9px; background: #fff5e7; color: #f69200; font-size: 18px; }
 .detail-pengajuan-page .dp-eyebrow,
-.detail-pengajuan-page .dp-ticket-summary__meta span,
-.detail-pengajuan-page .dp-ticket-actions__top > div > span { display: block; margin-bottom: 3px; color: #818ba0; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+.detail-pengajuan-page .dp-ticket-summary__meta span { display: block; margin-bottom: 3px; color: #818ba0; font-size: 10px; font-weight: 700; text-transform: uppercase; }
 .detail-pengajuan-page .dp-ticket-summary__number .dp-eyebrow { color: #f69200; }
 .detail-pengajuan-page .dp-ticket-summary__number strong { display: block; color: #302474; font-family: 'Courier New', monospace; font-size: 21px; font-weight: 800; letter-spacing: .035em; line-height: 1.2; overflow-wrap: anywhere; }
-.detail-pengajuan-page .dp-ticket-actions__top strong { display: block; color: #302474; font-family: 'Courier New', monospace; font-size: 23px; font-weight: 900; letter-spacing: .035em; line-height: 1.2; overflow-wrap: anywhere; }
 .detail-pengajuan-page .dp-status { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 7px; padding: 6px 11px; border-radius: 6px; background: #fff4e5; color: #d77b00; font-size: 10px; font-weight: 800; text-transform: uppercase; }
 .detail-pengajuan-page .dp-status i { font-size: 8px; }
 .detail-pengajuan-page .dp-status--selesai { background: #eaf8ef; color: #16834d; }
@@ -583,6 +700,7 @@
 .detail-pengajuan-page .dp-ticket-summary__meta strong { display: block; color: #34364d; font-size: 12px; font-weight: 700; overflow-wrap: anywhere; }
 .detail-pengajuan-page .dp-ticket-summary__meta > div:last-child strong { color: #f69200; }
 .detail-pengajuan-page .dp-ticket-summary__hint { gap: 7px; margin: 13px 0 0; color: #818ba0; font-size: 10px; }
+.detail-pengajuan-page .dp-information-details { margin-top: 18px; }
 
 .detail-pengajuan-page .dp-card__header { margin-bottom: 16px; padding-bottom: 13px; border-bottom: 1px solid #e5e9f0; }
 .detail-pengajuan-page .dp-card__header h2 { margin: 0 0 3px; color: #292162; font-size: 14px; font-weight: 800; letter-spacing: -.02em; }
@@ -594,7 +712,8 @@
 .detail-pengajuan-page .dp-field > div { min-height: 37px; padding: 9px 12px; border: 1px solid #e8ebf0; border-radius: 7px; background: #f5f6f8; color: #404454; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
 .detail-pengajuan-page .dp-field > .dp-field__multiline { min-height: 54px; white-space: pre-line; }
 
-.detail-pengajuan-page .dp-document { gap: 12px; padding: 11px 13px; border: 1px solid #e5e9f0; border-radius: 8px; background: #f5f6f8; }
+.detail-pengajuan-page .dp-document-list { display: flex; flex-direction: column; gap: 10px; }
+.detail-pengajuan-page .dp-document { gap: 12px; padding: 11px 13px; border: 1px solid #e5e7eb; border-radius: 8px; background: #f5f6f8; }
 .detail-pengajuan-page .dp-document__icon { display: grid; flex: 0 0 24px; width: 24px; height: 24px; place-items: center; color: #12a875; font-size: 17px; }
 .detail-pengajuan-page .dp-document__info { display: flex; min-width: 0; flex: 1 1 auto; flex-direction: column; gap: 2px; }
 .detail-pengajuan-page .dp-document__info strong { overflow: hidden; color: #292162; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
@@ -610,19 +729,15 @@
 .detail-pengajuan-page .dp-empty-state { margin: 0; padding: 12px; border-radius: 7px; background: #f5f6f8; color: #818ba0; font-size: 11px; }
 
 .detail-pengajuan-page .dp-communication-list { display: flex; flex-direction: column; gap: 12px; }
-.detail-pengajuan-page .dp-message { min-width: 0; padding: 12px 13px; border-left: 3px solid #dce1e9; border-radius: 6px; background: #f5f6f8; }
+.detail-pengajuan-page .dp-message { min-width: 0; padding: 12px 13px; border: 1px solid #e5e7eb; border-left: 3px solid #dce1e9; border-radius: 6px; background: #f5f6f8; }
 .detail-pengajuan-page .dp-message--officer { border-left-color: #302474; }
 .detail-pengajuan-page .dp-message__meta > div { flex-wrap: wrap; gap: 7px; }
 .detail-pengajuan-page .dp-message__meta strong { color: #292162; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-.detail-pengajuan-page .dp-message__meta time,
-.detail-pengajuan-page .dp-status-event time { color: #818ba0; font-size: 9px; white-space: nowrap; }
+.detail-pengajuan-page .dp-message__meta time { color: #818ba0; font-size: 9px; white-space: nowrap; }
 .detail-pengajuan-page .dp-role-badge { padding: 2px 5px; border-radius: 3px; background: #e8e5f7; color: #302474; font-size: 8px; font-weight: 800; }
 .detail-pengajuan-page .dp-role-badge--officer { background: #ff9b00; color: #fff; }
 .detail-pengajuan-page .dp-message > p { margin: 7px 0 0; color: #4c5060; font-size: 11px; line-height: 1.55; overflow-wrap: anywhere; white-space: pre-line; }
-.detail-pengajuan-page .dp-message__attachment { display: inline-flex; gap: 5px; margin-top: 8px; color: #302474; font-size: 10px; font-weight: 700; text-decoration: none; }
 .detail-pengajuan-page .dp-message-attachment-toggle { margin-top: 10px; }
-.detail-pengajuan-page .dp-status-event { display: flex; align-items: center; gap: 8px; padding: 8px 11px; border-radius: 6px; background: #fff8ed; color: #df8000; font-size: 10px; font-weight: 700; }
-.detail-pengajuan-page .dp-status-event > span { flex: 1 1 auto; }
 .detail-pengajuan-page .dp-message-form { margin-top: 17px; padding-top: 16px; border-top: 1px solid #e5e9f0; }
 .detail-pengajuan-page .dp-message-form textarea { display: block; width: 100%; min-height: 74px; resize: vertical; padding: 11px 12px; border: 1px solid #e5e9f0; border-radius: 7px; outline: none; background: #f5f6f8; color: #34384a; font: inherit; font-size: 11px; }
 .detail-pengajuan-page .dp-message-form textarea:focus { border-color: #8379c6; box-shadow: 0 0 0 3px rgba(48, 36, 116, .1); }
@@ -634,26 +749,21 @@
 .detail-pengajuan-page .dp-form-note { color: #818ba0; font-size: 9px; }
 .detail-pengajuan-page .dp-form-note { display: block; margin-top: 9px; }
 .detail-pengajuan-page .dp-form-error { display: block; margin-top: 5px; color: #b42318; font-size: 10px; }
-.detail-pengajuan-page .dp-ticket-actions { padding-top: 19px; padding-bottom: 17px; }
-.detail-pengajuan-page .dp-ticket-actions__top { padding-bottom: 14px; border-bottom: 1px solid #e5e9f0; }
-.detail-pengajuan-page .dp-ticket-actions__top .dp-button { font-size: 11px; font-weight: 800; }
-.detail-pengajuan-page .dp-ticket-actions__bottom { padding-top: 14px; }
-.detail-pengajuan-page .dp-ticket-actions__bottom > a:first-child { display: inline-flex; align-items: center; gap: 8px; color: #302474; font-size: 11px; font-weight: 800; text-decoration: none; }
-.detail-pengajuan-page .dp-ticket-actions__bottom .dp-button { font-size: 11px; font-weight: 800; }
-.detail-pengajuan-page .dp-copy-feedback { display: block; min-height: 13px; margin-top: 4px; color: #16834d; font-size: 9px; text-align: right; }
+.detail-pengajuan-page .dp-status-link-row { display: flex; justify-content: flex-end; }
+.detail-pengajuan-page .dp-status-link-row .dp-button { font-size: 11px; font-weight: 800; }
 
 @media (max-width: 767.98px) {
-    .detail-pengajuan-page .detail-pengajuan-header h1 { font-size: 21px; }
     .detail-pengajuan-page .detail-pengajuan-content { padding: 24px 0 48px; }
     .detail-pengajuan-page .dp-content-container { gap: 16px; }
     .detail-pengajuan-page .dp-card,
-    .detail-pengajuan-page .dp-ticket-summary,
-    .detail-pengajuan-page .dp-ticket-actions { padding: 18px; }
+    .detail-pengajuan-page .dp-ticket-summary { padding: 18px; }
     .detail-pengajuan-page .dp-ticket-summary__meta { gap: 12px; }
 }
 
 @media (max-width: 600px) {
-    .detail-pengajuan-page .detail-pengajuan-header { padding: 24px 0 10px; }
+    .detail-pengajuan-page .detail-pengajuan-header { padding: 28px 0 16px; }
+    .detail-pengajuan-page .detail-pengajuan-header h1 { font-size: 18px; }
+    .detail-pengajuan-page .detail-pengajuan-content { padding-top: 18px; }
 }
 
 @media (max-width: 575.98px) {
@@ -662,22 +772,16 @@
     .detail-pengajuan-page .dp-field-grid,
     .detail-pengajuan-page .dp-ticket-summary__meta { grid-template-columns: 1fr; }
     .detail-pengajuan-page .dp-field--full { grid-column: auto; }
-    .detail-pengajuan-page .dp-ticket-summary__top,
-    .detail-pengajuan-page .dp-ticket-actions__top { align-items: flex-start; }
-    .detail-pengajuan-page .dp-ticket-summary__number strong,
-    .detail-pengajuan-page .dp-ticket-actions__top strong { font-size: 18px; }
+    .detail-pengajuan-page .dp-ticket-summary__top { align-items: flex-start; }
+    .detail-pengajuan-page .dp-ticket-summary__number strong { font-size: 18px; }
     .detail-pengajuan-page .dp-document { align-items: flex-start; flex-wrap: wrap; }
     .detail-pengajuan-page .dp-document__info { flex-basis: calc(100% - 42px); }
     .detail-pengajuan-page .dp-document__actions { width: 100%; margin-left: 36px; }
     .detail-pengajuan-page .dp-document__actions .dp-button { flex: 1 1 auto; }
     .detail-pengajuan-page .dp-message__meta { align-items: flex-start; flex-direction: column; gap: 4px; }
-    .detail-pengajuan-page .dp-status-event { align-items: flex-start; flex-wrap: wrap; }
-    .detail-pengajuan-page .dp-status-event time { width: 100%; margin-left: 22px; }
-    .detail-pengajuan-page .dp-message-form__actions,
-    .detail-pengajuan-page .dp-ticket-actions__bottom { align-items: stretch; flex-direction: column; }
+    .detail-pengajuan-page .dp-message-form__actions { align-items: stretch; flex-direction: column; }
     .detail-pengajuan-page .dp-message-form__actions > div { align-items: flex-start; flex-direction: column; }
-    .detail-pengajuan-page .dp-button--send,
-    .detail-pengajuan-page .dp-ticket-actions__bottom .dp-button { width: 100%; }
+    .detail-pengajuan-page .dp-button--send { width: 100%; }
 }
 
 @media (max-width: 991px) {

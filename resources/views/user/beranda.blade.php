@@ -236,20 +236,6 @@
         </div>
     </section>
 
-    {{-- CEK STATUS --}}
-    <section class="status-section section-space" id="cek-status">
-        <div class="container-xl text-center">
-            <h2 class="section-heading">CEK STATUS PENGAJUAN</h2>
-            <p class="section-subtitle">Sudah mengajukan layanan? Pantau proses pengajuan berkas Anda menggunakan nomor e-ticket.</p>
-
-            <form class="status-form mx-auto" id="statusForm" action="{{ route('cek-status') }}" method="GET">
-                <input type="text" id="ticketNumber" name="ticket" placeholder="ULT-2026-000123" aria-label="Nomor e-ticket" required>
-                <button type="submit" class="btn btn-purple">Cek Status</button>
-            </form>
-            <p id="statusFeedback" class="status-feedback" aria-live="polite"></p>
-        </div>
-    </section>
-
     {{-- FAQ --}}
     <section class="faq-section section-space" id="faq">
         <div class="container">

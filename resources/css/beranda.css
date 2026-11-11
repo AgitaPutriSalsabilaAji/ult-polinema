@@ -423,7 +423,6 @@ a {
 }
 
 .category-section,
-.status-section,
 .contact-section {
     background: #f6f7f9;
 }
@@ -523,54 +522,6 @@ a {
     line-height: 1.6;
     margin: 0;
     text-align: center;
-}
-
-.status-section {
-    padding-top: 70px;
-    padding-bottom: 70px;
-}
-
-.status-form {
-    display: flex;
-    max-width: 590px;
-    background: #fff;
-    padding: 7px;
-    border-radius: 10px;
-    margin-top: 25px;
-    box-shadow: 0 2px 8px rgba(25, 25, 60, .02);
-}
-
-.status-form input {
-    flex: 1;
-    min-width: 0;
-    border: 0;
-    outline: 0;
-    padding: 9px 15px;
-    font-size: 11px;
-    color: var(--ink);
-}
-
-.status-form input::placeholder {
-    color: #a5a6b5;
-}
-
-.btn-purple {
-    color: #fff;
-    background: var(--purple);
-    border: 1px solid var(--purple);
-    min-width: 110px;
-}
-
-.btn-purple:hover {
-    color: #fff;
-    background: #39308b;
-}
-
-.status-feedback {
-    color: var(--purple);
-    font-size: 11px;
-    margin: 12px 0 0;
-    min-height: 0;
 }
 
 .faq-section {
@@ -781,14 +732,6 @@ a {
 
     .category-card {
         min-height: 125px;
-    }
-
-    .status-form {
-        align-items: stretch;
-    }
-
-    .status-form input {
-        width: 50%;
     }
 
     .faq-accordion .accordion-button {
