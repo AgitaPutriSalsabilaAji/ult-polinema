@@ -585,7 +585,12 @@ class LayananController extends Controller
 
         $pengajuan = Pengajuan::query()
             ->where('id_pengguna', $pemohon->id)
-            ->with(['layanan.unit', 'riwayat'])
+            ->with([
+                'layanan.unit',
+                'riwayat' => static function (HasMany $query): void {
+                    $query->orderBy('dibuat_pada')->orderBy('id');
+                },
+            ])
             ->where('nomor_tiket', $nomorTiket)
             ->firstOrFail();
 
@@ -605,23 +610,11 @@ class LayananController extends Controller
 
         $komunikasi = collect();
 
-        foreach ($pengajuan->riwayat as $history) {
-            $historyDate = $history->dibuat_pada instanceof Carbon
-                ? $history->dibuat_pada
-                : (filled($history->dibuat_pada) ? Carbon::parse($history->dibuat_pada) : null);
-
-            $komunikasi->push((object) [
-                'type' => 'status',
-                'judul' => $history->judul_status,
-                'deskripsi' => $history->deskripsi,
-                'dibuat_pada' => $historyDate,
-            ]);
-        }
-
         if (Schema::hasTable('pesan_pengajuan')) {
             $pesan = DB::table('pesan_pengajuan')
                 ->where('id_pengajuan', $pengajuan->id)
                 ->orderBy('dibuat_pada')
+                ->orderBy('id')
                 ->get();
 
             foreach ($pesan as $item) {
@@ -631,8 +624,6 @@ class LayananController extends Controller
 
                 $lampiranPath = $item->lampiran ?? null;
                 $komunikasi->push((object) [
-                    'id' => $item->id,
-                    'type' => 'message',
                     'pesan' => $item->pesan,
                     'dibuat_pada' => $historyDate,
                     'nama_pengirim' => $item->pengirim_tipe === 'admin'
@@ -649,15 +640,6 @@ class LayananController extends Controller
             }
         }
 
-        $komunikasi = $komunikasi
-            ->sortBy(fn ($item) => $item->dibuat_pada instanceof Carbon
-                ? $item->dibuat_pada->getTimestamp()
-                : 0)
-            ->values();
-
-        $jenisPemohon = Schema::hasColumn('pengajuan', 'jenis_pemohon')
-            ? ($pengajuan->jenis_pemohon ?? 'Belum tercatat')
-            : 'Belum tercatat';
         $ratingUlasan = RatingLayanan::query()
             ->where('id_pengajuan', $pengajuan->id)
             ->exists();
@@ -667,16 +649,27 @@ class LayananController extends Controller
             'pemohon' => $pemohon,
             'dokumen' => $dokumen,
             'komunikasi' => $komunikasi,
-            'jenisPemohon' => $jenisPemohon,
+            'chatTerbuka' => ! $pengajuan->isTerminal(),
             'ratingUlasan' => $ratingUlasan,
         ]);
     }
 
     public function storePesan(Request $request, string $nomorTiket): RedirectResponse
     {
+        $user = $request->user();
+        abort_unless($user instanceof User, 403);
+
+        $pemohon = Pengguna::query()->where('email', $user->email)->firstOrFail();
         $pengajuan = Pengajuan::query()
+            ->where('id_pengguna', $pemohon->id)
             ->where('nomor_tiket', $nomorTiket)
             ->firstOrFail();
+
+        abort_if(
+            $pengajuan->isTerminal(),
+            403,
+            'Percakapan untuk pengajuan yang telah selesai atau ditolak hanya dapat dibaca.'
+        );
 
         $data = $request->validate([
             'pesan' => ['required', 'string', 'max:5000'],
@@ -704,7 +697,7 @@ class LayananController extends Controller
             ]);
         }
 
-        return redirect()->to(route('pengajuan.detail', ['nomorTiket' => $nomorTiket]) . '#komunikasi')
+        return redirect()->to(route('pengajuan.detail', ['nomorTiket' => $nomorTiket]).'#komunikasi')
             ->with('success', 'Pesan berhasil dikirim.');
     }
 
