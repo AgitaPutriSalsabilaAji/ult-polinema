@@ -189,15 +189,50 @@
             <div class="text-center mb-4">
                 <span class="mini-label orange-label">Prosedur Pengajuan</span>
                 <h2 class="section-heading">ALUR PELAYANAN ULT</h2>
-                <p class="section-subtitle">Gunakan layanan ULT Politeknik Negeri Malang melalui empat langkah sederhana.</p>
+                <p class="section-subtitle">Gunakan layanan ULT Politeknik Negeri Malang melalui lima langkah sederhana.</p>
             </div>
 
-            <div class="row g-3">
-                <div class="col-6 col-lg-3"><article class="step-card"><span>01</span><h3>Pilih Layanan</h3><p>Cari dan pilih jenis layanan sesuai dengan keperluan administrasi Anda.</p></article></div>
-                <div class="col-6 col-lg-3"><article class="step-card"><span>02</span><h3>Isi Form Pengajuan</h3><p>Lengkapi identitas pemohon, deskripsi kebutuhan, dan unggah dokumen pendukung.</p></article></div>
-                <div class="col-6 col-lg-3"><article class="step-card"><span>03</span><h3>Dapatkan E-Ticket</h3><p>Nomor e-ticket dibuat otomatis oleh sistem sebagai bukti tanda terima resmi.</p></article></div>
-                <div class="col-6 col-lg-3"><article class="step-card"><span>04</span><h3>Pantau Status</h3><p>Gunakan nomor e-ticket untuk melihat perkembangan verifikasi dan penyelesaian berkas.</p></article></div>
-            </div>
+            <div class="steps-grid">
+    <div class="step-item">
+        <article class="step-card">
+            <span>01</span>
+            <h3>Pilih Layanan</h3>
+            <p>Cari dan pilih jenis layanan sesuai dengan keperluan administrasi Anda.</p>
+        </article>
+    </div>
+
+    <div class="step-item">
+        <article class="step-card">
+            <span>02</span>
+            <h3>Isi Form Pengajuan</h3>
+            <p>Lengkapi identitas pemohon, deskripsi kebutuhan, dan unggah dokumen pendukung.</p>
+        </article>
+    </div>
+
+    <div class="step-item">
+        <article class="step-card">
+            <span>03</span>
+            <h3>Dapatkan E-Ticket</h3>
+            <p>Nomor e-ticket dibuat otomatis oleh sistem sebagai bukti tanda terima resmi.</p>
+        </article>
+    </div>
+
+    <div class="step-item">
+        <article class="step-card">
+            <span>04</span>
+            <h3>Pantau Status</h3>
+            <p>Gunakan nomor e-ticket untuk melihat perkembangan verifikasi dan penyelesaian berkas.</p>
+        </article>
+    </div>
+
+    <div class="step-item">
+        <article class="step-card">
+            <span>05</span>
+            <h3>Berikan Penilaian</h3>
+            <p>Setelah layanan selesai, berikan rating dan ulasan sebagai bentuk penilaian terhadap kualitas pelayanan.</p>
+        </article>
+    </div>
+</div>
         </div>
     </section>
 

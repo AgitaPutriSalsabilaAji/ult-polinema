@@ -934,7 +934,12 @@ class LayananController extends Controller
 
         $data = $request->validate([
             'rating' => ['required', 'integer', 'between:1,5'],
-            'komentar' => ['nullable', 'string', 'max:2000'],
+            'komentar' => ['required', 'string', 'max:500'],
+        ], [
+            'rating.required' => 'Silakan pilih rating bintang terlebih dahulu.',
+            'rating.between' => 'Rating harus dipilih antara 1 sampai 5 bintang.',
+            'komentar.required' => 'Saran dan pendapat wajib diisi.',
+            'komentar.max' => 'Saran dan pendapat maksimal 500 karakter.',
         ]);
 
         RatingLayanan::query()->updateOrCreate(
@@ -945,7 +950,7 @@ class LayananController extends Controller
             [
                 'id_layanan' => $pengajuan->id_layanan,
                 'rating' => $data['rating'],
-                'komentar' => $data['komentar'] ?? null,
+                'komentar' => trim($data['komentar']),
                 'dibuat_pada' => now(),
             ]
         );
