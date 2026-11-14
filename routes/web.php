@@ -187,6 +187,9 @@ Route::middleware('auth:admin')
             ->except(['create', 'show', 'edit']);
 
         // Rating dan ulasan
+        Route::get('/rating/export', [RatingLayananController::class, 'export'])
+            ->name('rating-ulasan.export');
+
         Route::get('/rating', [RatingLayananController::class, 'index'])
             ->name('rating-ulasan.index');
 
