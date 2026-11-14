@@ -12,8 +12,102 @@
 @section('content')
 <div class="container-fluid px-0 dashboard-page">
 
-    {{-- Statistik Dashboard --}}
-    <div class="row g-3">
+    {{-- Statistik Pengajuan, E-Ticket, dan Rating --}}
+    <div class="dashboard-stats-grid">
+        <div class="card dashboard-card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="dashboard-stat-content">
+                        <p class="dashboard-label mb-2">Total Pengajuan</p>
+                        <h2 class="dashboard-number">{{ number_format($statistikPengajuan->total_pengajuan ?? 0) }}</h2>
+                        <p class="dashboard-description mb-0">Total pengajuan masuk</p>
+                    </div>
+                    <div class="dashboard-icon icon-blue"><i class="bi bi-inboxes"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card dashboard-card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="dashboard-stat-content">
+                        <p class="dashboard-label mb-2">Pengajuan Baru</p>
+                        <h2 class="dashboard-number">{{ number_format($statistikPengajuan->pengajuan_baru ?? 0) }}</h2>
+                        <p class="dashboard-description mb-0">Perlu verifikasi</p>
+                    </div>
+                    <div class="dashboard-icon icon-orange"><i class="bi bi-envelope-exclamation"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card dashboard-card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="dashboard-stat-content">
+                        <p class="dashboard-label mb-2">Sedang Diproses</p>
+                        <h2 class="dashboard-number">{{ number_format($statistikPengajuan->pengajuan_diproses ?? 0) }}</h2>
+                        <p class="dashboard-description mb-0">Pengajuan dalam proses</p>
+                    </div>
+                    <div class="dashboard-icon icon-purple"><i class="bi bi-gear"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card dashboard-card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="dashboard-stat-content">
+                        <p class="dashboard-label mb-2">Pengajuan Selesai</p>
+                        <h2 class="dashboard-number">{{ number_format($statistikPengajuan->pengajuan_selesai ?? 0) }}</h2>
+                        <p class="dashboard-description mb-0">Pengajuan telah diselesaikan</p>
+                    </div>
+                    <div class="dashboard-icon icon-green"><i class="bi bi-check2-circle"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card dashboard-card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="dashboard-stat-content">
+                        <p class="dashboard-label mb-2">Total E-Ticket</p>
+                        <h2 class="dashboard-number">{{ number_format($statistikPengajuan->total_pengajuan ?? 0) }}</h2>
+                        <p class="dashboard-description mb-0">Tercatat di sistem</p>
+                    </div>
+                    <div class="dashboard-icon icon-yellow"><i class="bi bi-ticket-perforated"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card dashboard-card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="dashboard-stat-content">
+                        <p class="dashboard-label mb-2">E-Ticket Aktif</p>
+                        <h2 class="dashboard-number">{{ number_format($statistikPengajuan->eticket_aktif ?? 0) }}</h2>
+                        <p class="dashboard-description mb-0">Masih dalam penanganan</p>
+                    </div>
+                    <div class="dashboard-icon icon-teal"><i class="bi bi-hourglass-split"></i></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card dashboard-card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="dashboard-stat-content">
+                        <p class="dashboard-label mb-2">Rating Layanan</p>
+                        <h2 class="dashboard-number">{{ number_format((float) ($statistikRating->rata_rata_rating ?? 0), 2) }}</h2>
+                        <p class="dashboard-description mb-0">Dari {{ number_format($statistikRating->jumlah_ulasan ?? 0) }} ulasan</p>
+                    </div>
+                    <div class="dashboard-icon icon-rating"><i class="bi bi-star-fill"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Statistik Layanan --}}
+    <div class="row g-3 mt-0">
 
         <div class="col-md-4">
             <div class="card dashboard-card border-0 shadow-sm">
@@ -21,7 +115,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <p class="dashboard-label mb-2">Unit Layanan</p>
-                            <h2 class="dashboard-number">5</h2>
+                            <h2 class="dashboard-number">{{ number_format($jumlahUnit) }}</h2>
                             <p class="dashboard-description mb-0">
                                 Unit layanan utama
                             </p>
@@ -104,6 +198,12 @@
         font-size: 12px;
     }
 
+    .dashboard-stats-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+
     /* Judul halaman */
     .admin-page-title {
         font-size: 20px;
@@ -117,12 +217,16 @@
     /* Card statistik */
     .dashboard-card {
         border-radius: 8px;
-        min-height: 125px;
+        min-height: 112px;
         transition: transform .2s ease, box-shadow .2s ease;
     }
 
     .dashboard-card .card-body {
-        padding: 17px 18px;
+        padding: 13px 12px;
+    }
+
+    .dashboard-stat-content {
+        min-width: 0;
     }
 
     .dashboard-card:hover {
@@ -133,33 +237,38 @@
     /* Judul statistik */
     .dashboard-label {
         color: #475569;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 600;
+        line-height: 1.35;
     }
 
     /* Angka statistik */
     .dashboard-number {
         color: #1e293b;
-        font-size: 27px;
+        font-size: clamp(18px, 1.6vw, 23px);
         font-weight: 700;
         margin-bottom: 4px;
+        overflow-wrap: anywhere;
     }
 
     /* Keterangan */
     .dashboard-description {
         color: #8491a3;
-        font-size: 11px;
+        font-size: 10px;
+        line-height: 1.35;
     }
 
     /* Icon statistik */
     .dashboard-icon {
-        width: 43px;
-        height: 43px;
+        flex: 0 0 32px;
+        width: 32px;
+        height: 32px;
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 9px;
-        font-size: 20px;
+        border-radius: 8px;
+        font-size: 16px;
+        margin-left: 6px;
     }
 
     .icon-blue {
@@ -175,6 +284,26 @@
     .icon-orange {
         color: #d97706;
         background: #fffbeb;
+    }
+
+    .icon-purple {
+        color: #7c3aed;
+        background: #f5f3ff;
+    }
+
+    .icon-yellow {
+        color: #ca8a04;
+        background: #fefce8;
+    }
+
+    .icon-teal {
+        color: #0f766e;
+        background: #f0fdfa;
+    }
+
+    .icon-rating {
+        color: #d97706;
+        background: #fff7ed;
     }
 
     /* Informasi sistem */
@@ -202,13 +331,23 @@
     }
 
     /* Responsif */
+    @media (max-width: 1199.98px) {
+        .dashboard-stats-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+    }
+
     @media (max-width: 767.98px) {
+        .dashboard-stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
         .dashboard-card {
-            min-height: 110px;
+            min-height: 105px;
         }
 
         .dashboard-card .card-body {
-            padding: 14px;
+            padding: 12px;
         }
     }
 </style>
