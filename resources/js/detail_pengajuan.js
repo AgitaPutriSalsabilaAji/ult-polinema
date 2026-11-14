@@ -58,44 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
         resetStarsToSelection();
     }
 
-    const copyButton = document.querySelector('[data-copy-ticket]');
-    const copyFeedback = document.querySelector('[data-copy-feedback]');
-
-    if (copyButton && copyFeedback) {
-        copyButton.addEventListener('click', async () => {
-            const ticketNumber = copyButton.dataset.copyTicket;
-
-            try {
-                await navigator.clipboard.writeText(ticketNumber);
-                copyFeedback.textContent = 'Nomor E-Ticket berhasil disalin.';
-            } catch {
-                const temporaryInput = document.createElement('textarea');
-                temporaryInput.value = ticketNumber;
-                temporaryInput.setAttribute('readonly', '');
-                temporaryInput.style.position = 'fixed';
-                temporaryInput.style.opacity = '0';
-                document.body.append(temporaryInput);
-                temporaryInput.select();
-                const copied = document.execCommand('copy');
-                temporaryInput.remove();
-                copyFeedback.textContent = copied
-                    ? 'Nomor E-Ticket berhasil disalin.'
-                    : 'Nomor E-Ticket tidak dapat disalin.';
-            }
-        });
-    }
-
-    const fileInput = document.querySelector('#dp-message-file');
-    const fileName = document.querySelector('[data-file-name]');
-
-    if (fileInput && fileName) {
-        fileInput.addEventListener('change', () => {
-            fileName.textContent = fileInput.files?.[0]?.name
-                ?? 'PDF, JPG, PNG, DOC, DOCX; maks. 5 MB.';
-        });
-    }
-
-    
     const ratingKomentar = document.getElementById('rating-komentar');
     const ratingCounter = document.getElementById('rating-character-count');
 
@@ -107,6 +69,16 @@ document.addEventListener('DOMContentLoaded', () => {
         ratingKomentar.addEventListener('input', updateRatingCounter);
 
         updateRatingCounter();
+    }
+
+    const fileInput = document.querySelector('#dp-message-file');
+    const fileName = document.querySelector('[data-file-name]');
+
+    if (fileInput && fileName) {
+        fileInput.addEventListener('change', () => {
+            fileName.textContent = fileInput.files?.[0]?.name
+                ?? 'PDF, JPG, PNG, DOC, DOCX; maks. 5 MB.';
+        });
     }
 
 });
