@@ -65,7 +65,7 @@
                         <div class="ticket-code-block">
                             <span class="ticket-label">NOMOR E-TICKET ANDA</span>
                             <strong>{{ $pengajuan->nomor_tiket }}</strong>
-                            <small>Gunakan nomor tiket ini untuk memantau status setelah login ke akun Anda.</small>
+                            <small>Gunakan nomor tiket ini untuk memantau status secara langsung tanpa login.</small>
                         </div>
 
                         <div class="ticket-detail-grid">
