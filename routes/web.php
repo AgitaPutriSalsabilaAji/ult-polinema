@@ -125,6 +125,9 @@ Route::middleware('auth:admin')
     ->group(function () {
 
         // Dashboard
+        Route::get('/dashboard/export', [DashboardController::class, 'export'])
+            ->name('dashboard.export');
+
         Route::get('/', [DashboardController::class, 'index'])
             ->name('dashboard');
 
