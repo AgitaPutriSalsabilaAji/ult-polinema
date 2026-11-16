@@ -12,6 +12,76 @@
 @section('content')
 <div class="container-fluid px-0 dashboard-page">
 
+    @if (session('info'))
+        <div class="alert alert-info alert-dismissible fade show" role="status">
+            {{ session('info') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger" role="alert">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    {{-- Filter Statistik --}}
+    <div class="card dashboard-filter border-0 shadow-sm mb-3">
+        <div class="card-body">
+            <form action="{{ route('admin.dashboard') }}" method="GET">
+                <div class="row g-3 align-items-end">
+                    @if ($isAdminUlt)
+                        <div class="col-12 col-md-4">
+                            <label for="id_unit" class="form-label">Unit Layanan</label>
+                            <select class="form-select" name="id_unit" id="id_unit">
+                                <option value="">Semua Unit</option>
+                                @foreach ($units as $unit)
+                                    <option value="{{ $unit->id }}"
+                                        @selected(($filters['id_unit'] ?? null) == $unit->id)>
+                                        {{ $unit->nama_unit }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @else
+                        <div class="col-12 col-md-4">
+                            <label class="form-label">Unit Layanan</label>
+                            <input class="form-control" value="{{ $units->first()?->nama_unit ?? 'Unit tidak ditemukan' }}" disabled>
+                            <input type="hidden" name="id_unit" value="{{ $filters['id_unit'] }}">
+                        </div>
+                    @endif
+
+                    <div class="col-12 col-md-2">
+                        <label for="tanggal_mulai" class="form-label">Tanggal Mulai</label>
+                        <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai"
+                            value="{{ $filters['tanggal_mulai'] }}">
+                    </div>
+
+                    <div class="col-12 col-md-2">
+                        <label for="tanggal_selesai" class="form-label">Tanggal Selesai</label>
+                        <input type="date" class="form-control" id="tanggal_selesai" name="tanggal_selesai"
+                            value="{{ $filters['tanggal_selesai'] }}">
+                    </div>
+
+                    <div class="col-12 col-md-4">
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="submit" class="btn btn-primary">Terapkan</button>
+                            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">Reset Filter</a>
+                            <button type="submit" class="btn btn-outline-danger"
+                                formaction="{{ route('admin.dashboard.export') }}" formmethod="GET">
+                                <i class="bi bi-file-earmark-pdf me-1"></i>Export PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     {{-- Statistik Pengajuan, E-Ticket, dan Rating --}}
     <div class="dashboard-stats-grid">
         <div class="card dashboard-card border-0 shadow-sm">
@@ -19,7 +89,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="dashboard-stat-content">
                         <p class="dashboard-label mb-2">Total Pengajuan</p>
-                        <h2 class="dashboard-number">{{ number_format($statistikPengajuan->total_pengajuan ?? 0) }}</h2>
+                        <h2 class="dashboard-number">{{ number_format($statistikPengajuan['total_pengajuan']) }}</h2>
                         <p class="dashboard-description mb-0">Total pengajuan masuk</p>
                     </div>
                     <div class="dashboard-icon icon-blue"><i class="bi bi-inboxes"></i></div>
@@ -32,7 +102,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="dashboard-stat-content">
                         <p class="dashboard-label mb-2">Pengajuan Baru</p>
-                        <h2 class="dashboard-number">{{ number_format($statistikPengajuan->pengajuan_baru ?? 0) }}</h2>
+                        <h2 class="dashboard-number">{{ number_format($statistikPengajuan['pengajuan_baru']) }}</h2>
                         <p class="dashboard-description mb-0">Perlu verifikasi</p>
                     </div>
                     <div class="dashboard-icon icon-orange"><i class="bi bi-envelope-exclamation"></i></div>
@@ -45,8 +115,8 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="dashboard-stat-content">
                         <p class="dashboard-label mb-2">Sedang Diproses</p>
-                        <h2 class="dashboard-number">{{ number_format($statistikPengajuan->pengajuan_diproses ?? 0) }}</h2>
-                        <p class="dashboard-description mb-0">Pengajuan dalam proses</p>
+                        <h2 class="dashboard-number">{{ number_format($statistikPengajuan['pengajuan_diproses']) }}</h2>
+                        <p class="dashboard-description mb-0">Dalam proses penanganan</p>
                     </div>
                     <div class="dashboard-icon icon-purple"><i class="bi bi-gear"></i></div>
                 </div>
@@ -58,7 +128,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="dashboard-stat-content">
                         <p class="dashboard-label mb-2">Pengajuan Selesai</p>
-                        <h2 class="dashboard-number">{{ number_format($statistikPengajuan->pengajuan_selesai ?? 0) }}</h2>
+                        <h2 class="dashboard-number">{{ number_format($statistikPengajuan['pengajuan_selesai']) }}</h2>
                         <p class="dashboard-description mb-0">Pengajuan telah diselesaikan</p>
                     </div>
                     <div class="dashboard-icon icon-green"><i class="bi bi-check2-circle"></i></div>
@@ -70,11 +140,11 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="dashboard-stat-content">
-                        <p class="dashboard-label mb-2">Total E-Ticket</p>
-                        <h2 class="dashboard-number">{{ number_format($statistikPengajuan->total_pengajuan ?? 0) }}</h2>
-                        <p class="dashboard-description mb-0">Tercatat di sistem</p>
+                        <p class="dashboard-label mb-2">Pengajuan Ditolak</p>
+                        <h2 class="dashboard-number">{{ number_format($statistikPengajuan['pengajuan_ditolak']) }}</h2>
+                        <p class="dashboard-description mb-0">Pengajuan tidak disetujui</p>
                     </div>
-                    <div class="dashboard-icon icon-yellow"><i class="bi bi-ticket-perforated"></i></div>
+                    <div class="dashboard-icon icon-red"><i class="bi bi-x-circle"></i></div>
                 </div>
             </div>
         </div>
@@ -83,11 +153,11 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="dashboard-stat-content">
-                        <p class="dashboard-label mb-2">E-Ticket Aktif</p>
-                        <h2 class="dashboard-number">{{ number_format($statistikPengajuan->eticket_aktif ?? 0) }}</h2>
-                        <p class="dashboard-description mb-0">Masih dalam penanganan</p>
+                        <p class="dashboard-label mb-2">Informasi Layanan</p>
+                        <h2 class="dashboard-number">{{ number_format($informasiLayananAktif) }}</h2>
+                        <p class="dashboard-description mb-0">Informasi layanan aktif</p>
                     </div>
-                    <div class="dashboard-icon icon-teal"><i class="bi bi-hourglass-split"></i></div>
+                    <div class="dashboard-icon icon-teal"><i class="bi bi-journal-check"></i></div>
                 </div>
             </div>
         </div>
@@ -97,8 +167,8 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="dashboard-stat-content">
                         <p class="dashboard-label mb-2">Rating Layanan</p>
-                        <h2 class="dashboard-number">{{ number_format((float) ($statistikRating->rata_rata_rating ?? 0), 2) }}</h2>
-                        <p class="dashboard-description mb-0">Dari {{ number_format($statistikRating->jumlah_ulasan ?? 0) }} ulasan</p>
+                        <h2 class="dashboard-number">{{ number_format($statistikRating['rata_rata_rating'], 2) }} / 5</h2>
+                        <p class="dashboard-description mb-0">{{ number_format($statistikRating['jumlah_ulasan']) }} ulasan</p>
                     </div>
                     <div class="dashboard-icon icon-rating"><i class="bi bi-star-fill"></i></div>
                 </div>
@@ -106,69 +176,37 @@
         </div>
     </div>
 
-    {{-- Statistik Layanan --}}
-    <div class="row g-3 mt-0">
-
-        <div class="col-md-4">
-            <div class="card dashboard-card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="dashboard-label mb-2">Unit Layanan</p>
-                            <h2 class="dashboard-number">{{ number_format($jumlahUnit) }}</h2>
-                            <p class="dashboard-description mb-0">
-                                Unit layanan utama
-                            </p>
-                        </div>
-
-                        <div class="dashboard-icon icon-blue">
-                            <i class="bi bi-building"></i>
-                        </div>
-                    </div>
+    {{-- Grafik Statistik --}}
+    <div class="dashboard-charts-grid mt-3">
+        <div class="card dashboard-chart-card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 pb-0">
+                <h6 class="dashboard-chart-title mb-1">Statistik Pengajuan per Unit</h6>
+                <p class="dashboard-description mb-0">Perbandingan jumlah pengajuan menurut status.</p>
+            </div>
+            <div class="card-body">
+                <div class="dashboard-chart-wrap">
+                    <div id="dashboard-chart-data"
+                        data-unit-statistics="{{ json_encode($unitApplicationStatistics->values(), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) }}"
+                        data-status-statistics="{{ json_encode($pieChart->values(), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) }}"
+                        hidden></div>
+                    <canvas id="applicationUnitChart" role="img"
+                        aria-label="Grafik pengajuan baru, diproses, selesai, dan ditolak per unit layanan"></canvas>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card dashboard-card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="dashboard-label mb-2">Informasi Layanan</p>
-                            <h2 class="dashboard-number">{{ $jumlahLayanan }}</h2>
-                            <p class="dashboard-description mb-0">
-                                Informasi yang dikelola
-                            </p>
-                        </div>
-
-                        <div class="dashboard-icon icon-green">
-                            <i class="bi bi-journal-text"></i>
-                        </div>
-                    </div>
+        <div class="card dashboard-chart-card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 pb-0">
+                <h6 class="dashboard-chart-title mb-1">Distribusi Status Pengajuan</h6>
+                <p class="dashboard-description mb-0">Persentase dan jumlah seluruh pengajuan pada filter aktif.</p>
+            </div>
+            <div class="card-body">
+                <div class="dashboard-chart-wrap dashboard-pie-chart-wrap">
+                    <canvas id="applicationStatusChart" role="img"
+                        aria-label="Grafik distribusi status pengajuan"></canvas>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-4">
-            <div class="card dashboard-card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="dashboard-label mb-2">FAQ</p>
-                            <h2 class="dashboard-number">{{ $jumlahFaq }}</h2>
-                            <p class="dashboard-description mb-0">
-                                Pertanyaan yang tersedia
-                            </p>
-                        </div>
-
-                        <div class="dashboard-icon icon-orange">
-                            <i class="bi bi-question-circle"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 
     {{-- Informasi Sistem --}}
@@ -200,8 +238,14 @@
 
     .dashboard-stats-grid {
         display: grid;
-        gap: 12px;
+        gap: 10px;
         grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+
+    .dashboard-charts-grid {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     /* Judul halaman */
@@ -301,6 +345,11 @@
         background: #f0fdfa;
     }
 
+    .icon-red {
+        color: #dc2626;
+        background: #fef2f2;
+    }
+
     .icon-rating {
         color: #d97706;
         background: #fff7ed;
@@ -330,6 +379,54 @@
         line-height: 1.6;
     }
 
+    .dashboard-filter,
+    .dashboard-chart-card {
+        border-radius: 8px;
+    }
+
+    .dashboard-filter .card-body {
+        padding: 14px;
+    }
+
+    .dashboard-filter .form-label {
+        color: #475569;
+        font-size: 11px;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .dashboard-filter .form-control,
+    .dashboard-filter .form-select,
+    .dashboard-filter .btn {
+        font-size: 12px;
+        min-height: 34px;
+    }
+
+    .dashboard-chart-card .card-header {
+        padding: 15px 16px 0;
+    }
+
+    .dashboard-chart-card .card-body {
+        padding: 10px 16px 16px;
+    }
+
+    .dashboard-chart-title {
+        color: #334155;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .dashboard-chart-wrap {
+        height: 300px;
+        position: relative;
+    }
+
+    .dashboard-pie-chart-wrap {
+        height: 300px;
+        max-width: 500px;
+        margin-inline: auto;
+    }
+
     /* Responsif */
     @media (max-width: 1199.98px) {
         .dashboard-stats-grid {
@@ -342,6 +439,10 @@
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
+        .dashboard-charts-grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
         .dashboard-card {
             min-height: 105px;
         }
@@ -351,4 +452,8 @@
         }
     }
 </style>
+@stop
+
+@section('js')
+@vite('resources/js/dashboard.js')
 @stop

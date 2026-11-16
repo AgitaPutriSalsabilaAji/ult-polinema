@@ -22,6 +22,7 @@ export default defineConfig({
                 'resources/css/pengajuan_berhasil.css',
                 'resources/css/adminlte.css',
                 'resources/js/adminlte.js',
+                'resources/js/dashboard.js',
             ],
             refresh: true,
             fonts: [
