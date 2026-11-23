@@ -5,13 +5,15 @@
     <title>Laporan Statistik Unit Layanan Terpadu Polinema</title>
     <style>
         @page {
-            margin: 28px 30px 35px;
+            size: A4 portrait;
+            margin: 18px 26px 24px;
         }
 
         body {
             color: #202633;
             font-family: "DejaVu Sans", sans-serif;
             font-size: 9px;
+            margin: 0;
         }
 
         h1, h2, p {
@@ -20,34 +22,36 @@
 
         .report-header {
             border-bottom: 2px solid #25205f;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
+            margin-bottom: 8px;
+            padding-bottom: 7px;
             text-align: center;
         }
 
         .report-logo {
-            height: 55px;
-            margin-bottom: 5px;
-            width: 55px;
+            height: 48px;
+            margin-bottom: 3px;
+            width: 48px;
         }
 
         .report-title {
             color: #25205f;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
-            line-height: 1.5;
+            line-height: 1.35;
         }
 
         .report-meta {
             color: #505968;
-            line-height: 1.6;
-            margin-top: 5px;
+            font-size: 8px;
+            line-height: 1.45;
+            margin-top: 4px;
         }
 
         .section-title {
             color: #25205f;
             font-size: 11px;
-            margin: 14px 0 7px;
+            margin: 8px 0 5px;
+            page-break-after: avoid;
         }
 
         .summary-table, .report-table {
@@ -55,35 +59,44 @@
             width: 100%;
         }
 
+        .summary-table {
+            border-collapse: separate;
+            border-spacing: 6px 5px;
+        }
+
         .summary-table td {
-            background: #f3f4f8;
-            border: 1px solid #d6d9e2;
-            padding: 8px 5px;
+            background: #f7f8fa;
+            border: 1px solid #e4e7ec;
+            height: 43px;
+            padding: 5px 3px;
             text-align: center;
-            width: 12.5%;
+            width: 25%;
         }
 
         .summary-value {
             color: #25205f;
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: bold;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
 
         .summary-label {
             color: #505968;
-            font-size: 7px;
+            font-size: 7.5px;
+            line-height: 1.25;
         }
 
         .report-table {
             table-layout: fixed;
+            font-size: 7.5px;
         }
 
         .report-table th, .report-table td {
             border: 1px solid #cbd0da;
-            padding: 5px;
+            padding: 5px 3px;
             vertical-align: top;
+            word-wrap: break-word;
         }
 
         .report-table th {
@@ -108,28 +121,33 @@
 
         .chart-table td {
             vertical-align: top;
-            width: 50%;
         }
 
         .chart-title {
             color: #25205f;
             font-size: 10px;
-            margin: 0 0 6px;
+            margin: 0 0 7px;
+            text-align: center;
         }
 
         .bar-chart-image {
-            height: 270px;
+            display: block;
+            height: auto;
             width: 100%;
         }
 
         .pie-chart-image {
-            height: 190px;
+            display: block;
             width: 100%;
+            max-width: 300px;
+            height: auto;
+            margin: 0 auto;
         }
 
         .chart-legend {
-            line-height: 1.8;
-            margin: 5px 0 0 12px;
+            font-size: 8px;
+            line-height: 1.6;
+            margin: 0 0 8px;
         }
 
         .legend-dot {
@@ -151,6 +169,37 @@
             page-break-inside: avoid;
         }
 
+        section {
+            page-break-inside: avoid;
+        }
+
+        .chart-section {
+            margin: 0 0 12px;
+            padding: 0 0 4px;
+            page-break-inside: avoid;
+        }
+
+        .bar-legend {
+            text-align: center;
+            font-size: 7.5px;
+            line-height: 1.5;
+            margin: 10px 0 0;
+        }
+
+        .bar-legend span {
+            display: inline-block;
+            margin: 0 5px;
+        }
+
+        .pie-layout {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .pie-layout td {
+            vertical-align: middle;
+        }
+
         .page-break {
             page-break-before: always;
         }
@@ -163,8 +212,7 @@
         @endif
         <h1 class="report-title">LAPORAN STATISTIK<br>UNIT LAYANAN TERPADU POLINEMA</h1>
         <p class="report-meta">
-            Periode: {{ $period }}<br>
-            Unit Layanan: {{ $unitName }}<br>
+            Periode: {{ $period }} &nbsp; | &nbsp; Unit Layanan: {{ $unitName }}<br>
             Tanggal pembuatan: {{ $createdAt }}
         </p>
     </header>
@@ -190,6 +238,8 @@
                         <span class="summary-value">{{ number_format($statistikPengajuan['pengajuan_selesai']) }}</span>
                         <span class="summary-label">Pengajuan Selesai</span>
                     </td>
+                </tr>
+                <tr>
                     <td>
                         <span class="summary-value">{{ number_format($statistikPengajuan['pengajuan_ditolak']) }}</span>
                         <span class="summary-label">Pengajuan Ditolak</span>
@@ -213,60 +263,55 @@
 
     <section>
         <h2 class="section-title">Grafik Statistik</h2>
-        <table class="chart-table">
-            <tbody>
-                <tr>
-                    <td>
-                        <h3 class="chart-title">Statistik Pengajuan per Unit</h3>
-                        <img class="bar-chart-image" src="{{ $barChartImage }}" alt="Grafik statistik pengajuan per unit">
-                        <div class="chart-legend">
-                            @foreach ($statusGroups as $status)
-                                <span style="white-space: nowrap; margin-right: 8px;">
-                                    <span class="legend-dot" style="background: {{ $status['color'] }};"></span>
-                                    {{ $status['label'] }}
-                                </span>
+        <div class="chart-section">
+            <h3 class="chart-title">Statistik Pengajuan per Unit</h3>
+            <img class="bar-chart-image" src="{{ $barChartImage }}" alt="Grafik statistik pengajuan per unit">
+            <div class="bar-legend">
+                @foreach ($statusGroups as $status)
+                    <span>
+                        <span class="legend-dot" style="background: {{ $status['color'] }};"></span>
+                        {{ $status['label'] }}
+                    </span>
+                @endforeach
+            </div>
+        </div>
+        <div class="chart-section">
+            <h3 class="chart-title">Distribusi Status Pengajuan</h3>
+            <table class="pie-layout">
+                <tbody>
+                    <tr>
+                        <td class="text-center" style="width: 60%; padding-right: 10px;">
+                            <img class="pie-chart-image" src="{{ $pieChartImage }}">
+                        </td>
+
+                        <td style="width: 40%; padding-left: 10px;">
+                            @foreach ($pieChartSegments as $segment)
+                                <div class="chart-legend" style="margin-left: 0;">
+                                    <span class="legend-dot" style="background: {{ $segment['color'] }};"></span>
+                                    <strong>{{ $segment['label'] }}</strong><br>
+                                    {{ number_format($segment['count']) }} pengajuan
+                                    ({{ number_format($segment['percentage'], 1) }}%)
+                                </div>
                             @endforeach
-                        </div>
-                    </td>
-                    <td>
-                        <h3 class="chart-title">Distribusi Status Pengajuan</h3>
-                        <table style="width: 100%;">
-                            <tbody>
-                                <tr>
-                                    <td class="text-center" style="width: 58%;">
-                                        <img class="pie-chart-image" src="{{ $pieChartImage }}" alt="Grafik distribusi status pengajuan">
-                                    </td>
-                                    <td style="vertical-align: middle;">
-                                        @foreach ($pieChartSegments as $segment)
-                                            <div class="chart-legend" style="margin-left: 0;">
-                                                <span class="legend-dot" style="background: {{ $segment['color'] }};"></span>
-                                                <strong>{{ $segment['label'] }}</strong><br>
-                                                {{ number_format($segment['count']) }} pengajuan
-                                                ({{ number_format($segment['percentage'], 1) }}%)
-                                            </div>
-                                        @endforeach
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </section>
 
-    <section>
+    <section class="page-break">
         <h2 class="section-title">Rekapitulasi Pengajuan per Unit</h2>
         <table class="report-table">
             <thead>
                 <tr>
                     <th style="width: 5%;">No.</th>
-                    <th style="width: 35%;">Nama Unit</th>
-                    <th style="width: 12%;">Total Pengajuan</th>
-                    <th style="width: 12%;">Pengajuan Baru</th>
-                    <th style="width: 12%;">Sedang Diproses</th>
-                    <th style="width: 12%;">Pengajuan Selesai</th>
-                    <th style="width: 12%;">Pengajuan Ditolak</th>
+                    <th style="width: 30%;">Nama Unit</th>
+                    <th style="width: 13%;">Total<br>Pengajuan</th>
+                    <th style="width: 13%;">Pengajuan<br>Baru</th>
+                    <th style="width: 13%;">Sedang<br>Diproses</th>
+                    <th style="width: 13%;">Pengajuan<br>Selesai</th>
+                    <th style="width: 13%;">Pengajuan<br>Ditolak</th>
                 </tr>
             </thead>
             <tbody>
@@ -285,7 +330,7 @@
         </table>
     </section>
 
-    <section class="page-break">
+    <section>
         <h2 class="section-title">Rekapitulasi Rating per Unit</h2>
         <table class="report-table">
             <thead>

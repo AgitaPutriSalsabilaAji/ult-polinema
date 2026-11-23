@@ -187,7 +187,7 @@ class AdminDashboardStatisticsTest extends TestCase
         $pdf = Mockery::mock(DomPdfWrapper::class);
         $pdf->shouldReceive('setPaper')
             ->once()
-            ->with('a4', 'landscape')
+            ->with('a4', 'portrait')
             ->andReturnSelf();
         $pdf->shouldReceive('download')
             ->once()
@@ -214,6 +214,9 @@ class AdminDashboardStatisticsTest extends TestCase
                 $this->assertIsString($pieChartSvg);
                 $this->assertStringContainsString('<rect', $barChartSvg);
                 $this->assertStringContainsString('<path', $pieChartSvg);
+                $this->assertStringContainsString('width="820" height="230"', $barChartSvg);
+                $this->assertStringContainsString('width="320" height="320"', $pieChartSvg);
+                $this->assertStringContainsString('viewBox="0 0 320 320"', $pieChartSvg);
 
                 return true;
             }))

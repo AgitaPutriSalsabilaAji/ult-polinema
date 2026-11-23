@@ -95,7 +95,7 @@ class DashboardController extends Controller
             'statusGroups' => self::STATUS_GROUPS,
             'pieChartSegments' => $pieChartSegments,
         ])
-            ->setPaper('a4', 'landscape')
+            ->setPaper('a4', 'portrait')
             ->download('laporan-statistik-ult-polinema-'.now()->format('Ymd-His').'.pdf');
     }
 
@@ -376,7 +376,7 @@ class DashboardController extends Controller
             $path = '';
 
             if ($count > 0 && $percentage === 1.0) {
-                $path = 'M 180 160 L 180 50 A 110 110 0 1 1 180 270 A 110 110 0 1 1 180 50 Z';
+                $path = 'M 160 160 L 160 50 A 110 110 0 1 1 160 270 A 110 110 0 1 1 160 50 Z';
             } elseif ($count > 0) {
                 $endAngle = $angle + $segmentAngle;
                 $start = $this->piePoint($angle);
@@ -384,7 +384,7 @@ class DashboardController extends Controller
                 $largeArc = $segmentAngle > 180 ? 1 : 0;
 
                 $path = sprintf(
-                    'M 180 160 L %s %s A 110 110 0 %d 1 %s %s Z',
+                    'M 160 160 L %s %s A 110 110 0 %d 1 %s %s Z',
                     $start['x'],
                     $start['y'],
                     $largeArc,
@@ -414,7 +414,7 @@ class DashboardController extends Controller
         $radians = deg2rad($angle);
 
         return [
-            'x' => number_format(180 + 110 * cos($radians), 2, '.', ''),
+            'x' => number_format(160 + 110 * cos($radians), 2, '.', ''),
             'y' => number_format(160 + 110 * sin($radians), 2, '.', ''),
         ];
     }
