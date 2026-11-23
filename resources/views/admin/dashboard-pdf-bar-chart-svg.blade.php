@@ -1,8 +1,8 @@
 @php
     $plotLeft = 48;
-    $plotTop = 18;
+    $plotTop = 12;
     $plotWidth = 740;
-    $plotHeight = 190;
+    $plotHeight = 150;
     $barMaxValue = max(1, (int) $unitApplicationStatistics->max(
         fn (array $unit): int => $unit['total_pengajuan']
     ));
@@ -17,7 +17,7 @@
         ['key' => 'pengajuan_ditolak', 'color' => '#ef4444'],
     ];
 @endphp
-<svg xmlns="http://www.w3.org/2000/svg" width="820" height="270" viewBox="0 0 820 270">
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="230" viewBox="0 0 820 230">
     @for ($line = 0; $line <= 4; $line++)
         @php
             $gridY = $plotTop + ($plotHeight / 4) * $line;
