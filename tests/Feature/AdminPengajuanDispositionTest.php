@@ -142,7 +142,9 @@ class AdminPengajuanDispositionTest extends TestCase
             ->get(route('admin.pengajuan.index'))
             ->assertOk()
             ->assertSee('ULT-2026-000001')
-            ->assertDontSee('ULT-2026-000002');
+            ->assertDontSee('ULT-2026-000002')
+            ->assertDontSee('Semua Unit Pelaksana')
+            ->assertDontSee('Unit Saya');
 
         $this->actingAs($adminUnit, 'admin')
             ->get(route('admin.pengajuan.show', 2))

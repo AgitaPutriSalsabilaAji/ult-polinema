@@ -250,8 +250,24 @@ return [
     ],
     [
         'text' => 'Data Pengajuan',
-        'url' => 'admin/pengajuan',
         'icon' => 'bi bi-file-earmark-text',
+        'submenu' => [
+            [
+                'text' => 'Pengajuan Masuk',
+                'url' => 'admin/pengajuan?tab=masuk',
+                'active' => ['admin/pengajuan?tab=masuk'],
+            ],
+            [
+                'text' => 'Diproses',
+                'url' => 'admin/pengajuan?tab=diproses',
+                'active' => ['admin/pengajuan?tab=diproses'],
+            ],
+            [
+                'text' => 'Selesai',
+                'url' => 'admin/pengajuan?tab=selesai',
+                'active' => ['admin/pengajuan?tab=selesai'],
+            ],
+        ],
     ],
     [
         'text' => 'Informasi Layanan',

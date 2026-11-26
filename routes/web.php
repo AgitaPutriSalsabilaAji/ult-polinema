@@ -153,6 +153,11 @@ Route::middleware('auth:admin')
             'tolak',
         ])->name('pengajuan.tolak');
 
+        Route::post('/pengajuan/{pengajuan}/pesan', [
+            PengajuanController::class,
+            'storePesan',
+        ])->name('pengajuan.pesan.store');
+
         // Manajemen layanan admin
         Route::get('/layanan', [AdminLayananController::class, 'index'])
             ->name('layanan.index');
