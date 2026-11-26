@@ -426,7 +426,7 @@
 .detail-pengajuan-page .detail-pengajuan-header h1 {
     margin: 0 0 10px;
     color: #29216f;
-    font-size: 20px;
+    font-size: 10px;
     font-weight: 800;
     line-height: 1.2;
     letter-spacing: -.4px;
@@ -630,7 +630,7 @@
     display: block;
     width: 100%;
     min-height: 90px;
-    resize: vertical;
+    resize: none;
     padding: 11px 12px;
     border: 1px solid #e5e9f0;
     border-radius: 7px;
@@ -739,7 +739,7 @@
 .detail-pengajuan-page .dp-message > p { margin: 7px 0 0; color: #4c5060; font-size: 11px; line-height: 1.55; overflow-wrap: anywhere; white-space: pre-line; }
 .detail-pengajuan-page .dp-message-attachment-toggle { margin-top: 10px; }
 .detail-pengajuan-page .dp-message-form { margin-top: 17px; padding-top: 16px; border-top: 1px solid #e5e9f0; }
-.detail-pengajuan-page .dp-message-form textarea { display: block; width: 100%; min-height: 74px; resize: vertical; padding: 11px 12px; border: 1px solid #e5e9f0; border-radius: 7px; outline: none; background: #f5f6f8; color: #34384a; font: inherit; font-size: 11px; }
+.detail-pengajuan-page .dp-message-form textarea { display: block; width: 100%; min-height: 74px; resize: none; padding: 11px 12px; border: 1px solid #e5e9f0; border-radius: 7px; outline: none; background: #f5f6f8; color: #34384a; font: inherit; font-size: 11px; }
 .detail-pengajuan-page .dp-message-form textarea:focus { border-color: #8379c6; box-shadow: 0 0 0 3px rgba(48, 36, 116, .1); }
 .detail-pengajuan-page .dp-message-form__actions { justify-content: space-between; gap: 12px; margin-top: 9px; }
 .detail-pengajuan-page .dp-message-form__actions > div { display: flex; min-width: 0; align-items: center; flex-wrap: wrap; gap: 8px; }
@@ -825,3 +825,71 @@
     .dp-rating-counter small {
         font-size: inherit;
     }
+
+/* Area percakapan dengan scrollbar internal */
+.detail-pengajuan-page .dp-communication-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    max-height: 420px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding: 4px 12px 4px 0;
+    scroll-behavior: smooth;
+}
+
+/* Tampilan scrollbar */
+.detail-pengajuan-page .dp-communication-list::-webkit-scrollbar {
+    width: 7px;
+}
+
+.detail-pengajuan-page .dp-communication-list::-webkit-scrollbar-track {
+    background: #f1f3f6;
+    border-radius: 10px;
+}
+
+.detail-pengajuan-page .dp-communication-list::-webkit-scrollbar-thumb {
+    background: #b9c0cc;
+    border-radius: 10px;
+}
+
+.detail-pengajuan-page .dp-communication-list::-webkit-scrollbar-thumb:hover {
+    background: #929baa;
+}
+
+/* Bentuk dasar bubble */
+.detail-pengajuan-page .dp-message {
+    display: flex;
+    flex-direction: column;
+    align-self: flex-start;
+
+    width: fit-content;
+    max-width: 52%;
+    min-width: 120px;
+
+    padding: 9px 11px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+
+    overflow-wrap: anywhere;
+}
+
+/* Pesan pemohon - kanan */
+.detail-pengajuan-page .dp-message--applicant {
+    align-self: flex-end;
+
+    background: #dceeff;
+    border-color: #c5e2fa;
+}
+
+/* Pesan admin - kiri */
+.detail-pengajuan-page .dp-message--officer {
+    align-self: flex-start;
+
+    background: #e9ebf1;
+    border-color: #d7dce6;
+    border-left: 3px solid #302474;
+}
+

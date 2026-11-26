@@ -81,4 +81,39 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+
+
+    /* PERTAHANKAN POSISI SCROLL KOMUNIKASI */
+
+    const komunikasiForm = document.getElementById('komunikasi-form');
+    const komunikasiList = document.getElementById('komunikasi-history');
+
+    if (komunikasiForm && komunikasiList) {
+        const restoreKey = 'dp-komunikasi-restore';
+        const scrollKey = 'dp-komunikasi-window-y';
+
+        // Simpan posisi halaman sebelum pesan dikirim
+        komunikasiForm.addEventListener('submit', function () {
+            sessionStorage.setItem(restoreKey, 'true');
+            sessionStorage.setItem(scrollKey, String(window.scrollY));
+        });
+
+        // Pulihkan posisi setelah halaman dimuat ulang
+        if (sessionStorage.getItem(restoreKey) === 'true') {
+            const savedScrollY = Number(
+                sessionStorage.getItem(scrollKey) || 0
+            );
+
+            sessionStorage.removeItem(restoreKey);
+            sessionStorage.removeItem(scrollKey);
+
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    window.scrollTo(0, savedScrollY);
+                    komunikasiList.scrollTop = komunikasiList.scrollHeight;
+                });
+            });
+        }
+    }
+
 });
