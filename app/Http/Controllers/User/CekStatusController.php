@@ -20,7 +20,8 @@ class CekStatusController extends Controller
         $user = Auth::guard('web')->user();
 
         if (! $user) {
-            return redirect()->guest(route('user.login', ['auth' => 'login']));
+            return redirect()->guest(route('beranda'))
+                ->with('auth_modal', 'login');
         }
 
         $pemohon = Pengguna::query()->where('email', $user->email)->first();

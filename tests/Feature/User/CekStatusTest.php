@@ -16,10 +16,12 @@ class CekStatusTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_guest_is_redirected_to_login_from_my_tickets_page(): void
+    public function test_guest_redirect_to_login_modal_preserves_eticket_destination(): void
     {
         $this->get(route('cek-status'))
-            ->assertRedirect(route('user.login', ['auth' => 'login']));
+            ->assertRedirect(route('beranda'))
+            ->assertSessionHas('auth_modal', 'login')
+            ->assertSessionHas('url.intended', route('cek-status'));
     }
 
     public function test_user_sees_all_owned_tickets_with_latest_status_sorted_by_submission_date(): void
