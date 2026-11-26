@@ -28,11 +28,34 @@
 
     <div class="card border-0 shadow-sm pengajuan-filter">
         <div class="card-body">
+            @if($state === 'diproses')
+                <div class="pengajuan-message-filters mb-3" role="tablist" aria-label="Filter pesan">
+                    <a class="pengajuan-message-filter {{ !request()->boolean('unread') ? 'active' : '' }}"
+                       href="{{ route('admin.pengajuan.index', ['tab' => 'diproses', 'q' => request('q'), 'unit' => request('unit')]) }}"
+                       role="tab"
+                       @if(!request()->boolean('unread')) aria-selected="true" @endif>
+                        Semua Pesan
+                    </a>
+                    <a class="pengajuan-message-filter {{ request()->boolean('unread') ? 'active' : '' }}"
+                       href="{{ route('admin.pengajuan.index', ['tab' => 'diproses', 'unread' => 1, 'q' => request('q'), 'unit' => request('unit')]) }}"
+                       role="tab"
+                       @if(request()->boolean('unread')) aria-selected="true" @endif>
+                        Belum Dibaca
+                        @if($unreadCount > 0)
+                            <span class="pengajuan-message-filter__badge">{{ $unreadCount }}</span>
+                        @endif
+                    </a>
+                </div>
+            @endif
             <form method="GET"
                 action="{{ route('admin.pengajuan.index') }}"
                 class="row g-2 align-items-center">
+                <input type="hidden" name="tab" value="{{ $state }}">
+                @if(request()->boolean('unread'))
+                    <input type="hidden" name="unread" value="1">
+                @endif
 
-                <div class="{{ $isAdminUlt ? 'col-lg-5' : 'col-lg-7' }}">
+                <div class="{{ $isAdminUlt ? 'col-lg-5' : 'col-lg-8' }}">
                     <input type="search"
                         name="q"
                         class="form-control"
@@ -53,25 +76,6 @@
                         </select>
                     </div>
                 @endif
-
-                <div class="col-lg-2">
-                    <select name="status" class="form-select">
-                        <option value="">Semua Status</option>
-                        @foreach([
-                            'diajukan' => 'Diajukan',
-                            'baru' => 'Baru',
-                            'diproses' => 'Diproses',
-                            'didisposisikan' => 'Didisposisikan',
-                            'selesai' => 'Selesai',
-                            'ditolak' => 'Ditolak',
-                        ] as $value => $label)
-                            <option value="{{ $value }}"
-                                @selected(request('status') === $value)>
-                                {{ $label }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
 
                 <div class="col-lg-2 d-grid">
                     <button class="btn btn-outline-primary" type="submit">
@@ -124,7 +128,7 @@
                             <td>{{ $item->nama_unit ?? 'Belum ditentukan' }}</td>
                             <td>
                                 {{ $item->dibuat_pada
-                                    ? \Carbon\Carbon::parse($item->dibuat_pada)->format('d/m/Y')
+                                    ? \Carbon\Carbon::parse($item->dibuat_pada)->timezone('Asia/Jakarta')->format('d/m/Y H:i')
                                     : '-' }}
                             </td>
                             <td>
@@ -300,6 +304,42 @@
 
 @section('css')
 <style>
+    .pengajuan-message-filters {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .pengajuan-message-filter {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 34px;
+        padding: 7px 13px;
+        border: 1px solid #dbe3ee;
+        border-radius: 999px;
+        color: #64748b;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        background: #fff;
+    }
+    .pengajuan-message-filter:hover,
+    .pengajuan-message-filter.active {
+        border-color: #2563eb;
+        background: #2563eb;
+        color: #fff;
+    }
+    .pengajuan-message-filter__badge {
+        display: inline-grid;
+        min-width: 18px;
+        height: 18px;
+        place-items: center;
+        border-radius: 999px;
+        background: #ef4444;
+        color: #fff;
+        font-size: 10px;
+    }
     .ticket-status-badge {
         display: inline-flex;
         align-items: center;

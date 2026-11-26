@@ -8,6 +8,25 @@
     </div>
 @stop
 
+@section('js')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const textarea = document.getElementById('admin-chat-message');
+    if (!textarea) {
+        return;
+    }
+
+    const resizeTextarea = function () {
+        textarea.style.height = '34px';
+        textarea.style.height = Math.min(textarea.scrollHeight, 140) + 'px';
+    };
+
+    textarea.addEventListener('input', resizeTextarea);
+    resizeTextarea();
+});
+</script>
+@stop
+
 @section('content')
     <div class="detail-pengajuan-page">
         @if (session('success'))
@@ -88,7 +107,7 @@
                     </div>
                 </section>
 
-                <section class="detail-card detail-conversation-card">
+                <section class="detail-card detail-conversation-card" id="komunikasi">
                     <div class="detail-card-heading detail-conversation-heading">
                         <div>
                             <h2>Komunikasi Pengajuan</h2>
@@ -107,22 +126,43 @@
                             @foreach ($pesanPengajuan as $pesan)
                                 <div class="detail-chat-message {{ strtolower($pesan->pengirim_tipe ?? '') === 'admin' ? 'detail-chat-message--outgoing' : 'detail-chat-message--incoming' }}">
                                     <div class="detail-chat-message-meta">
-                                        <strong>{{ strtolower($pesan->pengirim_tipe ?? '') === 'admin' ? 'Petugas ULT' : 'Pemohon' }}</strong>
-                                        <span>{{ $pesan->dibuat_pada ? \Carbon\Carbon::parse($pesan->dibuat_pada)->format('d M Y, H:i') : '-' }}</span>
+                                        <strong>{{ strtolower($pesan->pengirim_tipe ?? '') === 'admin' ? 'Petugas Unit' : 'Pemohon' }}</strong>
+                                        <span>{{ $pesan->dibuat_pada ? \Carbon\Carbon::parse($pesan->dibuat_pada)->timezone('Asia/Jakarta')->format('d/m/Y H:i') : '-' }}</span>
                                     </div>
-                                    <p>{{ $pesan->pesan }}</p>
+                                    @if(filled($pesan->pesan))
+                                        <p>{{ $pesan->pesan }}</p>
+                                    @endif
+                                    @if(!empty($pesan->lampiran))
+                                        <a class="detail-chat-attachment" href="{{ route('pengajuan.pesan.lampiran.view', ['nomorTiket' => $pengajuan->nomor_tiket, 'pesanId' => $pesan->id]) }}" target="_blank" rel="noopener">
+                                            <i class="bi bi-paperclip" aria-hidden="true"></i>
+                                            {{ basename($pesan->lampiran) }}
+                                        </a>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>
                     @endif
-                    <div class="detail-chat-compose" aria-label="Placeholder penulisan pesan">
-                        <input type="text" class="form-control" placeholder="Tulis pesan kepada pemohon..." disabled>
-                        <button type="button" class="btn btn-primary" disabled>
-                            <i class="bi bi-send" aria-hidden="true"></i> Kirim Pesan
-                        </button>
-                    </div>
+                    @if(auth('admin')->user()?->peran === 'admin_unit' && $pengajuan->status === 'diproses')
+                        <form class="detail-chat-compose" method="POST" action="{{ route('admin.pengajuan.pesan.store', $pengajuan) }}" enctype="multipart/form-data">
+                            @csrf
+                            <textarea id="admin-chat-message" name="pesan" class="form-control" rows="1" maxlength="5000" placeholder="Tulis pesan kepada pemohon..."></textarea>
+                            <label class="btn detail-chat-attach" for="admin-chat-attachment" title="Lampirkan file">
+                                <i class="bi bi-paperclip" aria-hidden="true"></i>
+                            </label>
+                            <input id="admin-chat-attachment" class="d-none" type="file" name="lampiran" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                            <button type="submit" class="btn btn-primary detail-chat-send">
+                                <i class="bi bi-send" aria-hidden="true"></i> Kirim Pesan
+                            </button>
+                        </form>
+                    @else
+                        <div class="detail-chat-compose detail-chat-compose--readonly" aria-label="Percakapan hanya dapat dibaca">
+                            <input type="text" class="form-control" placeholder="Percakapan hanya dapat dibaca" disabled>
+                        </div>
+                    @endif
                     <small class="detail-chat-note">
-                        {{ $pengajuan->isTerminal() ? 'Tiket terminal. Riwayat komunikasi hanya dapat dibaca.' : 'Fitur komunikasi akan tersedia setelah integrasi percakapan selesai.' }}
+                        {{ auth('admin')->user()?->peran === 'admin_ult'
+                            ? 'Mode baca saja untuk Admin ULT.'
+                            : ($pengajuan->isTerminal() ? 'Tiket terminal. Riwayat komunikasi hanya dapat dibaca.' : 'Pesan dan lampiran dikirim kepada pemohon.') }}
                     </small>
                 </section>
             </div>
@@ -143,7 +183,7 @@
                         <div><dt>NIM / NIP / NIK</dt><dd>{{ $pemohon->nim_nip ?? '-' }}</dd></div>
                         <div><dt>Nomor WhatsApp</dt><dd>{{ $pemohon->nomor_telepon ?? '-' }}</dd></div>
                         <div><dt>Email</dt><dd class="detail-breakable">{{ $pemohon->email ?? '-' }}</dd></div>
-                        <div><dt>Tanggal Pengajuan</dt><dd>{{ $pengajuan->dibuat_pada?->format('d F Y, H:i') ?? '-' }}</dd></div>
+                        <div><dt>Tanggal Pengajuan</dt><dd>{{ $pengajuan->dibuat_pada?->timezone('Asia/Jakarta')->format('d F Y, H:i') ?? '-' }}</dd></div>
                     </dl>
                 </section>
 
@@ -168,7 +208,7 @@
                     <tbody>
                         @forelse ($pengajuan->riwayat->sortByDesc('dibuat_pada') as $item)
                             <tr>
-                                <td>{{ $item->dibuat_pada?->format('d/m/Y H:i') ?? '-' }}</td>
+                                <td>{{ $item->dibuat_pada?->timezone('Asia/Jakarta')->format('d/m/Y H:i') ?? '-' }}</td>
                                 <td><strong>{{ $item->judul_status }}</strong><small>{{ $item->nama_aktor }}</small></td>
                                 <td>{{ $pengajuan->unit?->nama_unit ?? '-' }}</td>
                                 <td>@include('admin.partials.status-badge', ['status' => $item->status_baru])</td>
@@ -245,9 +285,13 @@
     .detail-chat-message-meta { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 4px; color: #64748b; font-size: var(--admin-font-size-secondary); font-weight: 400; }
     .detail-chat-message-meta strong { color: #315a91; }
     .detail-chat-message p { margin: 0; color: #475569; font-size: var(--admin-font-size-secondary); font-weight: 400; line-height: 1.45; white-space: pre-wrap; }
-    .detail-chat-compose { display: flex; gap: 8px; padding-top: 11px; border-top: 1px solid #edf1f5; }
-    .detail-chat-compose .form-control { height: 34px; background: #f8fafc; font-size: var(--admin-font-size-primary); font-weight: 400; }
-    .detail-chat-compose .btn { min-width: 92px; font-size: var(--admin-font-size-primary); font-weight: 600; }
+    .detail-chat-compose { display: flex; align-items: stretch; gap: 8px; padding-top: 11px; border-top: 1px solid #edf1f5; }
+    .detail-chat-compose textarea { min-width: 0; flex: 1; min-height: 34px; height: 34px; max-height: 140px; resize: none; overflow-y: auto; background: #f8fafc; font-size: var(--admin-font-size-primary); font-weight: 400; line-height: 1.45; }
+    .detail-chat-compose .btn { min-width: 92px; align-self: stretch; font-size: var(--admin-font-size-primary); font-weight: 600; }
+    .detail-chat-compose .detail-chat-attach { display: grid; min-width: 34px; width: 34px; padding: 0; place-items: center; border: 1px solid #dbe3ee; background: #fff; color: #64748b; cursor: pointer; }
+    .detail-chat-compose--readonly { align-items: center; }
+    .detail-chat-compose--readonly .form-control { width: 100%; }
+    .detail-chat-attachment { display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; color: #2563eb; font-size: var(--admin-font-size-secondary); }
     .detail-chat-note { display: block; margin-top: 8px; color: #a0aec0; font-size: var(--admin-font-size-secondary); font-weight: 400; }
     .detail-history-card { width: 100%; padding: 0; overflow: hidden; }
     .detail-history-card .detail-card-heading { margin: 0; padding: 15px 17px; border-bottom: 1px solid var(--detail-border); }
@@ -273,8 +317,9 @@
         .detail-status-actions { width: 100%; flex-wrap: wrap; justify-content: flex-start; }
         .detail-request-grid { grid-template-columns: 1fr; }
         .detail-field-wide { grid-column: auto; }
-        .detail-chat-compose { flex-direction: column; }
-        .detail-chat-compose .btn { width: 100%; }
+        .detail-chat-compose { align-items: stretch; }
+        .detail-chat-compose textarea { min-width: 0; flex: 1; }
+        .detail-chat-compose .detail-chat-send { width: 92px; flex: 0 0 92px; }
         .detail-sidebar-column { position: static; }
     }
 </style>

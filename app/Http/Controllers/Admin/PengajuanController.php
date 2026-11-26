@@ -27,6 +27,11 @@ class PengajuanController extends Controller
             abort(403, 'Anda tidak memiliki akses.');
         }
 
+        $state = $request->string('tab')->toString();
+        if (! in_array($state, ['masuk', 'diproses', 'selesai'], true)) {
+            $state = 'masuk';
+        }
+
         $query = DB::table('pengajuan as p')
             ->leftJoin('layanan as l', 'l.id', '=', 'p.id_layanan')
             ->leftJoin('unit as un', 'un.id', '=', 'p.id_unit')
@@ -79,6 +84,28 @@ class PengajuanController extends Controller
             $query->where('p.id_unit', $adminLogin->id_unit);
         }
 
+        if ($state === 'masuk') {
+            if ($adminLogin->peran === 'admin_ult') {
+                $query->whereIn('p.status', ['baru', 'diajukan'])
+                    ->whereNotExists(function ($subQuery) {
+                        $subQuery->select(DB::raw(1))
+                            ->from('disposisi_pengajuan')
+                            ->whereColumn('disposisi_pengajuan.id_pengajuan', 'p.id')
+                            ->where('status_disposisi', 'dikirim');
+                    });
+            } else {
+                $query->where('p.status', 'didisposisikan');
+            }
+        } elseif ($state === 'diproses') {
+            if ($adminLogin->peran === 'admin_ult') {
+                $query->whereIn('p.status', ['didisposisikan', 'diproses']);
+            } else {
+                $query->where('p.status', 'diproses');
+            }
+        } else {
+            $query->whereIn('p.status', Pengajuan::TERMINAL_STATUSES);
+        }
+
         if ($request->filled('q')) {
             $keyword = $request->input('q');
 
@@ -111,8 +138,49 @@ class PengajuanController extends Controller
             $query->where('p.id_unit', $request->input('unit'));
         }
 
-        if ($request->filled('status')) {
-            $query->where('p.status', $request->input('status'));
+        $unreadApplicationIds = collect();
+        $unreadCount = 0;
+
+        if ($state === 'diproses'
+            && Schema::hasTable('pesan_pengajuan')
+            && Schema::hasTable('pesan_pengajuan_baca')) {
+            $readRows = DB::table('pesan_pengajuan_baca')->get();
+            $readRowsByApplicationAndAdmin = $readRows
+                ->groupBy(fn ($row) => $row->id_pengajuan.'-'.$row->id_admin);
+
+            $incomingMessages = DB::table('pesan_pengajuan')
+                ->where('pengirim_tipe', 'pemohon')
+                ->orderBy('id')
+                ->get(['id', 'id_pengajuan']);
+
+            $unreadApplicationIds = $incomingMessages
+                ->groupBy('id_pengajuan')
+                ->filter(function ($messages, $pengajuanId) use ($readRowsByApplicationAndAdmin, $adminLogin) {
+                    $responsibleAdminId = $adminLogin->peran === 'admin_unit'
+                        ? $adminLogin->id
+                        : DB::table('disposisi_pengajuan')
+                            ->where('id_pengajuan', $pengajuanId)
+                            ->where('status_disposisi', 'dikirim')
+                            ->value('id_admin_tujuan');
+
+                    $readRow = $responsibleAdminId
+                        ? $readRowsByApplicationAndAdmin
+                            ->get($pengajuanId.'-'.$responsibleAdminId)
+                            ?->sortByDesc('dibaca_sampai_pesan_id')
+                            ->first()
+                        : null;
+                    $lastMessageId = (int) $messages->last()->id;
+
+                    return ! $readRow
+                        || (int) ($readRow->dibaca_sampai_pesan_id ?? 0) < $lastMessageId;
+                })
+                ->keys();
+
+            $unreadCount = $unreadApplicationIds->count();
+
+            if ($request->boolean('unread')) {
+                $query->whereIn('p.id', $unreadApplicationIds);
+            }
         }
 
         $pengajuans = $query
@@ -150,7 +218,9 @@ class PengajuanController extends Controller
             'units',
             'adminTujuan',
             'adminTujuanByUnit',
-            'isAdminUlt'
+            'isAdminUlt',
+            'state',
+            'unreadCount'
         ));
     }
 
@@ -195,6 +265,29 @@ class PengajuanController extends Controller
             ]);
         }
 
+        if ($adminLogin->peran === 'admin_unit'
+            && Schema::hasTable('pesan_pengajuan')
+            && Schema::hasTable('pesan_pengajuan_baca')) {
+            $latestIncomingMessage = DB::table('pesan_pengajuan')
+                ->where('id_pengajuan', $pengajuan->id)
+                ->where('pengirim_tipe', 'pemohon')
+                ->orderByDesc('id')
+                ->first(['id']);
+
+            if ($latestIncomingMessage) {
+                DB::table('pesan_pengajuan_baca')->updateOrInsert(
+                    [
+                        'id_pengajuan' => $pengajuan->id,
+                        'id_admin' => $adminLogin->id,
+                    ],
+                    [
+                        'dibaca_sampai' => now(),
+                        'dibaca_sampai_pesan_id' => $latestIncomingMessage->id,
+                    ]
+                );
+            }
+        }
+
         $pemohon = null;
 
         if (Schema::hasTable('pengguna')) {
@@ -223,6 +316,47 @@ class PengajuanController extends Controller
             'dokumenPengajuan',
             'pesanPengajuan'
         ));
+    }
+
+    public function storePesan(Request $request, Pengajuan $pengajuan): RedirectResponse
+    {
+        $admin = auth('admin')->user();
+
+        abort_unless($admin && $admin->peran === 'admin_unit', 403);
+        abort_unless((int) $pengajuan->id_unit === (int) $admin->id_unit, 403);
+        abort_unless($pengajuan->status === 'diproses', 409);
+
+        $data = $request->validate([
+            'pesan' => ['nullable', 'string', 'max:5000'],
+            'lampiran' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:5120'],
+        ]);
+
+        if (empty(trim((string) ($data['pesan'] ?? '')))
+            && ! $request->hasFile('lampiran')) {
+            return back()->withErrors(['pesan' => 'Tuliskan pesan atau lampirkan file.']);
+        }
+
+        $storedPath = null;
+        if ($request->hasFile('lampiran')) {
+            $storedPath = $request->file('lampiran')->storeAs(
+                'pengajuan/pesan',
+                time().'_'.$request->file('lampiran')->getClientOriginalName(),
+                'public'
+            );
+        }
+
+        DB::table('pesan_pengajuan')->insert([
+            'id_pengajuan' => $pengajuan->id,
+            'pengirim_tipe' => 'admin',
+            'id_pengirim' => $admin->id,
+            'pesan' => trim((string) ($data['pesan'] ?? '')),
+            'lampiran' => $storedPath,
+            'dibuat_pada' => now(),
+        ]);
+
+        return redirect()
+            ->to(route('admin.pengajuan.show', $pengajuan).'#komunikasi')
+            ->with('success', 'Pesan berhasil dikirim.');
     }
 
     public function selesai(Pengajuan $pengajuan): RedirectResponse
