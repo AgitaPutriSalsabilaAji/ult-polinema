@@ -110,9 +110,9 @@
                     <div><dt>Layanan</dt><dd>{{ $pengajuan->layanan?->nama_layanan ?? 'Layanan' }}</dd></div>
                     <div><dt>Unit Tujuan</dt><dd>{{ $pengajuan->layanan?->unit?->nama_unit ?? 'Belum ditentukan' }}</dd></div>
                     <div><dt>Subjek Pengajuan</dt><dd>{{ $pengajuan->subjek }}</dd></div>
-                    <div><dt>Tanggal Pengajuan</dt><dd>{{ $pengajuan->dibuat_pada?->locale('id')->translatedFormat('d F Y • H:i') ?? '-' }}{{ $pengajuan->dibuat_pada ? ' WIB' : '' }}</dd></div>
+                    <div><dt>Tanggal Pengajuan</dt><dd>{{ $pengajuan->dibuat_pada ? \Carbon\Carbon::parse($pengajuan->dibuat_pada)->locale('id')->translatedFormat('d F Y • H:i') : '-' }}{{ $pengajuan->dibuat_pada ? ' WIB' : '' }}</dd></div>
                     @if ($pengajuan->tanggal_selesai)
-                        <div><dt>Tanggal Selesai</dt><dd>{{ $pengajuan->tanggal_selesai?->locale('id')->translatedFormat('d F Y • H:i') }} WIB</dd></div>
+                        <div><dt>Tanggal Selesai</dt><dd>{{ $pengajuan->tanggal_selesai ? \Carbon\Carbon::parse($pengajuan->tanggal_selesai)->locale('id')->translatedFormat('d F Y • H:i') : '-' }} WIB</dd></div>
                     @endif
                 </dl>
                 <div class="current-status"><i class="bi bi-circle-fill"></i>{{ $statusLabel }}</div>
@@ -129,7 +129,7 @@
                                     <h3>{{ strtolower(trim((string) $item->judul_status)) === 'pengajuan diterima' ? 'Pengajuan Masuk' : $item->judul_status }}</h3>
                                     <p>{{ $item->deskripsi }}</p>
                                     <small>
-                                        {{ $item->dibuat_pada?->locale('id')->translatedFormat('d M Y, H:i') ?? '-' }} WIB
+                                        {{ $item->dibuat_pada ? \Carbon\Carbon::parse($item->dibuat_pada)->locale('id')->translatedFormat('d M Y, H:i') : '-' }} WIB
                                         @if ($item->nama_aktor)
                                             · {{ $item->nama_aktor }}
                                         @endif
@@ -140,7 +140,7 @@
                     </ol>
                 @else
                     <ol class="timeline">
-                        <li class="timeline-item is-current"><span class="timeline-marker"><i class="bi bi-circle-fill"></i></span><div class="timeline-content"><h3>{{ $statusLabel }}</h3><p>Pengajuan tercatat di sistem. Riwayat detail akan tampil setelah petugas memperbarui proses pengajuan.</p><small>{{ $pengajuan->dibuat_pada?->locale('id')->translatedFormat('d M Y, H:i') ?? '-' }} WIB</small></div></li>
+                        <li class="timeline-item is-current"><span class="timeline-marker"><i class="bi bi-circle-fill"></i></span><div class="timeline-content"><h3>{{ $statusLabel }}</h3><p>Pengajuan tercatat di sistem. Riwayat detail akan tampil setelah petugas memperbarui proses pengajuan.</p><small>{{ $pengajuan->dibuat_pada ? \Carbon\Carbon::parse($pengajuan->dibuat_pada)->locale('id')->translatedFormat('d M Y, H:i') : '-' }} WIB</small></div></li>
                     </ol>
                 @endif
             </article>

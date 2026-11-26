@@ -9,6 +9,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class CekStatusController extends Controller
 {
@@ -88,11 +90,14 @@ class CekStatusController extends Controller
             $pengajuan = $query->first();
 
             if ($pengajuan) {
-                $riwayat = $pengajuan->riwayat;
-            } else {
+                $riwayat = DB::table('riwayat_pengajuan')
+                    ->where('id_pengajuan', $pengajuan->id)
+                    ->orderBy('dibuat_pada', 'asc')
+                    ->get();
+              } else {
                 $error = 'Nomor E-Tiket tidak ditemukan atau tidak terdaftar pada akun Anda.';
             }
-        }
+        } // Penutup if ($ticket !== '')
 
         return view('user.cek-status', compact(
             'ticket',
