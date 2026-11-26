@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\MessageBag;
 use Tests\TestCase;
 
 class UserAuthenticationTest extends TestCase
@@ -26,6 +27,12 @@ class UserAuthenticationTest extends TestCase
         Schema::create('layanan', function (Blueprint $table): void {
             $table->id();
             $table->string('status')->default('aktif');
+            $table->string('nama_layanan')->nullable();
+            $table->unsignedBigInteger('id_unit')->nullable();
+        });
+        Schema::create('unit', function (Blueprint $table): void {
+            $table->id();
+            $table->string('nama_unit');
         });
     }
 
@@ -47,9 +54,15 @@ class UserAuthenticationTest extends TestCase
 
     public function test_guest_navbar_has_no_login_or_registration_controls(): void
     {
+        $this->withSession(['auth_modal' => 'login']);
         $this->withoutVite();
-        $navbar = view('user.navbar', ['theme' => 'purple'])->render();
+        $navbar = view('user.navbar', [
+            'theme' => 'purple',
+            'errors' => new MessageBag,
+        ])->render();
 
+        $this->assertStringContainsString('id="loginModal"', $navbar);
+        $this->assertStringContainsString('data-auth-modal-autostart', $navbar);
         $this->assertStringNotContainsString('ult-navbar__login', $navbar);
         $this->assertStringNotContainsString('ult-navbar__register', $navbar);
         $this->assertStringNotContainsString('data-bs-target="#loginModal"', $navbar);
@@ -60,6 +73,55 @@ class UserAuthenticationTest extends TestCase
         $this->assertStringContainsString('id="loginModal"', $navbar);
         $this->assertStringContainsString('id="registerModal"', $navbar);
         $this->assertStringContainsString('data-auth-modal-switch="register">Daftar sekarang</a>', $navbar);
+    }
+
+    public function test_guest_can_log_in_and_return_to_the_eticket_page(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'eticket@example.com',
+            'password' => Hash::make('correct-password'),
+        ]);
+
+        $this->get(route('cek-status'))
+            ->assertRedirect(route('beranda'))
+            ->assertSessionHas('auth_modal', 'login')
+            ->assertSessionHas('url.intended', route('cek-status'));
+
+        $this->post(route('user.login.submit'), [
+            'email' => 'eticket@example.com',
+            'password' => 'correct-password',
+        ])->assertRedirect(route('cek-status'));
+
+        $this->assertAuthenticatedAs($user, 'web');
+    }
+
+    public function test_authenticated_session_persists_across_ticket_requests_until_manual_logout(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'session@example.com',
+            'password' => Hash::make('correct-password'),
+        ]);
+        $ticketForm = route('pengajuan.form');
+
+        $this->get($ticketForm)->assertRedirect(route('user.login'));
+
+        $this->post(route('user.login.submit'), [
+            'email' => 'session@example.com',
+            'password' => 'correct-password',
+        ])->assertRedirect($ticketForm);
+
+        $this->withoutVite()
+            ->get($ticketForm)
+            ->assertOk();
+        $this->assertAuthenticatedAs($user, 'web');
+
+        $this->get($ticketForm)->assertOk();
+        $this->assertAuthenticatedAs($user, 'web');
+
+        $this->post(route('user.logout'))->assertRedirect(route('beranda'));
+        $this->assertGuest('web');
+
+        $this->get($ticketForm)->assertRedirect(route('user.login'));
     }
 
     public function test_guest_is_redirected_to_login_with_the_selected_service_preserved(): void
