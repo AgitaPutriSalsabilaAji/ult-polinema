@@ -23,6 +23,18 @@
     font-size: var(--admin-font-size-primary);
 }
 
+.app-wrapper :where(.app-content, .app-content-header, .app-footer, .card, .modal, .table, .form-control, .form-select, .btn) {
+    font-family: var(--admin-font-family);
+}
+
+.app-wrapper :where(.card, .table, .form-control, .form-select, .btn, .modal, .alert) {
+    font-size: var(--admin-font-size-primary);
+}
+
+.app-wrapper :where(.btn, .table thead th) {
+    font-weight: 600;
+}
+
 .app-wrapper :where(button, input, optgroup, select, textarea) {
     font-family: inherit;
 }

@@ -4,6 +4,34 @@
     $sidebarClasses = config('adminlte.classes_sidebar', 'bg-body-secondary shadow');
     $admin = auth('admin')->user();
 @endphp
+<style>
+    .app-sidebar {
+        background: #172b4d !important;
+    }
+    .app-sidebar .sidebar-menu > .nav-item > .nav-link {
+        color: #dbe7f5;
+    }
+    .app-sidebar .sidebar-menu > .nav-item > .nav-link:hover,
+    .app-sidebar .sidebar-menu > .nav-item.menu-open > .nav-link,
+    .app-sidebar .sidebar-menu .nav-link.active {
+        background: rgba(59, 130, 246, .28);
+        color: #fff;
+    }
+    .app-sidebar .nav-treeview {
+        margin: 0;
+        padding: 4px 0;
+        background: #172b4d;
+    }
+    .app-sidebar .nav-treeview .nav-link {
+        padding-left: 2.25rem;
+        color: #dbe7f5;
+    }
+    .app-sidebar .nav-treeview .nav-link.active,
+    .app-sidebar .nav-treeview .nav-link:hover {
+        background: #2563eb;
+        color: #fff;
+    }
+</style>
 <aside class="app-sidebar {{ $sidebarClasses }}" @if ($sidebarTheme === 'dark') data-bs-theme="dark" @endif>
     <div class="sidebar-brand {{ config('adminlte.classes_brand') }}">
         <a href="{{ url('/') }}" class="brand-link">

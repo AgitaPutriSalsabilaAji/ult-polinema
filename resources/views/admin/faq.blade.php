@@ -1,4 +1,3 @@
-
 @extends('adminlte::page')
 
 @section('title', 'Manajemen FAQ & Pusat Bantuan')
@@ -9,7 +8,7 @@
 @stop
 
 @section('content')
-<div class="container-fluid px-0">
+<div class="container-fluid px-0 faq-page">
 
     {{-- Notifikasi --}}
     @if (session('success'))
@@ -30,47 +29,49 @@
         </div>
     @endif
 
+
     {{-- Pencarian dan filter --}}
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
             <form action="{{ route('admin.faq.index') }}" method="GET">
                 <div class="row g-2 align-items-center">
-                    <div class="col-md-8">
-                        <input
-                            type="text"
-                            name="search"
-                            class="form-control"
-                            placeholder="Cari pertanyaan atau jawaban FAQ..."
-                            value="{{ request('search') }}"
-                        >
-                    </div>
+    <div class="col">
+        <input type="text"
+               name="search"
+               class="form-control"
+               placeholder="Cari pertanyaan atau jawaban FAQ..."
+               value="{{ request('search') }}">
+    </div>
 
-                    <div class="col-md-2">
-                        <select name="unit_id" class="form-select">
-                            <option value="">Pilih Unit</option>
-                            @foreach ($units as $unit)
-                                <option value="{{ $unit->id }}"
-                                    @selected(request('unit_id') == $unit->id)>
-                                    {{ $unit->nama_unit }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+    <div class="col-auto">
+        <select name="unit_id" class="form-select">
+            <option value="">Pilih Unit</option>
+            @foreach ($units as $unit)
+                <option value="{{ $unit->id }}"
+                    @selected(request('unit_id') == $unit->id)>
+                    {{ $unit->nama_unit }}
+                </option>
+            @endforeach
+        </select>
+    </div>
 
-                    <div class="col-md-2 d-grid">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search me-1"></i> Cari
-                        </button>
-                    </div>
-                </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-primary">
+            <i class="bi bi-search"></i> Cari
+        </button>
+    </div>
+
+    <div class="col-auto">
+        <button type="button"
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#modalTambahFaq">
+            <i class="bi bi-plus-lg"></i>
+            Tambah FAQ Baru
+        </button>
+    </div>
+</div>
             </form>
-
-            <div class="d-flex justify-content-end mt-3">
-                <button type="button" class="btn btn-primary"
-                    data-bs-toggle="modal" data-bs-target="#modalTambahFaq">
-                    <i class="fas fa-plus me-1"></i> Tambah FAQ Baru
-                </button>
-            </div>
         </div>
     </div>
 
@@ -125,11 +126,6 @@
                 <div class="d-flex flex-wrap justify-content-between gap-2">
                     <small class="text-muted">
                         Unit: <strong>{{ $faq->unit->nama_unit ?? 'Umum' }}</strong>
-                    </small>
-
-                    <small class="text-muted">
-                        Diperbarui:
-                        {{ $faq->updated_at?->translatedFormat('d M Y') ?? '-' }}
                     </small>
                 </div>
             </div>
@@ -293,3 +289,157 @@
     </div>
 </div>
 @stop
+
+
+@push('css')
+<style>
+    /* ===== HALAMAN MANAJEMEN FAQ ===== */
+
+    .faq-page {
+        font-size: 12px;
+    }
+
+    /* Judul halaman */
+    .admin-page-title {
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .content-header p {
+        font-size: 12px;
+    }
+
+    /* Card pencarian dan filter */
+    .faq-page > .card .card-body {
+        padding: 14px !important;
+    }
+
+    .faq-page .form-control,
+    .faq-page .form-select {
+        font-size: 11px;
+        min-height: 33px;
+        padding: 6px 10px;
+        border-radius: 5px;
+    }
+
+    .faq-page .form-control::placeholder {
+        font-size: 11px;
+    }
+
+    /* Tombol */
+    .faq-page .btn {
+        font-size: 11px;
+        padding: 6px 11px;
+        border-radius: 5px;
+    }
+
+    /* Tombol tambah FAQ */
+    .faq-page .btn-primary {
+        font-weight: 500;
+    }
+
+    /* Card daftar FAQ */
+    .faq-page > .card.mb-3 {
+        border-radius: 8px;
+    }
+
+    .faq-page > .card.mb-3 .card-body {
+        padding: 13px 16px !important;
+    }
+
+    /* Badge status */
+    .faq-page .badge {
+        font-size: 10px;
+        padding: 4px 7px;
+        font-weight: 600;
+    }
+
+    /* Pertanyaan FAQ */
+    .faq-page h6 {
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    /* Jawaban FAQ */
+    .faq-page .card-body p.small {
+        font-size: 11.5px;
+        line-height: 1.5;
+    }
+
+    /* Informasi unit dan tanggal */
+    .faq-page .card-body small {
+        font-size: 10.5px;
+    }
+
+    /* Jarak tombol edit dan hapus */
+    .faq-page .d-flex.gap-2 {
+        gap: 5px !important;
+    }
+
+    /* Modal tambah dan edit */
+    .faq-page .modal-content {
+        border: 0;
+        border-radius: 8px;
+    }
+
+    .faq-page .modal-header {
+        padding: 14px 18px;
+    }
+
+    .faq-page .modal-title {
+        font-size: 16px;
+    }
+
+    .faq-page .modal-body {
+        padding: 14px 18px;
+    }
+
+    .faq-page .modal-footer {
+        padding: 10px 18px 14px;
+    }
+
+    .faq-page .modal-body .form-label,
+    .faq-page .modal-body label {
+        font-size: 11.5px;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .faq-page .modal-body textarea {
+        font-size: 11.5px;
+    }
+
+    /* Pagination */
+    .faq-page .pagination {
+        font-size: 11px;
+    }
+
+    .faq-page .pagination .page-link {
+        padding: 5px 9px;
+    }
+
+    .faq-page .btn-primary {
+    color: #fff !important;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    }
+
+    .faq-page .btn-primary i,
+    .faq-page .btn-primary span {
+        color: #fff !important;
+    }
+
+    /* Responsif */
+    @media (max-width: 767.98px) {
+        .faq-page > .card.mb-3 .card-body {
+            padding: 12px !important;
+        }
+
+        .faq-page .modal-dialog {
+            margin: 12px;
+        }
+    }
+</style>
+@endpush
+

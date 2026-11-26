@@ -423,7 +423,6 @@ a {
 }
 
 .category-section,
-.status-section,
 .contact-section {
     background: #f6f7f9;
 }
@@ -477,32 +476,44 @@ a {
     background: #fff;
 }
 
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.step-item {
+    min-width: 0;
+}
+
 .step-card {
     background: #f6f7f9;
     border-radius: 12px;
-    padding: 20px 18px;
+    padding: 20px 14px;
     height: 100%;
-    min-height: 145px;
+    min-height: 180px;
+    text-align: center;
 }
 
 .step-card > span {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 14px;
     background: var(--orange);
     color: #fff;
-    border-radius: 7px;
-    font-size: 11px;
+    border-radius: 9px;
+    font-size: 13px;
     font-weight: 800;
-    margin-bottom: 12px;
 }
 
 .step-card h3 {
     font-size: 12px;
     font-weight: 800;
     margin-bottom: 8px;
+    text-align: center;
 }
 
 .step-card p {
@@ -510,54 +521,7 @@ a {
     color: #8b8fa2;
     line-height: 1.6;
     margin: 0;
-}
-
-.status-section {
-    padding-top: 70px;
-    padding-bottom: 70px;
-}
-
-.status-form {
-    display: flex;
-    max-width: 590px;
-    background: #fff;
-    padding: 7px;
-    border-radius: 10px;
-    margin-top: 25px;
-    box-shadow: 0 2px 8px rgba(25, 25, 60, .02);
-}
-
-.status-form input {
-    flex: 1;
-    min-width: 0;
-    border: 0;
-    outline: 0;
-    padding: 9px 15px;
-    font-size: 11px;
-    color: var(--ink);
-}
-
-.status-form input::placeholder {
-    color: #a5a6b5;
-}
-
-.btn-purple {
-    color: #fff;
-    background: var(--purple);
-    border: 1px solid var(--purple);
-    min-width: 110px;
-}
-
-.btn-purple:hover {
-    color: #fff;
-    background: #39308b;
-}
-
-.status-feedback {
-    color: var(--purple);
-    font-size: 11px;
-    margin: 12px 0 0;
-    min-height: 0;
+    text-align: center;
 }
 
 .faq-section {
@@ -768,14 +732,6 @@ a {
 
     .category-card {
         min-height: 125px;
-    }
-
-    .status-form {
-        align-items: stretch;
-    }
-
-    .status-form input {
-        width: 50%;
     }
 
     .faq-accordion .accordion-button {

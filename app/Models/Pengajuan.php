@@ -8,9 +8,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Pengajuan extends Model
 {
+    public const TERMINAL_STATUSES = ['selesai', 'ditolak'];
+
     protected $table = 'pengajuan';
 
     const CREATED_AT = 'dibuat_pada';
+
     const UPDATED_AT = 'diperbarui_pada';
 
     protected $fillable = [
@@ -19,6 +22,7 @@ class Pengajuan extends Model
         'id_layanan',
         'id_unit',
         'id_admin_fo',
+        'jenis_pemohon',
         'subjek',
         'deskripsi',
         'status',
@@ -31,9 +35,24 @@ class Pengajuan extends Model
         'tanggal_selesai' => 'datetime',
     ];
 
+    public static function generateNomorTiket(int $id): string
+    {
+        return sprintf('ULT-%s-%06d', date('Y'), $id);
+    }
+
     public function layanan(): BelongsTo
     {
         return $this->belongsTo(Layanan::class, 'id_layanan');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'id_pengguna');
+    }
+
+    public function pengguna(): BelongsTo
+    {
+        return $this->belongsTo(Pengguna::class, 'id_pengguna');
     }
 
     public function unit(): BelongsTo
@@ -55,5 +74,10 @@ class Pengajuan extends Model
             RiwayatPengajuan::class,
             'id_pengajuan'
         );
+    }
+
+    public function isTerminal(): bool
+    {
+        return in_array($this->status, self::TERMINAL_STATUSES, true);
     }
 }

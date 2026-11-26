@@ -6,7 +6,9 @@
  */
 
 // Bootstrap (provides dropdowns, modals, tooltips, offcanvas, etc.)
-import 'bootstrap'
+import * as bootstrap from 'bootstrap'
+
+window.bootstrap = bootstrap
 
 // OverlayScrollbars — AdminLTE uses it for the sidebar scroller (optional)
 import { OverlayScrollbars } from 'overlayscrollbars'

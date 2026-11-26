@@ -54,8 +54,8 @@ return [
     |
     */
 
-    'logo' => '<span class="brand-title">ULT POLINEMA</span><span class="brand-subtitle">ADMIN WORKSPACE</span>',
-    'logo_img' => 'images/logo polinema.png',
+    'logo' => '<span class="brand-title">ULT POLINEMA</span><span class="brand-subtitle">ADMIN PORTAL</span>',
+    'logo_img' => 'images/polinema-logo.png',
     'logo_img_class' => 'brand-image',
     'logo_img_alt' => 'Logo Politeknik Negeri Malang',
 
@@ -250,13 +250,24 @@ return [
     ],
     [
         'text' => 'Data Pengajuan',
-        'url' => 'admin/pengajuan',
         'icon' => 'bi bi-file-earmark-text',
-    ],
-    [
-        'text' => 'Tracking E-Ticket',
-        'url' => 'admin/tracking',
-        'icon' => 'bi bi-ticket-perforated',
+        'submenu' => [
+            [
+                'text' => 'Pengajuan Masuk',
+                'url' => 'admin/pengajuan?tab=masuk',
+                'active' => ['admin/pengajuan?tab=masuk'],
+            ],
+            [
+                'text' => 'Diproses',
+                'url' => 'admin/pengajuan?tab=diproses',
+                'active' => ['admin/pengajuan?tab=diproses'],
+            ],
+            [
+                'text' => 'Selesai',
+                'url' => 'admin/pengajuan?tab=selesai',
+                'active' => ['admin/pengajuan?tab=selesai'],
+            ],
+        ],
     ],
     [
         'text' => 'Informasi Layanan',
@@ -282,6 +293,7 @@ return [
         'text' => 'Daftar Admin',
         'url' => 'admin/daftar-admin',
         'icon' => 'bi bi-people',
+        'can' => 'akses-daftar-admin',
     ],
 ],
 
@@ -360,6 +372,17 @@ return [
         'sortablejs' => [
             'enabled' => false,
             'js' => 'vendor/sortablejs/sortablejs.min.js',
+        ],
+
+        'FontAwesome' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => true,
+                    'location' => 'vendor/fontawesome-free/css/all.min.css',
+                ],
+            ],
         ],
     ],
 

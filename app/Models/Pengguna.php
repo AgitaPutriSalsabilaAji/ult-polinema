@@ -26,6 +26,15 @@ class Pengguna extends Model
         'kata_sandi',
     ];
 
+    public function pengajuan(): HasMany
+    {
+        return $this->hasMany(
+            Pengajuan::class,
+            'id_pengguna',
+            'id'
+        );
+    }
+
     public function ratingLayanan(): HasMany
     {
         return $this->hasMany(

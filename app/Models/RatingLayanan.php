@@ -51,7 +51,7 @@ class RatingLayanan extends Model
         return $this->belongsTo(
             Pengajuan::class,
             'id_pengajuan',
-            'id_pengajuan'
+            'id'
         );
     }
 

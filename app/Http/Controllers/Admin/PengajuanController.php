@@ -3,28 +3,50 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\DisposisiPengajuan;
 use App\Models\Pengajuan;
 use App\Models\RiwayatPengajuan;
 use App\Models\Unit;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Validation\Rule;
 
 class PengajuanController extends Controller
 {
     public function index(Request $request)
     {
+        $adminLogin = auth('admin')->user();
+
+        if (! $adminLogin) {
+            abort(401, 'Silakan login terlebih dahulu.');
+        }
+
+        if (! in_array($adminLogin->peran, ['admin_ult', 'admin_unit'])) {
+            abort(403, 'Anda tidak memiliki akses.');
+        }
+
+        $state = $request->string('tab')->toString();
+        if (! in_array($state, ['masuk', 'diproses', 'selesai'], true)) {
+            $state = 'masuk';
+        }
+
         $query = DB::table('pengajuan as p')
             ->leftJoin('layanan as l', 'l.id', '=', 'p.id_layanan')
             ->leftJoin('unit as un', 'un.id', '=', 'p.id_unit')
             ->leftJoin('admin as a', 'a.id', '=', 'p.id_admin_fo')
+            ->leftJoin('disposisi_pengajuan as d', function ($join) {
+                $join->on('d.id_pengajuan', '=', 'p.id')
+                    ->where('d.status_disposisi', 'dikirim');
+            })
+            ->leftJoin('admin as at', 'at.id', '=', 'd.id_admin_tujuan')
             ->select(
                 'p.*',
                 'l.nama_layanan',
+                'p.id_unit as unit_tujuan_id',
                 'un.nama_unit',
-                'a.nama_lengkap_gelar as nama_admin_fo'
+                DB::raw('COALESCE(at.nama_lengkap_gelar, a.nama_lengkap_gelar) as nama_admin_fo')
             );
 
         // Ambil nama pemohon jika tabel pengguna tersedia.
@@ -55,6 +77,33 @@ class PengajuanController extends Controller
                     $query->addSelect("u.{$nipColumn} as nip_pemohon");
                 }
             }
+        }
+
+        // Hak akses berdasarkan role admin
+        if ($adminLogin->peran === 'admin_unit') {
+            $query->where('p.id_unit', $adminLogin->id_unit);
+        }
+
+        if ($state === 'masuk') {
+            if ($adminLogin->peran === 'admin_ult') {
+                $query->whereIn('p.status', ['baru', 'diajukan'])
+                    ->whereNotExists(function ($subQuery) {
+                        $subQuery->select(DB::raw(1))
+                            ->from('disposisi_pengajuan')
+                            ->whereColumn('disposisi_pengajuan.id_pengajuan', 'p.id')
+                            ->where('status_disposisi', 'dikirim');
+                    });
+            } else {
+                $query->where('p.status', 'didisposisikan');
+            }
+        } elseif ($state === 'diproses') {
+            if ($adminLogin->peran === 'admin_ult') {
+                $query->whereIn('p.status', ['didisposisikan', 'diproses']);
+            } else {
+                $query->where('p.status', 'diproses');
+            }
+        } else {
+            $query->whereIn('p.status', Pengajuan::TERMINAL_STATUSES);
         }
 
         if ($request->filled('q')) {
@@ -89,8 +138,49 @@ class PengajuanController extends Controller
             $query->where('p.id_unit', $request->input('unit'));
         }
 
-        if ($request->filled('status')) {
-            $query->where('p.status', $request->input('status'));
+        $unreadApplicationIds = collect();
+        $unreadCount = 0;
+
+        if ($state === 'diproses'
+            && Schema::hasTable('pesan_pengajuan')
+            && Schema::hasTable('pesan_pengajuan_baca')) {
+            $readRows = DB::table('pesan_pengajuan_baca')->get();
+            $readRowsByApplicationAndAdmin = $readRows
+                ->groupBy(fn ($row) => $row->id_pengajuan.'-'.$row->id_admin);
+
+            $incomingMessages = DB::table('pesan_pengajuan')
+                ->where('pengirim_tipe', 'pemohon')
+                ->orderBy('id')
+                ->get(['id', 'id_pengajuan']);
+
+            $unreadApplicationIds = $incomingMessages
+                ->groupBy('id_pengajuan')
+                ->filter(function ($messages, $pengajuanId) use ($readRowsByApplicationAndAdmin, $adminLogin) {
+                    $responsibleAdminId = $adminLogin->peran === 'admin_unit'
+                        ? $adminLogin->id
+                        : DB::table('disposisi_pengajuan')
+                            ->where('id_pengajuan', $pengajuanId)
+                            ->where('status_disposisi', 'dikirim')
+                            ->value('id_admin_tujuan');
+
+                    $readRow = $responsibleAdminId
+                        ? $readRowsByApplicationAndAdmin
+                            ->get($pengajuanId.'-'.$responsibleAdminId)
+                            ?->sortByDesc('dibaca_sampai_pesan_id')
+                            ->first()
+                        : null;
+                    $lastMessageId = (int) $messages->last()->id;
+
+                    return ! $readRow
+                        || (int) ($readRow->dibaca_sampai_pesan_id ?? 0) < $lastMessageId;
+                })
+                ->keys();
+
+            $unreadCount = $unreadApplicationIds->count();
+
+            if ($request->boolean('unread')) {
+                $query->whereIn('p.id', $unreadApplicationIds);
+            }
         }
 
         $pengajuans = $query
@@ -98,29 +188,105 @@ class PengajuanController extends Controller
             ->paginate(5)
             ->withQueryString();
 
-        $units = Unit::orderBy('nama_unit')->get();
+        // Mengatur data berdasarkan role admin
+        if ($adminLogin->peran === 'admin_ult') {
 
-        $adminTujuan = DB::table('admin')
-            ->where('peran', 'admin_unit')
-            ->select('id', 'nama_lengkap_gelar', 'id_unit')
-            ->orderBy('nama_lengkap_gelar')
-            ->get();
+            // Admin ULT bisa melihat semua unit dan memilih admin tujuan
+            $units = Unit::orderBy('nama_unit')->get();
+
+            $adminTujuan = DB::table('admin')
+                ->where('peran', 'admin_unit')
+                ->select('id', 'nama_lengkap_gelar', 'peran', 'id_unit')
+                ->orderBy('nama_lengkap_gelar')
+                ->get();
+
+        } else {
+
+            // Admin Unit hanya mendapatkan unit miliknya
+            $units = Unit::where('id', $adminLogin->id_unit)->get();
+
+            $adminTujuan = collect();
+        }
+
+        $isAdminUlt = $adminLogin->peran === 'admin_ult';
+        $adminTujuanByUnit = $adminTujuan
+            ->groupBy('id_unit')
+            ->map(fn ($admins) => $admins->values());
 
         return view('admin.pengajuan', compact(
             'pengajuans',
             'units',
-            'adminTujuan'
+            'adminTujuan',
+            'adminTujuanByUnit',
+            'isAdminUlt',
+            'state',
+            'unreadCount'
         ));
     }
 
     public function show(Pengajuan $pengajuan)
     {
+        $adminLogin = auth('admin')->user();
+
+        if (! $adminLogin) {
+            abort(401);
+        }
+
+        if (! in_array($adminLogin->peran, ['admin_ult', 'admin_unit'])) {
+            abort(403);
+        }
+
         $pengajuan->load([
-            'layanan',
-            'unit',
+            'layanan.unit',
             'disposisi.unitTujuan',
+            'disposisi.adminTujuan',
             'riwayat',
         ]);
+
+        if ($adminLogin->peran === 'admin_unit'
+            && (int) $pengajuan->id_unit !== (int) $adminLogin->id_unit) {
+            abort(403, 'Anda tidak memiliki akses ke pengajuan ini.');
+        }
+
+        if ($adminLogin->peran === 'admin_unit'
+            && $pengajuan->status === 'didisposisikan') {
+            $this->transitionStatus(
+                $pengajuan,
+                'diproses',
+                $adminLogin,
+                'Pengajuan mulai diproses oleh admin unit.'
+            );
+            $pengajuan->refresh();
+            $pengajuan->load([
+                'layanan.unit',
+                'disposisi.unitTujuan',
+                'disposisi.adminTujuan',
+                'riwayat',
+            ]);
+        }
+
+        if ($adminLogin->peran === 'admin_unit'
+            && Schema::hasTable('pesan_pengajuan')
+            && Schema::hasTable('pesan_pengajuan_baca')) {
+            $latestIncomingMessage = DB::table('pesan_pengajuan')
+                ->where('id_pengajuan', $pengajuan->id)
+                ->where('pengirim_tipe', 'pemohon')
+                ->orderByDesc('id')
+                ->first(['id']);
+
+            if ($latestIncomingMessage) {
+                DB::table('pesan_pengajuan_baca')->updateOrInsert(
+                    [
+                        'id_pengajuan' => $pengajuan->id,
+                        'id_admin' => $adminLogin->id,
+                    ],
+                    [
+                        'dibaca_sampai' => now(),
+                        'dibaca_sampai_pesan_id' => $latestIncomingMessage->id,
+                    ]
+                );
+            }
+        }
 
         $pemohon = null;
 
@@ -130,28 +296,169 @@ class PengajuanController extends Controller
                 ->first();
         }
 
+        $dokumenPengajuan = Schema::hasTable('dokumen_pengajuan')
+            ? DB::table('dokumen_pengajuan')
+                ->where('id_pengajuan', $pengajuan->id)
+                ->orderBy('diunggah_pada')
+                ->get()
+            : collect();
+
+        $pesanPengajuan = Schema::hasTable('pesan_pengajuan')
+            ? DB::table('pesan_pengajuan')
+                ->where('id_pengajuan', $pengajuan->id)
+                ->orderBy('dibuat_pada')
+                ->get()
+            : collect();
+
         return view('admin.detail-pengajuan', compact(
             'pengajuan',
-            'pemohon'
+            'pemohon',
+            'dokumenPengajuan',
+            'pesanPengajuan'
         ));
+    }
+
+    public function storePesan(Request $request, Pengajuan $pengajuan): RedirectResponse
+    {
+        $admin = auth('admin')->user();
+
+        abort_unless($admin && $admin->peran === 'admin_unit', 403);
+        abort_unless((int) $pengajuan->id_unit === (int) $admin->id_unit, 403);
+        abort_unless($pengajuan->status === 'diproses', 409);
+
+        $data = $request->validate([
+            'pesan' => ['nullable', 'string', 'max:5000'],
+            'lampiran' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,doc,docx', 'max:5120'],
+        ]);
+
+        if (empty(trim((string) ($data['pesan'] ?? '')))
+            && ! $request->hasFile('lampiran')) {
+            return back()->withErrors(['pesan' => 'Tuliskan pesan atau lampirkan file.']);
+        }
+
+        $storedPath = null;
+        if ($request->hasFile('lampiran')) {
+            $storedPath = $request->file('lampiran')->storeAs(
+                'pengajuan/pesan',
+                time().'_'.$request->file('lampiran')->getClientOriginalName(),
+                'public'
+            );
+        }
+
+        DB::table('pesan_pengajuan')->insert([
+            'id_pengajuan' => $pengajuan->id,
+            'pengirim_tipe' => 'admin',
+            'id_pengirim' => $admin->id,
+            'pesan' => trim((string) ($data['pesan'] ?? '')),
+            'lampiran' => $storedPath,
+            'dibuat_pada' => now(),
+        ]);
+
+        return redirect()
+            ->to(route('admin.pengajuan.show', $pengajuan).'#komunikasi')
+            ->with('success', 'Pesan berhasil dikirim.');
+    }
+
+    public function selesai(Pengajuan $pengajuan): RedirectResponse
+    {
+        $admin = $this->authorizeUnitAdmin($pengajuan);
+
+        $this->transitionStatus(
+            $pengajuan,
+            'selesai',
+            $admin,
+            'Pengajuan diselesaikan oleh admin unit.'
+        );
+
+        return redirect()
+            ->route('admin.pengajuan.show', $pengajuan)
+            ->with('success', 'Pengajuan berhasil diselesaikan.');
+    }
+
+    public function tolak(Pengajuan $pengajuan): RedirectResponse
+    {
+        $admin = $this->authorizeUnitAdmin($pengajuan);
+
+        $this->transitionStatus(
+            $pengajuan,
+            'ditolak',
+            $admin,
+            'Pengajuan ditolak oleh admin unit.'
+        );
+
+        return redirect()
+            ->route('admin.pengajuan.show', $pengajuan)
+            ->with('success', 'Pengajuan berhasil ditolak.');
+    }
+
+    private function authorizeUnitAdmin(Pengajuan $pengajuan): Admin
+    {
+        $admin = auth('admin')->user();
+
+        if (! $admin || $admin->peran !== 'admin_unit') {
+            abort(403, 'Hanya admin unit yang dapat melakukan tindakan ini.');
+        }
+
+        if ((int) $pengajuan->id_unit !== (int) $admin->id_unit) {
+            abort(403, 'Anda tidak memiliki akses ke pengajuan ini.');
+        }
+
+        if ($pengajuan->status !== 'diproses') {
+            abort(409, 'Pengajuan harus berstatus diproses sebelum tindakan ini dilakukan.');
+        }
+
+        return $admin;
+    }
+
+    private function transitionStatus(
+        Pengajuan $pengajuan,
+        string $newStatus,
+        Admin $admin,
+        string $description
+    ): void {
+        DB::transaction(function () use ($pengajuan, $newStatus, $admin, $description): void {
+            $locked = Pengajuan::query()
+                ->whereKey($pengajuan->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $allowedTransitions = [
+                'didisposisikan' => ['diproses'],
+                'diproses' => ['selesai', 'ditolak'],
+            ];
+
+            if ($locked->isTerminal()
+                || ! in_array($newStatus, $allowedTransitions[$locked->status] ?? [], true)) {
+                abort(409, 'Perubahan status pengajuan tidak valid.');
+            }
+
+            $previousStatus = $locked->status;
+            $attributes = ['status' => $newStatus];
+
+            if ($newStatus === 'selesai') {
+                $attributes['tanggal_selesai'] = now();
+            }
+
+            $locked->update($attributes);
+
+            RiwayatPengajuan::create([
+                'id_pengajuan' => $locked->id,
+                'status_sebelumnya' => $previousStatus,
+                'status_baru' => $newStatus,
+                'judul_status' => 'Pengajuan '.strtolower($newStatus),
+                'deskripsi' => $description,
+                'nama_aktor' => $admin->nama_lengkap_gelar,
+                'id_admin' => $admin->id,
+            ]);
+        });
     }
 
     public function disposisi(Request $request, Pengajuan $pengajuan)
     {
         $data = $request->validate([
-            'id_unit_tujuan' => [
-                'required',
-                'integer',
-                'exists:unit,id',
-            ],
             'id_admin_tujuan' => [
                 'required',
                 'integer',
-                Rule::exists('admin', 'id')
-                    ->where(fn ($q) => $q
-                        ->where('peran', 'admin_unit')
-                        ->where('id_unit', $request->input('id_unit_tujuan')),
-                    ),
             ],
             'catatan_disposisi' => [
                 'nullable',
@@ -160,10 +467,9 @@ class PengajuanController extends Controller
             ],
         ]);
 
-        // Sesuaikan ID ini dengan guard autentikasi admin yang digunakan.
         $adminPengirim = auth('admin')->user();
 
-        if (!$adminPengirim) {
+        if (! $adminPengirim) {
             return back()->withErrors([
                 'disposisi' => 'Data admin yang login tidak ditemukan.',
             ]);
@@ -173,31 +479,59 @@ class PengajuanController extends Controller
             abort(403, 'Hanya Admin ULT yang dapat melakukan disposisi.');
         }
 
-        $adminPengirimId = $adminPengirim->id;
-
-        DB::transaction(function () use (
-            $pengajuan,
-            $data,
-            $adminPengirimId,
-            $adminPengirim
-        ) {
+        DB::transaction(function () use ($pengajuan, $data, $adminPengirim) {
             $locked = Pengajuan::whereKey($pengajuan->id)
                 ->lockForUpdate()
                 ->firstOrFail();
+
+            if (! in_array($locked->status, ['baru', 'diajukan'], true)) {
+                abort(409, 'Pengajuan ini sudah tidak dapat didisposisikan.');
+            }
+
+            $unitTujuanId = DB::table('layanan')
+                ->where('id', $locked->id_layanan)
+                ->value('id_unit');
+
+            if (! $unitTujuanId) {
+                abort(422, 'Unit tujuan pengajuan tidak ditemukan.');
+            }
+
+            $adminTujuan = DB::table('admin')
+                ->where('id', $data['id_admin_tujuan'])
+                ->where('peran', 'admin_unit')
+                ->where('id_unit', $unitTujuanId)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $adminTujuan) {
+                abort(422, 'Admin tujuan tidak aktif atau bukan bagian dari unit pengajuan.');
+            }
+
+            if (DB::table('disposisi_pengajuan')
+                ->where('id_pengajuan', $locked->id)
+                ->where('status_disposisi', 'dikirim')
+                ->exists()) {
+                abort(409, 'Pengajuan ini sudah memiliki disposisi awal.');
+            }
 
             $statusSebelumnya = $locked->status;
 
             DisposisiPengajuan::create([
                 'id_pengajuan' => $locked->id,
-                'id_unit_tujuan' => $data['id_unit_tujuan'],
-                'id_admin_pengirim' => $adminPengirimId,
+                'id_unit_tujuan' => $unitTujuanId,
+                'id_admin_pengirim' => $adminPengirim->id,
                 'id_admin_tujuan' => $data['id_admin_tujuan'],
                 'catatan_disposisi' => $data['catatan_disposisi'] ?? null,
                 'status_disposisi' => 'dikirim',
             ]);
 
+            if (Schema::hasColumn('pengajuan', 'id_unit')) {
+                $locked->update([
+                    'id_unit' => $unitTujuanId,
+                ]);
+            }
+
             $locked->update([
-                'id_unit' => $data['id_unit_tujuan'],
                 'status' => 'didisposisikan',
             ]);
 
@@ -210,9 +544,15 @@ class PengajuanController extends Controller
                     ?? 'Pengajuan diteruskan ke unit tujuan.',
                 'nama_aktor' => $adminPengirim->nama_lengkap_gelar
                     ?? 'Admin ULT',
-                'id_admin' => $adminPengirimId,
+                'id_admin' => $adminPengirim->id,
             ]);
         });
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Pengajuan berhasil didisposisikan.',
+            ]);
+        }
 
         return redirect()
             ->route('admin.pengajuan.index')

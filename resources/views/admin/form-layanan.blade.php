@@ -1,10 +1,12 @@
-
 @extends('adminlte::page')
 
 @section('title', $mode === 'edit' ? 'Edit Layanan' : 'Tambah Layanan')
 
 @section('content_header')
-    <h1>Manajemen Informasi Layanan</h1>
+    <h3 class="admin-page-title mb-1">Manajemen Informasi Layanan</h3>
+    <p class="text-muted mb-0">
+        Kelola Informasi Layanan yang ditampilkan kepada pengguna.
+    </p>
 @stop
 
 @section('content')
@@ -34,17 +36,18 @@
     }
 @endphp
 
-<div class="container-fluid">
+<div class="container-fluid py-2">
+
+    {{-- Tombol Kembali --}}
     <div class="mb-3">
-        <a href="{{ route('admin.layanan.index') }}">
-            Informasi Layanan
+        <a href="{{ route('admin.layanan.index') }}"
+        class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>
+            Kembali ke daftar layanan
         </a>
-        <span class="text-secondary">
-            / {{ $mode === 'edit' ? 'Edit Layanan' : 'Tambah Layanan Baru' }}
-        </span>
     </div>
 
-    <p class="text-secondary">
+    <p class="text-secondary small mb-3">
         Lengkapi informasi layanan yang akan ditampilkan kepada pengguna.
     </p>
 
@@ -72,14 +75,18 @@
         @endif
 
         {{-- INFORMASI DASAR --}}
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title fw-bold">Informasi Dasar</h3>
+        <div class="card border-0 shadow-sm mb-4">
+
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title fw-bold mb-0">
+                    Informasi Dasar
+                </h5>
             </div>
 
-            <div class="card-body">
+            <div class="card-body p-4">
+
                 <div class="mb-3">
-                    <label for="nama_layanan" class="form-label">
+                    <label for="nama_layanan" class="form-label fw-semibold">
                         Nama Layanan <span class="text-danger">*</span>
                     </label>
 
@@ -89,15 +96,14 @@
                            class="form-control"
                            maxlength="255"
                            required
-                           value="{{ old(
-                               'nama_layanan', $layanan->nama_layanan
-                           ) }}"
+                           value="{{ old('nama_layanan', $layanan->nama_layanan) }}"
                            placeholder="Contoh: Pengurusan Kartu Tanda Mahasiswa">
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="id_unit" class="form-label">
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label for="id_unit" class="form-label fw-semibold">
                             Unit Penanggung Jawab
                             <span class="text-danger">*</span>
                         </label>
@@ -108,19 +114,16 @@
 
                             @foreach($units as $unit)
                                 <option value="{{ $unit->id }}"
-                                    @selected(old(
-                                        'id_unit', $layanan->id_unit
-                                    ) == $unit->id)>
+                                    @selected(old('id_unit', $layanan->id_unit) == $unit->id)>
                                     {{ $unit->nama_unit }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label for="estimasi_waktu" class="form-label">
-                            Estimasi Waktu
-                            <span class="text-danger">*</span>
+                    <div class="col-md-6">
+                        <label for="estimasi_waktu" class="form-label fw-semibold">
+                            Estimasi Waktu <span class="text-danger">*</span>
                         </label>
 
                         <input type="text"
@@ -128,15 +131,14 @@
                                name="estimasi_waktu"
                                class="form-control"
                                required
-                               value="{{ old(
-                                   'estimasi_waktu',
-                                   $layanan->estimasi_waktu
-                               ) }}"
+                               value="{{ old('estimasi_waktu', $layanan->estimasi_waktu) }}"
                                placeholder="Contoh: 3 Hari Kerja">
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label for="tarif" class="form-label">Tarif</label>
+                    <div class="col-md-6">
+                        <label for="tarif" class="form-label fw-semibold">
+                            Tarif
+                        </label>
 
                         <input type="text"
                                id="tarif"
@@ -146,8 +148,8 @@
                                placeholder="Contoh: Gratis">
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label for="jam_operasional" class="form-label">
+                    <div class="col-md-6">
+                        <label for="jam_operasional" class="form-label fw-semibold">
                             Jam Operasional
                         </label>
 
@@ -155,36 +157,31 @@
                                id="jam_operasional"
                                name="jam_operasional"
                                class="form-control"
-                               value="{{ old(
-                                   'jam_operasional',
-                                   $layanan->jam_operasional
-                               ) }}"
+                               value="{{ old('jam_operasional', $layanan->jam_operasional) }}"
                                placeholder="Senin–Jumat, 08.00–16.00">
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label for="status" class="form-label">Status</label>
+                    <div class="col-md-6">
+                        <label for="status" class="form-label fw-semibold">
+                            Status
+                        </label>
 
                         <select name="status" id="status"
                                 class="form-select" required>
                             <option value="aktif"
-                                @selected(old(
-                                    'status', $layanan->status ?: 'aktif'
-                                ) === 'aktif')>
+                                @selected(old('status', $layanan->status ?: 'aktif') === 'aktif')>
                                 Aktif
                             </option>
 
                             <option value="nonaktif"
-                                @selected(old(
-                                    'status', $layanan->status
-                                ) === 'nonaktif')>
+                                @selected(old('status', $layanan->status) === 'nonaktif')>
                                 Nonaktif
                             </option>
                         </select>
                     </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label for="tautan_eksternal" class="form-label">
+                    <div class="col-md-6">
+                        <label for="tautan_eksternal" class="form-label fw-semibold">
                             Tautan Eksternal
                         </label>
 
@@ -192,58 +189,59 @@
                                id="tautan_eksternal"
                                name="tautan_eksternal"
                                class="form-control"
-                               value="{{ old(
-                                   'tautan_eksternal',
-                                   $layanan->tautan_eksternal
-                               ) }}"
+                               value="{{ old('tautan_eksternal', $layanan->tautan_eksternal) }}"
                                placeholder="https://...">
                     </div>
-                </div>
 
-                <div class="mb-3">
-                    <label for="deskripsi_singkat" class="form-label">
-                        Deskripsi Singkat
-                        <span class="text-danger">*</span>
-                    </label>
+                    <div class="col-12">
+                        <label for="deskripsi_singkat" class="form-label fw-semibold">
+                            Deskripsi Singkat
+                            <span class="text-danger">*</span>
+                        </label>
 
-                    <textarea id="deskripsi_singkat"
-                              name="deskripsi_singkat"
-                              class="form-control"
-                              rows="3" required
-                              placeholder="Tuliskan ringkasan layanan...">{{ old(
-                                  'deskripsi_singkat',
-                                  $layanan->deskripsi_singkat
-                              ) }}</textarea>
+                        <textarea id="deskripsi_singkat"
+                                  name="deskripsi_singkat"
+                                  class="form-control"
+                                  rows="3"
+                                  required
+                                  placeholder="Tuliskan ringkasan layanan...">{{ old('deskripsi_singkat', $layanan->deskripsi_singkat) }}</textarea>
+                    </div>
+
                 </div>
             </div>
         </div>
 
         {{-- BAGIAN INFORMASI --}}
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title fw-bold">Informasi Layanan</h3>
+        <div class="card border-0 shadow-sm mb-4">
+
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title fw-bold mb-0">
+                    Informasi Layanan
+                </h5>
             </div>
 
-            <div class="card-body">
-                <p class="text-secondary">
+            <div class="card-body p-4">
+
+                <p class="text-secondary small mb-3">
                     Tambahkan detail, persyaratan, prosedur, atau informasi
                     pendukung sesuai kebutuhan layanan.
                 </p>
 
                 <div id="bagian-container">
+
                     @foreach($sections as $i => $section)
                         <div class="bagian-item border rounded p-3 mb-3">
+
                             @if(!empty($section['id']))
                                 <input type="hidden"
                                        name="bagian[{{ $i }}][id]"
                                        value="{{ $section['id'] }}">
                             @endif
 
-                            <div class="d-flex justify-content-between
-                                        align-items-center mb-3">
-                                <h5 class="bagian-title mb-0">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="bagian-title fw-bold mb-0">
                                     Bagian Informasi {{ $loop->iteration }}
-                                </h5>
+                                </h6>
 
                                 <button type="button"
                                         class="btn btn-outline-danger btn-sm remove-bagian">
@@ -252,7 +250,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">
+                                <label class="form-label fw-semibold">
                                     Judul Informasi
                                     <span class="text-danger">*</span>
                                 </label>
@@ -266,38 +264,33 @@
                                        placeholder="Contoh: Persyaratan Pengajuan">
                             </div>
 
-<div class="mb-3">
-    <label class="form-label">
-        Penjelasan
-        <span class="text-danger">*</span>
-    </label>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    Penjelasan
+                                    <span class="text-danger">*</span>
+                                </label>
 
-    {{-- Rich Text Editor --}}
-    <div class="quill-editor">
-        {!! $section['konten'] ?? '' !!}
-    </div>
+                                <div class="quill-editor">{!! $section['konten'] ?? '' !!}</div>
 
-    {{-- Menyimpan isi editor ke form --}}
-    <textarea name="bagian[{{ $i }}][konten]"
-              class="quill-content"
-              data-field="konten"
-              hidden></textarea>
-</div>
+                                <textarea name="bagian[{{ $i }}][konten]"
+                                          class="quill-content"
+                                          data-field="konten"
+                                          hidden></textarea>
+                            </div>
 
                             @if(!empty($section['gambar_pendukung']))
                                 <div class="mb-3">
-                                    <label class="form-label">
-                                        Gambar saat ini
+                                    <label class="form-label fw-semibold">
+                                        Gambar Saat Ini
                                     </label>
+
                                     <div>
-                                        <img
-                                            src="{{ asset(
-                                                'storage/'.$section['gambar_pendukung']
-                                            ) }}"
-                                            alt="Gambar pendukung"
-                                            style="max-width:220px;max-height:150px"
-                                            class="img-thumbnail">
+                                        <img src="{{ asset('storage/'.$section['gambar_pendukung']) }}"
+                                             alt="Gambar pendukung"
+                                             style="max-width:220px;max-height:150px"
+                                             class="img-thumbnail">
                                     </div>
+
                                     <small class="text-secondary">
                                         Unggah gambar baru jika ingin mengganti gambar.
                                     </small>
@@ -305,7 +298,7 @@
                             @endif
 
                             <div class="mb-2">
-                                <label class="form-label">
+                                <label class="form-label fw-semibold">
                                     Gambar Pendukung (Opsional)
                                 </label>
 
@@ -318,8 +311,10 @@
                                     Format JPG, PNG, WEBP. Maksimal 5 MB.
                                 </small>
                             </div>
+
                         </div>
                     @endforeach
+
                 </div>
 
                 <button type="button" id="tambah-bagian"
@@ -327,28 +322,36 @@
                     <i class="bi bi-plus-lg"></i>
                     Tambah Bagian Informasi
                 </button>
+
             </div>
         </div>
 
+        {{-- TOMBOL AKSI --}}
         <div class="d-flex justify-content-end gap-2 mb-4">
+
             <a href="{{ route('admin.layanan.index') }}"
-               class="btn btn-secondary">
+               class="btn btn-outline-secondary">
                 Batal
             </a>
 
             <button type="submit" class="btn btn-primary">
-                <i class="bi bi-save"></i>
+                <i class="bi bi-save me-1"></i>
                 {{ $mode === 'edit' ? 'Simpan Perubahan' : 'Simpan Layanan' }}
             </button>
+
         </div>
+
     </form>
 </div>
 
+{{-- TEMPLATE BAGIAN BARU --}}
 <template id="template-bagian">
     <div class="bagian-item border rounded p-3 mb-3">
-        <div class="d-flex justify-content-between
-                    align-items-center mb-3">
-            <h5 class="bagian-title mb-0">Bagian Informasi</h5>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="bagian-title fw-bold mb-0">
+                Bagian Informasi
+            </h6>
 
             <button type="button"
                     class="btn btn-outline-danger btn-sm remove-bagian">
@@ -357,7 +360,7 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label">
+            <label class="form-label fw-semibold">
                 Judul Informasi <span class="text-danger">*</span>
             </label>
 
@@ -369,20 +372,22 @@
                    placeholder="Contoh: Persyaratan Pengajuan">
         </div>
 
-<div class="mb-3">
-    <label class="form-label">
-        Penjelasan <span class="text-danger">*</span>
-    </label>
+        <div class="mb-3">
+            <label class="form-label fw-semibold">
+                Penjelasan <span class="text-danger">*</span>
+            </label>
 
-    <div class="quill-editor"></div>
+            <div class="quill-editor"></div>
 
-    <textarea data-field="konten"
-              class="quill-content"
-              hidden></textarea>
-</div>
+            <textarea data-field="konten"
+                      class="quill-content"
+                      hidden></textarea>
+        </div>
 
         <div class="mb-2">
-            <label class="form-label">Gambar Pendukung (Opsional)</label>
+            <label class="form-label fw-semibold">
+                Gambar Pendukung (Opsional)
+            </label>
 
             <input type="file"
                    data-field="gambar"
@@ -393,31 +398,68 @@
                 Format JPG, PNG, WEBP. Maksimal 5 MB.
             </small>
         </div>
+
     </div>
 </template>
 @stop
 
 @section('css')
-
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css"
       rel="stylesheet">
 
 <style>
+    /* Ukuran dan jarak halaman */
+    .container-fluid {
+        font-size: 14px;
+    }
+
+    .card {
+        border-radius: 8px;
+    }
+
+    .card-header {
+        border-bottom: 1px solid #edf0f4;
+    }
+
+    .card-title {
+        color: #253858;
+        font-size: 16px;
+    }
+
+    /* Form */
+    .form-label {
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+
+    .form-control,
+    .form-select {
+        min-height: 38px;
+        font-size: 14px;
+        border-radius: 6px;
+    }
+
+    textarea.form-control {
+        min-height: auto;
+    }
+
+    /* Bagian informasi */
     .bagian-item {
         background: #fff;
         border-color: #dee2e6 !important;
+        border-radius: 8px !important;
     }
 
     .bagian-title {
         color: #253858;
-        font-size: 14px;
+        font-size: 15px;
     }
 
     #tambah-bagian {
         border-style: dashed;
     }
 
-    /* Tampilan Rich Text Editor */
+    /* Quill editor */
     .quill-editor {
         background: #fff;
         min-height: 150px;
@@ -425,29 +467,41 @@
     }
 
     .quill-editor .ql-editor {
-        min-height: 100px;
+        min-height: 110px;
         font-family: inherit;
         font-size: 14px;
+        line-height: 1.6;
     }
 
     .quill-editor .ql-toolbar {
-        border-radius: 8px 8px 0 0;
+        border-radius: 7px 7px 0 0;
         background: #f8f9fa;
     }
 
     .quill-editor .ql-container {
-        border-radius: 0 0 8px 8px;
+        border-radius: 0 0 7px 7px;
     }
 
     .quill-editor.is-invalid .ql-toolbar,
     .quill-editor.is-invalid .ql-container {
         border-color: #dc3545;
     }
+
+    /* Tombol */
+    .btn {
+        font-size: 14px;
+        border-radius: 6px;
+    }
+
+    @media (max-width: 575.98px) {
+        .card-body {
+            padding: 16px !important;
+        }
+    }
 </style>
 @stop
 
 @section('js')
-
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 
 <script>
@@ -457,10 +511,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const template = document.getElementById('template-bagian');
     const form = container.closest('form');
 
-    // =====================================
-    // INISIALISASI QUILL EDITOR
-    // =====================================
-
+    // INISIALISASI QUILL
     function initQuill(item) {
 
         const editorElement = item.querySelector('.quill-editor');
@@ -471,7 +522,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const quill = new Quill(editorElement, {
             theme: 'snow',
-
             modules: {
                 toolbar: [
                     ['bold', 'italic'],
@@ -479,7 +529,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     ['link']
                 ]
             },
-
             placeholder: 'Tuliskan penjelasan secara lengkap...'
         });
 
@@ -487,22 +536,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const textarea = item.querySelector('.quill-content');
 
-        // Sinkronisasi isi editor dengan textarea
         quill.on('text-change', function () {
-
             textarea.value = quill.root.innerHTML;
-
             editorElement.classList.remove('is-invalid');
         });
 
         textarea.value = quill.root.innerHTML;
     }
 
-
-    // =====================================
-    // RAPIIKAN NOMOR DAN NAME INPUT
-    // =====================================
-
+    // RAPIIKAN BAGIAN
     function rapikanBagian() {
 
         container.querySelectorAll('.bagian-item').forEach((item, index) => {
@@ -510,58 +552,34 @@ document.addEventListener('DOMContentLoaded', function () {
             item.querySelector('.bagian-title').textContent =
                 'Bagian Informasi ' + (index + 1);
 
-            // Perbarui nama input yang sudah memiliki name
             item.querySelectorAll('[name]').forEach(input => {
-
                 input.name = input.name.replace(
                     /^bagian\[\d+\]/,
                     'bagian[' + index + ']'
                 );
-
             });
 
-            // Perbarui name input dari template
             item.querySelectorAll('[data-field]').forEach(input => {
-
                 input.name = 'bagian[' + index + '][' +
                     input.dataset.field + ']';
-
             });
 
-            // Pastikan setiap bagian mempunyai Quill Editor
             initQuill(item);
-
         });
     }
 
-
-    // =====================================
-    // INISIALISASI EDITOR AWAL
-    // =====================================
-
     rapikanBagian();
 
-
-    // =====================================
-    // TAMBAH BAGIAN INFORMASI
-    // =====================================
-
+    // TAMBAH BAGIAN
     document.getElementById('tambah-bagian')
         .addEventListener('click', function () {
 
-            container.appendChild(
-                template.content.cloneNode(true)
-            );
-
+            container.appendChild(template.content.cloneNode(true));
             rapikanBagian();
 
         });
 
-
-    // =====================================
-    // HAPUS BAGIAN INFORMASI
-    // =====================================
-
+    // HAPUS BAGIAN
     container.addEventListener('click', function (event) {
 
         const button = event.target.closest('.remove-bagian');
@@ -569,23 +587,16 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!button) return;
 
         if (container.querySelectorAll('.bagian-item').length <= 1) {
-
             alert('Minimal harus ada satu bagian informasi.');
-
             return;
         }
 
         button.closest('.bagian-item').remove();
-
         rapikanBagian();
 
     });
 
-
-    // =====================================
     // VALIDASI GAMBAR
-    // =====================================
-
     container.addEventListener('change', function (event) {
 
         const input = event.target;
@@ -603,29 +614,19 @@ document.addEventListener('DOMContentLoaded', function () {
         ];
 
         if (!allowedTypes.includes(file.type)) {
-
             alert('Gunakan gambar JPG, PNG, atau WEBP.');
-
             input.value = '';
-
             return;
         }
 
         if (file.size > 5 * 1024 * 1024) {
-
             alert('Ukuran gambar maksimal 5 MB.');
-
             input.value = '';
-
         }
 
     });
 
-
-    // =====================================
     // SINKRONISASI DAN VALIDASI FORM
-    // =====================================
-
     form.addEventListener('submit', function (event) {
 
         let valid = true;
@@ -635,19 +636,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const editorElement = item.querySelector('.quill-editor');
             const textarea = item.querySelector('.quill-content');
-
             const quill = editorElement._quill;
 
-            // Simpan HTML editor ke textarea
             textarea.value = quill.root.innerHTML;
 
-            // Validasi isi penjelasan
             const plainText = quill.getText().trim();
 
             if (!plainText) {
 
                 valid = false;
-
                 editorElement.classList.add('is-invalid');
 
                 if (!firstInvalidEditor) {
@@ -655,13 +652,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
             } else {
-
                 editorElement.classList.remove('is-invalid');
-
             }
 
         });
-
 
         if (!valid) {
 
@@ -679,7 +673,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 firstInvalidEditor._quill.focus();
 
             }
-
         }
 
     });

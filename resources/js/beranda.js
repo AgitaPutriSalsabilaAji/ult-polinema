@@ -149,9 +149,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Form cek status dikirim ke route Laravel /cek-status.
-    // Route tersebut akan mencari nomor e-ticket pada database dan menampilkan hasilnya.
-
     // Tutup menu navigasi mobile setelah tautan dipilih
     document.querySelectorAll('#mainNav .nav-link').forEach((link) => {
         link.addEventListener('click', () => {

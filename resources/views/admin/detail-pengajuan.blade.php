@@ -1,157 +1,326 @@
 @extends('adminlte::page')
 
-@section('title', 'Detail Pengajuan')
+@section('title', 'Detail Pengajuan Pelayanan')
 
 @section('content_header')
-    <h1 class="h4 font-weight-bold">Detail Pengajuan Pelayanan</h1>
+    <div class="detail-page-heading">
+        <h1 class="admin-page-title mb-0">Data Pengajuan Pelayanan</h1>
+    </div>
+@stop
+
+@section('js')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const textarea = document.getElementById('admin-chat-message');
+    if (!textarea) {
+        return;
+    }
+
+    const resizeTextarea = function () {
+        textarea.style.height = '34px';
+        textarea.style.height = Math.min(textarea.scrollHeight, 140) + 'px';
+    };
+
+    textarea.addEventListener('input', resizeTextarea);
+    resizeTextarea();
+});
+</script>
 @stop
 
 @section('content')
-<div class="container-fluid">
+    <div class="detail-pengajuan-page">
+        @if (session('success'))
+            <div class="alert alert-success detail-alert" role="alert">{{ session('success') }}</div>
+        @endif
 
-    <div class="mb-3">
-        <a href="{{ route('admin.pengajuan.index') }}"
-           class="btn btn-sm btn-outline-secondary">
-            <i class="fas fa-arrow-left"></i> Kembali
-        </a>
-    </div>
+        @if ($errors->any())
+            <div class="alert alert-danger detail-alert" role="alert">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-    <div class="card">
-        <div class="card-header">
-            <strong>{{ $pengajuan->nomor_tiket }}</strong>
-        </div>
+        <section class="detail-status-bar" aria-label="Status dan tindakan pengajuan">
+            @include('admin.partials.status-badge', ['status' => $pengajuan->status])
+            <div class="detail-status-actions">
+                @if (auth('admin')->user()?->peran === 'admin_unit' && $pengajuan->status === 'diproses')
+                    <form method="POST" action="{{ route('admin.pengajuan.tolak', $pengajuan) }}">
+                        @csrf
+                        <button class="detail-action-button detail-action-button--reject" type="submit">
+                            Tolak Pengajuan
+                        </button>
+                    </form>
+                @endif
+                @if (auth('admin')->user()?->peran === 'admin_unit' && $pengajuan->status === 'diproses')
+                    <form method="POST" action="{{ route('admin.pengajuan.selesai', $pengajuan) }}">
+                        @csrf
+                        <button class="detail-action-button detail-action-button--complete" type="submit">
+                            Tandai Selesai
+                        </button>
+                    </form>
+                @endif
+            </div>
+        </section>
 
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <h6 class="font-weight-bold">Informasi Pemohon</h6>
-                    <table class="table table-bordered">
-                        <tr>
-                            <th>Nama</th>
-                            <td>
-                                {{ $pemohon->nama_lengkap
-                                    ?? $pemohon->nama
-                                    ?? $pemohon->nama_pengguna
-                                    ?? $pemohon->name
-                                    ?? 'Pemohon #' . $pengajuan->id_pengguna }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>ID Pengguna</th>
-                            <td>{{ $pengajuan->id_pengguna }}</td>
-                        </tr>
-                        <tr>
-                            <th>Email</th>
-                            <td>{{ $pemohon->email ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th>NIP</th>
-                            <td>{{ $pemohon->nip ?? '-' }}</td>
-                        </tr>
-                    </table>
-                </div>
+        <div class="row g-3 detail-main-layout">
+            <div class="col-xl-8 detail-main-content">
+                <section class="detail-card detail-request-card">
+                    <div class="detail-card-heading">
+                        <h2>Detail Permohonan Layanan</h2>
+                    </div>
+                    <div class="detail-request-grid">
+                        <div class="detail-field">
+                            <span>Nomor E-Tiket</span>
+                            <strong class="text-primary">{{ $pengajuan->nomor_tiket }}</strong>
+                        </div>
+                        <div class="detail-field detail-field-wide">
+                            <span>Subjek Pengajuan</span>
+                            <strong>{{ $pengajuan->subjek ?: '-' }}</strong>
+                        </div>
+                    </div>
+                    <div class="detail-description">
+                        <span>Deskripsi Permohonan</span>
+                        <p>{{ $pengajuan->deskripsi ?: '-' }}</p>
+                    </div>
+                    <div class="detail-attachments">
+                        <span>Berkas Lampiran Pendukung</span>
+                        @forelse ($dokumenPengajuan as $dokumen)
+                            <div class="detail-document">
+                                <i class="bi bi-file-earmark-text detail-document-icon" aria-hidden="true"></i>
+                                <div class="detail-document-info">
+                                    <strong>{{ $dokumen->nama_file }}</strong>
+                                    <span>PDF Document · {{ number_format(((int) $dokumen->ukuran_file) / 1024 / 1024, 2) }} MB</span>
+                                </div>
+                                <a class="btn btn-sm btn-outline-primary" href="{{ asset('storage/' . ltrim($dokumen->path_file, '/')) }}" target="_blank" rel="noopener">
+                                    <i class="bi bi-download" aria-hidden="true"></i> Unduh
+                                </a>
+                            </div>
+                        @empty
+                            <div class="detail-empty-document">
+                                <i class="bi bi-paperclip" aria-hidden="true"></i>
+                                <span>Tidak ada dokumen pendukung yang dilampirkan.</span>
+                            </div>
+                        @endforelse
+                    </div>
+                </section>
 
-                <div class="col-md-6">
-                    <h6 class="font-weight-bold">Informasi Pengajuan</h6>
-                    <table class="table table-bordered">
-                        <tr>
-                            <th>Layanan</th>
-                            <td>{{ $pengajuan->layanan?->nama_layanan ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Unit</th>
-                            <td>{{ $pengajuan->unit?->nama_unit ?? 'Belum ditentukan' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Tanggal Masuk</th>
-                            <td>{{ $pengajuan->dibuat_pada?->format('d/m/Y H:i') ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <th>Status</th>
-                            <td>{{ strtoupper($pengajuan->status) }}</td>
-                        </tr>
-                    </table>
-                </div>
+                <section class="detail-card detail-conversation-card" id="komunikasi">
+                    <div class="detail-card-heading detail-conversation-heading">
+                        <div>
+                            <h2>Komunikasi Pengajuan</h2>
+                        </div>
+                        <span class="detail-muted-label">Ruang komunikasi</span>
+                    </div>
+                    <p class="detail-helper-text">Komunikasi langsung dengan pemohon terkait pengajuan layanan ini.</p>
+                    @if ($pesanPengajuan->isEmpty())
+                        <div class="detail-chat-empty">
+                            <i class="bi bi-chat-dots" aria-hidden="true"></i>
+                            <strong>Belum ada percakapan</strong>
+                            <span>Riwayat komunikasi dengan pemohon akan tampil di area ini.</span>
+                        </div>
+                    @else
+                        <div class="detail-chat-history">
+                            @foreach ($pesanPengajuan as $pesan)
+                                <div class="detail-chat-message {{ strtolower($pesan->pengirim_tipe ?? '') === 'admin' ? 'detail-chat-message--outgoing' : 'detail-chat-message--incoming' }}">
+                                    <div class="detail-chat-message-meta">
+                                        <strong>{{ strtolower($pesan->pengirim_tipe ?? '') === 'admin' ? 'Petugas Unit' : 'Pemohon' }}</strong>
+                                        <span>{{ $pesan->dibuat_pada ? \Carbon\Carbon::parse($pesan->dibuat_pada)->timezone('Asia/Jakarta')->format('d/m/Y H:i') : '-' }}</span>
+                                    </div>
+                                    @if(filled($pesan->pesan))
+                                        <p>{{ $pesan->pesan }}</p>
+                                    @endif
+                                    @if(!empty($pesan->lampiran))
+                                        <a class="detail-chat-attachment" href="{{ route('pengajuan.pesan.lampiran.view', ['nomorTiket' => $pengajuan->nomor_tiket, 'pesanId' => $pesan->id]) }}" target="_blank" rel="noopener">
+                                            <i class="bi bi-paperclip" aria-hidden="true"></i>
+                                            {{ basename($pesan->lampiran) }}
+                                        </a>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                    @if(auth('admin')->user()?->peran === 'admin_unit' && $pengajuan->status === 'diproses')
+                        <form class="detail-chat-compose" method="POST" action="{{ route('admin.pengajuan.pesan.store', $pengajuan) }}" enctype="multipart/form-data">
+                            @csrf
+                            <textarea id="admin-chat-message" name="pesan" class="form-control" rows="1" maxlength="5000" placeholder="Tulis pesan kepada pemohon..."></textarea>
+                            <label class="btn detail-chat-attach" for="admin-chat-attachment" title="Lampirkan file">
+                                <i class="bi bi-paperclip" aria-hidden="true"></i>
+                            </label>
+                            <input id="admin-chat-attachment" class="d-none" type="file" name="lampiran" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                            <button type="submit" class="btn btn-primary detail-chat-send">
+                                <i class="bi bi-send" aria-hidden="true"></i> Kirim Pesan
+                            </button>
+                        </form>
+                    @else
+                        <div class="detail-chat-compose detail-chat-compose--readonly" aria-label="Percakapan hanya dapat dibaca">
+                            <input type="text" class="form-control" placeholder="Percakapan hanya dapat dibaca" disabled>
+                        </div>
+                    @endif
+                    <small class="detail-chat-note">
+                        {{ auth('admin')->user()?->peran === 'admin_ult'
+                            ? 'Mode baca saja untuk Admin ULT.'
+                            : ($pengajuan->isTerminal() ? 'Tiket terminal. Riwayat komunikasi hanya dapat dibaca.' : 'Pesan dan lampiran dikirim kepada pemohon.') }}
+                    </small>
+                </section>
             </div>
 
-            <h6 class="font-weight-bold mt-3">Subjek Pengajuan</h6>
-            <p>{{ $pengajuan->subjek }}</p>
+            <div class="col-xl-4 detail-sidebar-column">
+                <section class="detail-card detail-applicant-card">
+                    <div class="detail-card-heading">
+                        <h2>Informasi Pemohon</h2>
+                    </div>
+                    <div class="detail-applicant-summary">
+                        <span class="detail-applicant-avatar">{{ strtoupper(substr($pemohon->nama_lengkap ?? 'P', 0, 1)) }}</span>
+                        <div>
+                            <strong>{{ $pemohon->nama_lengkap ?? 'Pemohon #' . $pengajuan->id_pengguna }}</strong>
+                            <span>Pemohon layanan</span>
+                        </div>
+                    </div>
+                    <dl class="detail-definition-list">
+                        <div><dt>NIM / NIP / NIK</dt><dd>{{ $pemohon->nim_nip ?? '-' }}</dd></div>
+                        <div><dt>Nomor WhatsApp</dt><dd>{{ $pemohon->nomor_telepon ?? '-' }}</dd></div>
+                        <div><dt>Email</dt><dd class="detail-breakable">{{ $pemohon->email ?? '-' }}</dd></div>
+                        <div><dt>Tanggal Pengajuan</dt><dd>{{ $pengajuan->dibuat_pada?->timezone('Asia/Jakarta')->format('d F Y, H:i') ?? '-' }}</dd></div>
+                    </dl>
+                </section>
 
-            <h6 class="font-weight-bold">Deskripsi</h6>
-            <div class="border rounded p-3" style="white-space:pre-wrap">{{ $pengajuan->deskripsi }}</div>
+                <section class="detail-card detail-service-card">
+                    <div class="detail-card-heading">
+                        <h2>Informasi Layanan</h2>
+                    </div>
+                    <dl class="detail-definition-list">
+                        <div><dt>Nama Layanan</dt><dd>{{ $pengajuan->layanan?->nama_layanan ?? '-' }}</dd></div>
+                        <div><dt>Unit Penyelenggara</dt><dd>{{ $pengajuan->layanan?->unit?->nama_unit ?? $pengajuan->unit?->nama_unit ?? '-' }}</dd></div>
+                        <div><dt>Estimasi Selesai</dt><dd>{{ $pengajuan->layanan?->estimasi_waktu ?? '-' }}</dd></div>
+                    </dl>
+                </section>
+            </div>
         </div>
-    </div>
 
-    <div class="card">
-        <div class="card-header">
-            <strong>Riwayat Disposisi</strong>
-        </div>
-        <div class="card-body p-0 table-responsive">
-            <table class="table table-bordered mb-0">
-                <thead>
-                    <tr>
-                        <th>Tanggal</th>
-                        <th>Unit Tujuan</th>
-                        <th>Catatan</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @forelse($pengajuan->disposisi->sortByDesc('tanggal_disposisi') as $item)
-                    <tr>
-                        <td>{{ $item->tanggal_disposisi?->format('d/m/Y H:i') ?? '-' }}</td>
-                        <td>{{ $item->unitTujuan?->nama_unit ?? '-' }}</td>
-                        <td>{{ $item->catatan_disposisi ?: '-' }}</td>
-                        <td>{{ strtoupper($item->status_disposisi) }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="4" class="text-center p-3">
-                            Belum ada riwayat disposisi.
-                        </td>
-                    </tr>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
+        <section class="detail-card detail-history-card">
+            <div class="detail-card-heading"><h2>Riwayat Disposisi & Status</h2></div>
+            <div class="table-responsive">
+                <table class="table detail-history-table align-middle mb-0">
+                    <thead><tr><th>Tanggal</th><th>Aktivitas</th><th>Unit / Admin</th><th>Status</th><th>Catatan</th></tr></thead>
+                    <tbody>
+                        @forelse ($pengajuan->riwayat->sortByDesc('dibuat_pada') as $item)
+                            <tr>
+                                <td>{{ $item->dibuat_pada?->timezone('Asia/Jakarta')->format('d/m/Y H:i') ?? '-' }}</td>
+                                <td><strong>{{ $item->judul_status }}</strong><small>{{ $item->nama_aktor }}</small></td>
+                                <td>{{ $pengajuan->unit?->nama_unit ?? '-' }}</td>
+                                <td>@include('admin.partials.status-badge', ['status' => $item->status_baru])</td>
+                                <td>{{ $item->deskripsi ?: '-' }}</td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="5" class="text-center text-muted py-4">Belum ada riwayat status.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
+@stop
 
-    <div class="card">
-        <div class="card-header">
-            <strong>Riwayat Status Pengajuan</strong>
-        </div>
-        <div class="card-body p-0 table-responsive">
-            <table class="table table-bordered mb-0">
-                <thead>
-                    <tr>
-                        <th>Tanggal</th>
-                        <th>Aktivitas</th>
-                        <th>Status Sebelumnya</th>
-                        <th>Status Baru</th>
-                        <th>Aktor</th>
-                        <th>Deskripsi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @forelse($pengajuan->riwayat->sortByDesc('dibuat_pada') as $item)
-                    <tr>
-                        <td>{{ $item->dibuat_pada?->format('d/m/Y H:i') ?? '-' }}</td>
-                        <td>{{ $item->judul_status }}</td>
-                        <td>{{ $item->status_sebelumnya ?? '-' }}</td>
-                        <td>{{ $item->status_baru ?? '-' }}</td>
-                        <td>{{ $item->nama_aktor }}</td>
-                        <td>{{ $item->deskripsi }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="6" class="text-center p-3">
-                            Belum ada riwayat status.
-                        </td>
-                    </tr>
-                @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+@section('css')
+<style>
+    .detail-pengajuan-page { --detail-border: #e2e8f0; --detail-muted: #64748b; color: #172033; font-family: var(--admin-font-family); font-size: var(--admin-font-size-primary); }
+    .detail-page-heading { display: flex; align-items: center; min-height: 31px; }
+    .detail-alert { border-radius: 8px; }
+    .detail-status-bar { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 1rem; min-height: 42px; margin-bottom: 8px; padding: 6px 9px; border: 1px solid #e5e9ef; border-radius: 8px; background: #fff; box-shadow: 0 2px 6px rgba(15, 23, 42, .025); }
+    .detail-status-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+    .detail-status-actions form { margin: 0; }
+    .detail-action-button { min-width: 77px; height: 24px; padding: 3px 9px; border: 1px solid transparent; border-radius: 5px; font-family: inherit; font-size: var(--admin-font-size-primary); font-weight: 600; line-height: 1; white-space: nowrap; }
+    .detail-action-button--reject { border-color: #f1aeb5; background: #fff5f5; color: #c03d4d; }
+    .detail-action-button--reject:hover { background: #ffe4e6; }
+    .detail-action-button--complete { border-color: #92d3c4; background: #e9f8f3; color: #087c68; }
+    .detail-action-button--complete:hover { background: #d3f1e7; }
+    .detail-main-layout { align-items: flex-start; }
+    .detail-main-content, .detail-sidebar-column { min-width: 0; }
+    .detail-card { margin-bottom: 14px; padding: 14px; border: 1px solid var(--detail-border); border-radius: 8px; background: #fff; box-shadow: 0 2px 6px rgba(15, 23, 42, .025); }
+    .detail-card-heading { display: flex; align-items: center; gap: 5px; margin-bottom: 13px; }
+    .detail-card-heading h2 { margin: 0; color: #172033; font-size: var(--admin-font-size-primary); font-weight: 600; }
+    .detail-request-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px 25px; }
+    .detail-field { min-width: 0; }
+    .detail-field-wide { grid-column: 1 / -1; }
+    .detail-field span, .detail-description > span, .detail-definition-list dt { display: block; margin-bottom: 4px; color: #94a3b8; font-size: var(--admin-font-size-primary); font-weight: 600; }
+    .detail-field strong, .detail-definition-list dd { color: #27344a; font-size: var(--admin-font-size-primary); font-weight: 400; }
+    .detail-description { margin-top: 14px; }
+    .detail-description p { min-height: 54px; margin: 0; padding: 9px 10px; border: 1px solid var(--detail-border); border-radius: 6px; background: #f8fafc; color: #475569; font-size: var(--admin-font-size-secondary); font-weight: 400; line-height: 1.45; white-space: pre-wrap; }
+    .detail-attachments { margin-top: 14px; }
+    .detail-attachments > span { display: block; margin-bottom: 4px; color: #94a3b8; font-size: var(--admin-font-size-primary); font-weight: 600; }
+    .detail-document { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding: 9px 10px; border: 1px solid var(--detail-border); border-radius: 7px; background: #f8fafc; }
+    .detail-document-icon { color: #d65b77; font-size: 1.05rem; }
+    .detail-document-info { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 2px; }
+    .detail-document-info strong { overflow: hidden; color: #334155; font-size: var(--admin-font-size-primary); font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
+    .detail-document-info span { color: #94a3b8; font-size: var(--admin-font-size-secondary); font-weight: 400; }
+    .detail-document .btn { padding: .2rem .5rem; border-color: #dbe3ee; background: #fff; font-size: var(--admin-font-size-primary); font-weight: 600; }
+    .detail-empty-document { display: flex; align-items: center; gap: 8px; color: #94a3b8; font-size: var(--admin-font-size-secondary); font-weight: 400; }
+    .detail-applicant-summary { display: flex; align-items: center; gap: 10px; margin-bottom: 17px; }
+    .detail-applicant-avatar { display: grid; width: 35px; height: 35px; place-items: center; border-radius: 50%; background: #e7eefb; color: #2759a4; font-size: var(--admin-font-size-primary); font-weight: 600; }
+    .detail-applicant-summary div { display: flex; flex-direction: column; gap: 2px; }
+    .detail-applicant-summary strong { color: #27344a; font-size: var(--admin-font-size-primary); font-weight: 400; }
+    .detail-applicant-summary span { color: #168b70; font-size: var(--admin-font-size-secondary); font-weight: 400; }
+    .detail-definition-list { margin: 0; }
+    .detail-definition-list > div { padding: 9px 0; border-top: 1px solid #eef2f6; }
+    .detail-definition-list > div:first-child { padding-top: 0; border-top: 0; }
+    .detail-definition-list dt, .detail-definition-list dd { margin: 0; }
+    .detail-definition-list dd { line-height: 1.4; }
+    .detail-breakable { overflow-wrap: anywhere; }
+    .detail-service-card .detail-definition-list > div:last-child { padding-bottom: 0; }
+    .detail-conversation-heading { justify-content: space-between; }
+    .detail-conversation-heading > div { display: flex; align-items: center; gap: 6px; }
+    .detail-muted-label { color: #94a3b8; font-size: var(--admin-font-size-secondary); font-weight: 400; }
+    .detail-helper-text { margin: -7px 0 13px; color: #94a3b8; font-size: var(--admin-font-size-secondary); font-weight: 400; }
+    .detail-chat-empty { display: flex; min-height: 115px; align-items: center; justify-content: center; flex-direction: column; gap: 5px; color: #94a3b8; text-align: center; }
+    .detail-chat-empty i { color: #cbd5e1; font-size: 1.7rem; }
+    .detail-chat-empty strong { color: #64748b; font-size: var(--admin-font-size-secondary); font-weight: 400; }
+    .detail-chat-empty span { font-size: var(--admin-font-size-secondary); font-weight: 400; }
+    .detail-chat-history { display: flex; max-height: 260px; overflow-y: auto; flex-direction: column; gap: 9px; padding: 12px 0; }
+    .detail-chat-message { max-width: 82%; padding: 9px 11px; border-radius: 8px; }
+    .detail-chat-message--incoming { align-self: flex-start; background: #f1f5f9; }
+    .detail-chat-message--outgoing { align-self: flex-end; background: #e0f2fe; }
+    .detail-chat-message-meta { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 4px; color: #64748b; font-size: var(--admin-font-size-secondary); font-weight: 400; }
+    .detail-chat-message-meta strong { color: #315a91; }
+    .detail-chat-message p { margin: 0; color: #475569; font-size: var(--admin-font-size-secondary); font-weight: 400; line-height: 1.45; white-space: pre-wrap; }
+    .detail-chat-compose { display: flex; align-items: stretch; gap: 8px; padding-top: 11px; border-top: 1px solid #edf1f5; }
+    .detail-chat-compose textarea { min-width: 0; flex: 1; min-height: 34px; height: 34px; max-height: 140px; resize: none; overflow-y: auto; background: #f8fafc; font-size: var(--admin-font-size-primary); font-weight: 400; line-height: 1.45; }
+    .detail-chat-compose .btn { min-width: 92px; align-self: stretch; font-size: var(--admin-font-size-primary); font-weight: 600; }
+    .detail-chat-compose .detail-chat-attach { display: grid; min-width: 34px; width: 34px; padding: 0; place-items: center; border: 1px solid #dbe3ee; background: #fff; color: #64748b; cursor: pointer; }
+    .detail-chat-compose--readonly { align-items: center; }
+    .detail-chat-compose--readonly .form-control { width: 100%; }
+    .detail-chat-attachment { display: inline-flex; align-items: center; gap: 5px; margin-top: 6px; color: #2563eb; font-size: var(--admin-font-size-secondary); }
+    .detail-chat-note { display: block; margin-top: 8px; color: #a0aec0; font-size: var(--admin-font-size-secondary); font-weight: 400; }
+    .detail-history-card { width: 100%; padding: 0; overflow: hidden; }
+    .detail-history-card .detail-card-heading { margin: 0; padding: 15px 17px; border-bottom: 1px solid var(--detail-border); }
+    .detail-history-table { font-size: var(--admin-font-size-primary); }
+    .detail-history-table th { padding: 10px 15px; color: #94a3b8; background: #f8fafc; font-size: var(--admin-font-size-primary); font-weight: 600; white-space: nowrap; }
+    .detail-history-table td { padding: 11px 15px; color: #475569; font-size: var(--admin-font-size-primary); font-weight: 400; }
+    .detail-history-table td strong, .detail-history-table td small { display: block; }
+    .detail-history-table td small { margin-top: 3px; color: #94a3b8; font-size: var(--admin-font-size-secondary); font-weight: 400; }
+    @media (min-width: 1200px) {
+        .detail-main-layout > .detail-main-content { flex: 0 0 68%; max-width: 68%; }
+        .detail-main-layout > .detail-sidebar-column { position: sticky; top: 16px; flex: 0 0 32%; max-width: 32%; align-self: flex-start; min-width: 0; }
+    }
+    .ticket-status-badge { display: inline-flex; align-items: center; justify-content: center; padding: 4px 8px; border-radius: 5px; font-size: 12px; font-weight: 700; line-height: 1.2; text-transform: uppercase; white-space: nowrap; }
+    .ticket-status-badge--baru { color: #1d4ed8; background: #dbeafe; }
+    .ticket-status-badge--didisposisikan { color: #7e22ce; background: #f3e8ff; }
+    .ticket-status-badge--diproses { color: #a16207; background: #fef3c7; }
+    .ticket-status-badge--selesai { color: #047857; background: #d1fae5; }
+    .ticket-status-badge--ditolak { color: #be123c; background: #ffe4e6; }
+    .ticket-status-badge--default { color: #475569; background: #e2e8f0; }
+    @media (max-width: 767.98px) {
+        .detail-page-heading { align-items: flex-start; flex-direction: column; }
+        .detail-status-bar { align-items: flex-start; flex-direction: column; }
+        .detail-status-actions { width: 100%; flex-wrap: wrap; justify-content: flex-start; }
+        .detail-request-grid { grid-template-columns: 1fr; }
+        .detail-field-wide { grid-column: auto; }
+        .detail-chat-compose { align-items: stretch; }
+        .detail-chat-compose textarea { min-width: 0; flex: 1; }
+        .detail-chat-compose .detail-chat-send { width: 92px; flex: 0 0 92px; }
+        .detail-sidebar-column { position: static; }
+    }
+</style>
 @stop

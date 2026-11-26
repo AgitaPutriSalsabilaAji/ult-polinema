@@ -49,7 +49,7 @@
             @endif
         </div>
         <aside class="detail-right">
-            <div class="information-card"><div class="information-label">Unit Pengampu</div><strong>{{ $layanan['unit'] }}</strong><h2>▣ &nbsp; INFORMASI LAYANAN</h2>
+            <div class="information-card"><h2><i class="bi bi-info-circle" aria-hidden="true"></i> INFORMASI LAYANAN</h2><div class="information-label">Unit Pengampu</div><strong>{{ $layanan['unit'] }}</strong>
                 <div class="information-row"><span>Jenis Layanan</span><strong>{{ $layanan['nama'] }}</strong></div>
                 @if (!empty($layanan['estimasi']))
                     <div class="information-row"><span>Estimasi Waktu</span><strong class="time-value">{{ $layanan['estimasi'] }}</strong></div>
@@ -60,7 +60,13 @@
                 @if (!empty($layanan['jam']))
                     <div class="information-row"><span>Jam Operasional Layanan</span><strong>{{ $layanan['jam'] }}</strong></div>
                 @endif
-                <a href="/e-tiket" class="apply-button">✎ &nbsp; AJUKAN LAYANAN</a>
+                @auth('web')
+                    <a href="{{ route('pengajuan.form', ['layanan' => $layanan['id']]) }}" class="apply-button">✎ &nbsp; AJUKAN LAYANAN</a>
+                @endauth
+                @guest('web')
+                    <button class="apply-button" type="button" data-bs-toggle="modal" data-bs-target="#loginModal"
+                            data-service-id="{{ $layanan['id'] }}">✎ &nbsp; AJUKAN LAYANAN</button>
+                @endguest
                 <a href="{{ route('layanan.index') }}" class="back-button">‹ &nbsp; Kembali ke Daftar Layanan</a>
             </div>
             <div class="help-card"><strong><span class="section-icon">⊙</span> Butuh Bantuan?</strong><p>Silakan hubungi helpdesk Bagian Kerja Sama &amp; Humas Polinema.</p><a href="https://wa.me/6285117479099" target="_blank" rel="noopener noreferrer" class="whatsapp-button">◉ &nbsp; Hubungi via WhatsApp</a></div>

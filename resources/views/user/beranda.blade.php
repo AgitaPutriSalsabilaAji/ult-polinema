@@ -26,7 +26,7 @@
                     <p class="hero-description">
                         Satu pintu layanan informasi dan administrasi Politeknik Negeri Malang
                         yang mudah, cepat, transparan, dan terpadu untuk civitas akademika
-                        dan masyarakat luas tanpa perlu login.
+                        dan masyarakat luas. Informasi layanan dapat dijelajahi tanpa login.
                     </p>
 
                     <div class="d-flex flex-wrap gap-2 hero-actions">
@@ -69,7 +69,7 @@
                      role="listbox" aria-label="Rekomendasi layanan">
                     @foreach ($searchServices as $service)
                         <a class="service-search-option" role="option"
-                           href="{{ route('layanan.detail', ['slug' => $service['slug']]) }}"
+                           href="{{ route('layanan.detail', ['slug' => $service['id']]) }}"
                            data-service-option>
                             {{ $service['nama'] }}
                         </a>
@@ -90,9 +90,9 @@
         <div class="container-xl">
             <div class="quick-apply">
                 <div>
-                    <span class="mini-label">Akses Langsung Tanpa Akun</span>
+                    <span class="mini-label">Pengajuan Layanan Online</span>
                     <h2>AJUKAN PERMOHONAN LAYANAN</h2>
-                    <p>Pilih layanan yang Anda butuhkan dan buat e-ticket resmi tanpa perlu mendaftar akun.</p>
+                    <p>Pilih layanan yang Anda butuhkan, lalu masuk atau daftar untuk mengirim pengajuan dan memantau e-ticket.</p>
                 </div>
                 <a href="{{ route('layanan.index') }}" class="btn btn-orange">
                     <i class="bi bi-arrow-right me-2"></i>PILIH LAYANAN
@@ -117,7 +117,7 @@
             <div class="row g-3 service-list" id="serviceList">
                 @forelse ($services as $index => $service)
                     <div class="col-md-6 service-item" data-search="{{ $service['nama'] }} {{ $service['deskripsi'] }} {{ $service['unit'] }}">
-                        <a href="{{ in_array($service['slug'], $slugsAktif, true) ? route('layanan.detail', ['slug' => $service['slug']]) : route('layanan.index', ['kategori' => $kategori]) }}" class="service-link">
+                        <a href="{{ route('layanan.detail', ['slug' => $service['id']]) }}" class="service-link">
                             <span class="service-number">{{ sprintf('%02d', $index + 1) }}</span>
                             <span class="service-copy">
                                 <strong>{{ $service['nama'] }}</strong>
@@ -129,7 +129,7 @@
                     </div>
                 @empty
                     <div class="col-12 no-results" id="noResults">
-                        Belum ada layanan dengan halaman detail untuk kategori ini.
+                        Belum ada layanan untuk kategori ini.
                     </div>
                 @endforelse
 
@@ -189,29 +189,50 @@
             <div class="text-center mb-4">
                 <span class="mini-label orange-label">Prosedur Pengajuan</span>
                 <h2 class="section-heading">ALUR PELAYANAN ULT</h2>
-                <p class="section-subtitle">Gunakan layanan ULT Politeknik Negeri Malang melalui empat langkah sederhana.</p>
+                <p class="section-subtitle">Gunakan layanan ULT Politeknik Negeri Malang melalui lima langkah sederhana.</p>
             </div>
 
-            <div class="row g-3">
-                <div class="col-6 col-lg-3"><article class="step-card"><span>01</span><h3>Pilih Layanan</h3><p>Cari dan pilih jenis layanan sesuai dengan keperluan administrasi Anda.</p></article></div>
-                <div class="col-6 col-lg-3"><article class="step-card"><span>02</span><h3>Isi Form Pengajuan</h3><p>Lengkapi identitas pemohon, deskripsi kebutuhan, dan unggah dokumen pendukung.</p></article></div>
-                <div class="col-6 col-lg-3"><article class="step-card"><span>03</span><h3>Dapatkan E-Ticket</h3><p>Nomor e-ticket dibuat otomatis oleh sistem sebagai bukti tanda terima resmi.</p></article></div>
-                <div class="col-6 col-lg-3"><article class="step-card"><span>04</span><h3>Pantau Status</h3><p>Gunakan nomor e-ticket untuk melihat perkembangan verifikasi dan penyelesaian berkas.</p></article></div>
-            </div>
-        </div>
-    </section>
+            <div class="steps-grid">
+    <div class="step-item">
+        <article class="step-card">
+            <span>01</span>
+            <h3>Pilih Layanan</h3>
+            <p>Cari dan pilih jenis layanan sesuai dengan keperluan administrasi Anda.</p>
+        </article>
+    </div>
 
-    {{-- CEK STATUS --}}
-    <section class="status-section section-space" id="cek-status">
-        <div class="container-xl text-center">
-            <h2 class="section-heading">CEK STATUS PENGAJUAN</h2>
-            <p class="section-subtitle">Sudah mengajukan layanan? Pantau proses pengajuan berkas Anda menggunakan nomor e-ticket.</p>
+    <div class="step-item">
+        <article class="step-card">
+            <span>02</span>
+            <h3>Isi Form Pengajuan</h3>
+            <p>Lengkapi identitas pemohon, deskripsi kebutuhan, dan unggah dokumen pendukung.</p>
+        </article>
+    </div>
 
-            <form class="status-form mx-auto" id="statusForm" action="{{ route('cek-status') }}" method="GET">
-                <input type="text" id="ticketNumber" name="ticket" placeholder="ULT-2026-000123" aria-label="Nomor e-ticket" required>
-                <button type="submit" class="btn btn-purple">Cek Status</button>
-            </form>
-            <p id="statusFeedback" class="status-feedback" aria-live="polite"></p>
+    <div class="step-item">
+        <article class="step-card">
+            <span>03</span>
+            <h3>Dapatkan E-Ticket</h3>
+            <p>Nomor e-ticket dibuat otomatis oleh sistem sebagai bukti tanda terima resmi.</p>
+        </article>
+    </div>
+
+    <div class="step-item">
+        <article class="step-card">
+            <span>04</span>
+            <h3>Pantau Status</h3>
+            <p>Gunakan nomor e-ticket untuk melihat perkembangan verifikasi dan penyelesaian berkas.</p>
+        </article>
+    </div>
+
+    <div class="step-item">
+        <article class="step-card">
+            <span>05</span>
+            <h3>Berikan Penilaian</h3>
+            <p>Setelah layanan selesai, berikan rating dan ulasan sebagai bentuk penilaian terhadap kualitas pelayanan.</p>
+        </article>
+    </div>
+</div>
         </div>
     </section>
 
@@ -224,50 +245,28 @@
             </div>
 
             <div class="accordion faq-accordion" id="faqAccordion">
-                <div class="accordion-item">
-                    <h3 class="accordion-header">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqOne" aria-expanded="true" aria-controls="faqOne">
-                            Apakah saya harus login untuk mengajukan layanan?
-                        </button>
-                    </h3>
-                    <div id="faqOne" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">Tidak. Portal ULT Polinema dirancang sebagai portal publik yang dapat diakses tanpa membuat akun.</div>
+                @forelse ($faqs as $faq)
+                    <div class="accordion-item">
+                        <h3 class="accordion-header">
+                            <button class="accordion-button {{ $loop->first ? '' : 'collapsed' }}" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#faq-{{ $faq->id }}"
+                                    aria-expanded="{{ $loop->first ? 'true' : 'false' }}"
+                                    aria-controls="faq-{{ $faq->id }}">
+                                {{ $faq->pertanyaan }}
+                            </button>
+                        </h3>
+                        <div id="faq-{{ $faq->id }}" class="accordion-collapse collapse {{ $loop->first ? 'show' : '' }}"
+                             data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">{{ $faq->jawaban }}</div>
+                        </div>
                     </div>
-                </div>
-                <div class="accordion-item">
-                    <h3 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqTwo" aria-expanded="false" aria-controls="faqTwo">
-                            Bagaimana cara mendapatkan e-ticket?
-                        </button>
-                    </h3>
-                    <div id="faqTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">Setelah formulir pengajuan diisi dan dikonfirmasi, sistem akan menerbitkan nomor e-ticket apabila fitur pengajuan sudah terhubung ke backend.</div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h3 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqThree" aria-expanded="false" aria-controls="faqThree">
-                            Bagaimana cara mengecek status pengajuan?
-                        </button>
-                    </h3>
-                    <div id="faqThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">Masukkan nomor e-ticket pada kolom Cek Status. Status ditampilkan setelah fitur terhubung dengan database Laravel.</div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h3 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqFour" aria-expanded="false" aria-controls="faqFour">
-                            Bagaimana jika saya tidak tahu harus memilih layanan apa?
-                        </button>
-                    </h3>
-                    <div id="faqFour" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                        <div class="accordion-body">Gunakan kolom pencarian atau pilih kategori layanan yang sesuai, lalu hubungi unit terkait jika membutuhkan informasi tambahan.</div>
-                    </div>
-                </div>
+                @empty
+                    <p class="section-subtitle text-center mb-0">Belum ada pertanyaan yang tersedia.</p>
+                @endforelse
             </div>
 
             <div class="text-center mt-4">
-                <a class="btn btn-light btn-sm all-faq" href="#faqAccordion">LIHAT SEMUA FAQ</a>
+                <a class="btn btn-light btn-sm all-faq" href="{{ route('faq.index') }}">LIHAT SEMUA FAQ</a>
             </div>
         </div>
     </section>
