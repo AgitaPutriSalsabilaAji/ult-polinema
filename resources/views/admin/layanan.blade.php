@@ -183,7 +183,7 @@
 
         @if($layanans->hasPages())
             <div class="card-footer">
-                {{ $layanans->links() }}
+                {{ $layanans->links('pagination::bootstrap-5') }}
             </div>
         @endif
     </div>

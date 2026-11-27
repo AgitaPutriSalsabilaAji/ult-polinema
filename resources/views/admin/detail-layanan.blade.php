@@ -130,7 +130,7 @@
             </div>
 
             <div class="card-body">
-                <div class="section-content">{{ $bagian->konten }}</div>
+                <div class="section-content">{!! $bagian->konten !!}</div>
 
                 @if($bagian->gambar_pendukung)
                     <div class="mt-3">
